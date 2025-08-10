@@ -1,0 +1,127 @@
+/* Estilos para el formulario de inicio de sesión */
+body, html {
+  font-family: 'Montserrat', Arial, sans-serif;
+}
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f6fa;
+  font-family: 'Montserrat', Arial, sans-serif;
+}
+.login-form {
+  background: #fff;
+  padding: 2.5rem 2rem 2rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  width: 100%;
+  max-width: 350px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  font-family: 'Montserrat', Arial, sans-serif;
+}
+.login-title {
+  text-align: center;
+  margin-bottom: 1rem;
+  color: #2d3436;
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-family: 'Montserrat', Arial, sans-serif;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-family: 'Montserrat', Arial, sans-serif;
+}
+.form-control {
+  padding: 0.7rem 1rem;
+  border: 1px solid #b2bec3;
+  border-radius: 6px;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.2s;
+}
+.form-control:focus {
+  border: 1.5px solid #0984e3;
+}
+.form-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: -0.5rem;
+}
+.btn-login {
+  background: #0984e3;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.8rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: background 0.2s;
+  font-family: 'Montserrat', Arial, sans-serif;
+}
+.btn-login:hover {
+  background: #74b9ff;
+}
+.login-link {
+  text-align: center;
+  margin-top: 0.5rem;
+  font-family: 'Montserrat', Arial, sans-serif;
+}
+.login-link a {
+  color: #636e72;
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+.login-link a:hover {
+  text-decoration: underline;
+}
+#usuario-advertencia {
+  color: #b80101;
+  font-size: 16px;
+  margin-top: 4px;
+  display: none;
+  font-family: 'Montserrat', Arial, sans-serif;
+  text-align: left;
+}
+.mensaje-exito {
+  color: #2a7c2a;
+  background: #eafaf1;
+  border: 1.5px solid #2ecc71;
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin-top: 20px;
+  font-size: 18px;
+  text-align: center;
+  font-family: 'Montserrat', Arial, sans-serif;
+}
+.mensaje-error {
+  color: #b90000;
+  background: #ffeaea;
+  border: 1.5px solid #e17055;
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin-top: 20px;
+  font-size: 18px;
+  text-align: center;
+  font-family: 'Montserrat', Arial, sans-serif;
+}
+.login-container, .login-form, .form-group, .btn-login, .login-title, .login-link, label, input, button {
+  font-family: 'Montserrat', Arial, sans-serif;
+}
+.codigo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  margin-top: 24px;
+}
+.codigo-container .login-form {
+  margin-bottom: 0;
+}

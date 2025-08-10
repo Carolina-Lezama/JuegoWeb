@@ -1,0 +1,334 @@
+/* Estilos para la pantalla de logros, inspirado en dialogos.css */
+body {
+  background: #f7f9fa;
+  font-family: 'Montserrat', Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: row;
+}
+
+.panel-sidebar {
+  /* Ya está fixed y con width 220px en home.css */
+  z-index: 100;
+}
+
+.logros-flex-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  width: 100vw;
+  min-height: 100vh;
+  margin-left: 360px; /* igual que .panel-sidebar en home.css */
+  box-sizing: border-box;
+}
+
+.panel-sidebar.collapsed ~ .logros-flex-container {
+  margin-left: 64px;
+}
+
+.main-content-logros {
+  width: 420px;
+  min-width: 220px;
+  margin-left: 0;
+  padding: 2rem 1rem 1rem 1rem;
+  background: #fff;
+  box-sizing: border-box;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  font-family: 'Montserrat', Arial, sans-serif;
+  float: none;
+  display: block;
+}
+
+/* El resto del espacio a la derecha queda libre para otros elementos futuros */
+
+.main-content h2 {
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1.2rem;
+  color: #222;
+  text-align: center;
+}
+
+.formulario {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  padding: 2rem 2.5rem 1.5rem 2.5rem;
+  max-width: 440px;
+  margin: 2rem 0 2rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-family: 'Montserrat', Arial, sans-serif;
+}
+
+label {
+  color: #333;
+  font-weight: 500;
+  display: block;
+  margin-bottom: 0.3rem;
+  font-family: 'Montserrat', Arial, sans-serif;
+}
+
+input[type="text"],
+input[type="number"],
+textarea,
+select {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border: 1.5px solid #c6b7ff;
+  border-radius: 6px;
+  font-size: 1rem;
+  margin-bottom: 0.4rem;
+  background: #fff;
+  color: #222;
+  font-family: 'Montserrat', Arial, sans-serif;
+  box-sizing: border-box;
+  transition: border 0.2s;
+  text-align: left;
+  resize: vertical;
+}
+
+input[type="file"] {
+  font-family: 'Montserrat', Arial, sans-serif;
+  margin-bottom: 1.2rem;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+textarea:focus,
+select:focus {
+  border-color: #7a5cff;
+  outline: none;
+}
+
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: #fff url('data:image/svg+xml;utf8,<svg fill="%237a5cff" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 1rem center/1.2em auto;
+  font-weight: 500;
+}
+
+.guardar[type="submit"] {
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.8rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: background 0.2s;
+  font-family: 'Montserrat', Arial, sans-serif;
+  display: block;
+  margin-left: 0;
+}
+
+.guardar[type="submit"]:hover {
+  background: #64b5f6;
+}
+
+.mensaje-exito {
+  background: #d4edda;
+  color: #155724;
+  border: 1.5px solid #c3e6cb;
+  border-radius: 6px;
+  padding: 1rem 1.2rem;
+  margin: 1.5rem auto 0 auto;
+  max-width: 440px;
+  font-size: 1.08rem;
+  text-align: center;
+  font-family: 'Montserrat', Arial, sans-serif;
+}
+.mensaje-error {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1.5px solid #f5c6cb;
+  border-radius: 6px;
+  padding: 1rem 1.2rem;
+  margin: 1.5rem auto 0 auto;
+  max-width: 440px;
+  font-size: 1.08rem;
+  text-align: center;
+  font-family: 'Montserrat', Arial, sans-serif;
+}
+
+.tabla-logros-container {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  margin-top: 2rem;
+  flex: 1 1 auto;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  padding: 1.5rem 1rem;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.tabla-logros {
+  width: 98%; /* Reduce el ancho de la tabla */
+  min-width: 600px;
+  max-width: 100%;
+  margin: 0 auto;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  font-family: 'Montserrat', Arial, sans-serif;
+  table-layout: auto;
+}
+.tabla-logros th, .tabla-logros td {
+  padding: 1rem 2.2rem;
+  border: 1px solid #b2bec3;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 1.08rem;
+  font-family: 'Montserrat', Arial, sans-serif;
+  background: #fff;
+  min-width: 160px;
+  max-width: 400px;
+  word-break: break-word;
+  white-space: normal;
+}
+.tabla-logros th {
+  background: #81a7cd;
+  color: #fff;
+  font-weight: 700;
+}
+.tabla-logros tr:last-child td {
+  border-bottom: 1px solid #b2bec3;
+}
+.tabla-logros tr:hover {
+  background: #f0f4fa;
+}
+
+@media (max-width: 900px) {
+  body {
+    flex-direction: column;
+  }
+  .main-content {
+    margin-left: 0;
+    width: 100vw;
+    border-radius: 0;
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 1100px) {
+  .logros-flex-container {
+    flex-direction: column;
+  }
+  .tabla-logros-container {
+    margin-left: 0;
+    margin-top: 1.5rem;
+    padding: 1rem 0.5rem;
+  }
+  .main-content {
+    margin-left: 220px;
+    width: 100vw;
+    border-radius: 0;
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .formulario {
+    padding: 1.2rem 0.5rem 1rem 0.5rem;
+    max-width: 98vw;
+  }
+  .mensaje-exito, .mensaje-error {
+    max-width: 98vw;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 991px) {
+  .logros-flex-container {
+    flex-direction: column;
+    margin-left: 0;
+    width: 100vw;
+    min-width: 0;
+    padding: 0 2px;
+  }
+  .main-content-logros {
+    width: 98vw;
+    min-width: 0;
+    margin-left: 0;
+    padding: 1rem 0.5rem 0.5rem 0.5rem;
+  }
+  .tabla-logros-container {
+    margin-left: 0;
+    margin-top: 1rem;
+    padding: 0.5rem 0.2rem 2.5rem 0.2rem; /* agrega espacio inferior */
+    min-width: 0;
+    max-width: 100vw;
+  }
+  .tabla-logros {
+    width: 100%;
+    min-width: 600px;
+    font-size: 0.95rem;
+    margin: 0 auto;
+    table-layout: auto;
+  }
+  .tabla-logros th, .tabla-logros td {
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    min-width: 120px;
+    max-width: 320px;
+    text-align: center;
+    vertical-align: middle;
+  }
+}
+
+@media (min-width: 992px) {
+  .logros-flex-container {
+    flex-direction: column;
+    align-items: center;
+    margin-left: 360px;
+    width: calc(100vw - 360px);
+    min-width: 0;
+    padding: 0 2px;
+  }
+  .main-content-logros {
+    width: 60vw;
+    min-width: 420px;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 2rem 1.5rem 1rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .formulario {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .tabla-logros-container {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto 2rem auto;
+    margin-top: 1.5rem;
+    padding: 1.5rem 1rem;
+  }
+  .tabla-logros {
+    width: 80%;
+    min-width: 600px;
+    max-width: 900px;
+    margin: 0 auto;
+    table-layout: auto;
+  }
+  .tabla-logros th, .tabla-logros td {
+    padding: 0.8rem 1.2rem;
+    font-size: 1rem;
+    min-width: 100px;
+    max-width: 220px;
+  }
+}

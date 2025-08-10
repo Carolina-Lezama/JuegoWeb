@@ -1,0 +1,11 @@
+body { background: #f5f5f5; font-family: Arial, sans-serif; }
+.registro-container { max-width: 400px; margin: 60px auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px #0002; padding: 32px 24px; }
+.registro-container h2 { text-align: center; margin-bottom: 24px; }
+.registro-container label { display: block; margin-bottom: 6px; font-weight: bold; }
+.registro-container input[type=text],
+.registro-container input[type=email],
+.registro-container input[type=password] {
+    width: 100%; padding: 8px 10px; margin-bottom: 16px; border: 1px solid #ccc; border-radius: 4px;
+}
+.registro-container button { width: 100%; padding: 10px; background: #2d89ef; color: #fff; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; }
+.registro-container button:hover { background: #1b5fa7; }

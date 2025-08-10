@@ -1,0 +1,170 @@
+/* Estilos básicos para formularios de texto y diálogos */
+body {
+  background: #f7f9fa;
+  font-family: 'Montserrat', Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.main-content h2 {
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1.2rem;
+  color: #222;
+  text-align: center;
+}
+
+.formulario, .form-dialogo {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  padding: 2rem 2.5rem 1.5rem 2.5rem;
+  max-width: 420px;
+  margin: 2rem auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  font-family: 'Montserrat', Arial, sans-serif;
+}
+
+label {
+  color: #333;
+  font-weight: 500;
+  display: block;
+  margin-bottom: 0.3rem;
+  font-family: 'Montserrat', Arial, sans-serif;
+}
+
+input[type="text"],
+textarea,
+.form-dialogo input[type="text"],
+.form-dialogo textarea {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border: 1px solid #b2bec3;
+  border-radius: 6px;
+  font-size: 1rem;
+  margin-bottom: 1.2rem;
+  background: #fff;
+  color: #222;
+  font-family: 'Montserrat', Arial, sans-serif;
+  box-sizing: border-box;
+  transition: border 0.2s;
+  text-align: left;
+  resize: vertical;
+  min-height: 60px;
+  max-height: 180px;
+}
+
+input[type="text"]::-webkit-input-placeholder,
+.form-dialogo input[type="text"]::-webkit-input-placeholder {
+  color: #aaa;
+}
+
+input[type="text"]:focus,
+textarea:focus,
+.form-dialogo input[type="text"]:focus,
+.form-dialogo textarea:focus {
+  border-color: #7a5cff;
+  outline: none;
+}
+
+.guardar[type="submit"],
+.form-dialogo button {
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.8rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: background 0.2s;
+  font-family: 'Montserrat', Arial, sans-serif;
+  display: block;
+  margin-left: 0;
+}
+
+.guardar[type="submit"]:hover {
+  background: #64b5f6;
+}
+
+.btn-volver {
+  background: #e17055;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.7rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin: 2rem auto 0 auto;
+  display: block;
+  transition: background 0.2s;
+  font-family: 'Montserrat', Arial, sans-serif;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+.btn-volver:hover {
+  background: #d35400;
+}
+
+/* Modificaciones para inputs de texto altos y sin scroll */
+input[type="text"],
+.form-dialogo input[type="text"] {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1.5px solid #c6b7ff;
+  border-radius: 6px;
+  font-size: 16px;
+  margin-bottom: 16px;
+  background: #fff;
+  color: #222;
+  font-family: inherit;
+  box-sizing: border-box;
+  transition: border 0.2s;
+  text-align: left;
+  overflow: hidden;
+  white-space: pre-wrap;
+  resize: none;
+  display: block;
+}
+
+/* Eliminar scroll en los inputs de texto y mostrar todo el contenido */
+input[type="text"],
+.form-dialogo input[type="text"] {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* Ajustes para los textarea */
+textarea,
+.form-dialogo textarea {
+  width: 100%;
+  min-height: 44px;
+  max-height: 180px;
+  padding: 10px 12px;
+  border: 1.5px solid #c6b7ff;
+  border-radius: 6px;
+  font-size: 16px;
+  margin-bottom: 16px;
+  background: #fff;
+  color: #222;
+  font-family: inherit;
+  box-sizing: border-box;
+  transition: border 0.2s;
+  text-align: left;
+  overflow: hidden;
+  resize: none;
+  display: block;
+  white-space: pre-wrap;
+}
+
+textarea:focus,
+.form-dialogo textarea:focus {
+  border-color: #7a5cff;
+  outline: none;
+}

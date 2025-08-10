@@ -1,0 +1,78 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "Nosale.tmx",
+    "expandedProjectPaths": [
+    ],
+    "fileStates": {
+        "": {
+            "scaleInDock": 1
+        },
+        "#FondoCasa": {
+            "scaleInDock": 0.33
+        },
+        "#FondoCasaU": {
+            "scaleInDock": 0.125
+        },
+        ":/automap-tiles.tsx": {
+            "scaleInDock": 1
+        },
+        "FondoCasaU.tsx": {
+            "scaleInDock": 0.125,
+            "scaleInEditor": 1
+        },
+        "Nosale.tmx": {
+            "scale": 0.33,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 724.2424242424242,
+                "y": 440.9090909090909
+            }
+        },
+        "Nosale.tmx#Fondo": {
+            "scaleInDock": 0.125,
+            "scaleInEditor": 1
+        },
+        "V.tmx": {
+            "scale": 0.33,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 627.2727272727273,
+                "y": 392.4242424242424
+            }
+        },
+        "V.tmx#FondoCasaU": {
+            "scaleInDock": 1
+        },
+        "mapaTutorial.tmx": {
+            "scale": 0.41562499999999997,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 767.5187969924813,
+                "y": 511.2781954887218
+            }
+        },
+        "mapaTutorial.tmx#FondoCasaU": {
+            "scaleInDock": 1
+        }
+    },
+    "last.exportedFilePath": "C:/xampp/htdocs/Juego/assets/static",
+    "last.imagePath": "C:/xampp/htdocs/Juego/assets/static",
+    "map.height": 32,
+    "map.lastUsedExportFilter": "JSON map files (*.tmj *.json)",
+    "map.lastUsedFormat": "tmx",
+    "map.width": 48,
+    "openFiles": [
+        "Nosale.tmx"
+    ],
+    "project": "",
+    "recentFiles": [
+        "Nosale.tmx",
+        "mapaTutorial.tmx",
+        "V.tmx",
+        "FondoCasaU.tsx"
+    ],
+    "tileset.embedInMap": true
+}
