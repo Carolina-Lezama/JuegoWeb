@@ -44,7 +44,7 @@ export class EscenaInicio extends Phaser.Scene {
         animarPersonaje();
         this.botonInicio = this.add.image(0, 0, 'botonInicio').setInteractive();
             this.botonInicio.on('pointerdown', () => {
-            this.scene.start('EscenaMapa');});// CAMBIAR LUEGO A EscenaIntroduccionUno
+            this.scene.start('EscenaIntroduccionUno');});// CAMBIAR LUEGO A EscenaIntroduccionUno
         this.botonPersonaje = this.add.image(0, 0, 'botonPersonaje').setInteractive();
             this.botonPersonaje.on('pointerdown', () => {
             this.scene.start('EscenaElegir');
