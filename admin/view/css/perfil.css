@@ -1,0 +1,69 @@
+body{
+background:#0f172a;
+color:white;
+font-family:'Montserrat',Arial,sans-serif;
+}
+
+.perfil-container{
+max-width:500px;
+margin:20px auto;
+background:#1e293b;
+border-radius:10px;
+box-shadow:0 10px 30px rgba(0,0,0,0.4);
+padding:2rem;
+text-align:center;
+}
+
+.perfil-header h2{
+margin-bottom:1.5rem;
+color:#3b82f6;
+}
+
+.perfil-datos p{
+margin:0.4rem 0;
+font-size:1.1rem;
+color:#cbd5f5;
+}
+
+.perfil-acciones{
+margin-top:2rem;
+display:flex;
+gap:1rem;
+justify-content:center;
+}
+
+.btn-editar{
+background:#2563eb;
+color:white;
+border:none;
+padding:10px 16px;
+border-radius:6px;
+cursor:pointer;
+}
+
+.btn-editar:hover{
+background:#3b82f6;
+}
+
+.btn-cerrar{
+background:#ef4444;
+color:white;
+border:none;
+padding:10px 16px;
+border-radius:6px;
+cursor:pointer;
+}
+
+.btn-cerrar:hover{
+background:#dc2626;
+}
+
+.form-editar-perfil input{
+width:100%;
+padding:10px;
+border-radius:6px;
+border:none;
+background:#020617;
+color:white;
+margin-top:5px;
+}

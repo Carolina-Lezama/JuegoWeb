@@ -1,0 +1,167 @@
+/* =========================
+   FONDO GENERAL
+========================= */
+
+body{
+
+margin:0;
+
+font-family:'Montserrat',Arial,sans-serif;
+
+background:#0f172a;
+
+color:#e2e8f0;
+
+}
+
+/* CONTENEDOR CENTRAL */
+
+.login-screen{
+
+min-height:100vh;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+padding:20px;
+
+}
+
+/* TARJETA LOGIN */
+
+.registro-container{
+
+width:100%;
+
+max-width:420px;
+
+background:#1e293b;
+
+padding:35px 30px;
+
+border-radius:14px;
+
+box-shadow:0 12px 35px rgba(0,0,0,0.45);
+
+}
+
+/* TITULO */
+
+.registro-container h2{
+
+text-align:center;
+
+margin-bottom:25px;
+
+color:#f1f5f9;
+
+font-size:1.8rem;
+
+}
+
+/* LABEL */
+
+.registro-container label{
+
+display:block;
+
+margin-bottom:6px;
+
+color:#cbd5f5;
+
+font-weight:600;
+
+font-size:0.9rem;
+
+}
+
+/* INPUT */
+
+.registro-container input{
+
+width:100%;
+
+padding:11px 12px;
+
+margin-bottom:16px;
+
+border:1px solid #334155;
+
+border-radius:6px;
+
+background:#0f172a;
+
+color:#e2e8f0;
+
+font-size:15px;
+
+outline:none;
+
+transition:.2s;
+
+}
+
+.registro-container input:focus{
+
+border-color:#2563eb;
+
+}
+
+/* BOTON */
+
+.registro-container button{
+
+width:100%;
+
+padding:12px;
+
+background:#2563eb;
+
+color:white;
+
+border:none;
+
+border-radius:6px;
+
+font-size:16px;
+
+font-weight:600;
+
+cursor:pointer;
+
+transition:.2s;
+
+}
+
+.registro-container button:hover{
+
+background:#3b82f6;
+
+}
+
+/* LINK REGISTRO */
+
+.registro-link{
+
+display:block;
+
+text-align:center;
+
+margin-top:14px;
+
+color:#cbd5f5;
+
+text-decoration:none;
+
+font-size:0.9rem;
+
+}
+
+.registro-link:hover{
+
+text-decoration:underline;
+
+}

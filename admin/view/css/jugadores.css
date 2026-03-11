@@ -1,0 +1,154 @@
+body{
+background:#0f172a;
+font-family:'Montserrat',Arial,sans-serif;
+margin:0;
+padding:0;
+color:#e2e8f0;
+}
+
+.main-content-jugadores{
+
+margin-left:320px;
+width:calc(100vw - 340px);
+max-width:100%;
+
+transition:margin-left .3s,width .3s;
+
+display:flex;
+flex-direction:column;
+
+min-height:100vh;
+
+padding:25px;
+
+box-sizing:border-box;
+}
+
+.panel-sidebar.collapsed ~ .main-content-jugadores{
+
+margin-left:70px;
+width:calc(100vw - 70px);
+
+}
+
+@media (max-width:991px){
+
+.main-content-jugadores{
+
+margin-left:0;
+width:100vw;
+
+}
+
+.panel-sidebar.open ~ .main-content-jugadores{
+
+margin-left:220px;
+width:calc(100vw - 220px);
+
+}
+
+}
+
+.main-content-jugadores h2{
+
+font-size:2rem;
+font-weight:700;
+
+margin-bottom:25px;
+
+color:#f1f5f9;
+
+text-align:center;
+
+}
+
+.tabla-jugadores-container{
+
+width:100%;
+
+overflow-x:auto;
+
+margin-top:20px;
+
+}
+
+.tabla-jugadores{
+
+width:100%;
+
+min-width:700px;
+
+border-collapse:collapse;
+
+background:#1e293b;
+
+border-radius:10px;
+
+overflow:hidden;
+
+box-shadow:0 10px 30px rgba(0,0,0,0.35);
+
+}
+
+.tabla-jugadores th,
+.tabla-jugadores td{
+
+padding:14px 16px;
+
+border-bottom:1px solid #334155;
+
+text-align:left;
+
+font-size:0.95rem;
+
+}
+
+.tabla-jugadores th{
+
+background:#2563eb;
+
+color:white;
+
+font-weight:600;
+
+}
+
+.tabla-jugadores tr:nth-child(even){
+
+background:#1e293b;
+
+}
+
+.tabla-jugadores tr:nth-child(odd){
+
+background:#172033;
+
+}
+
+.tabla-jugadores tr:hover{
+
+background:#26324a;
+
+transition:0.2s;
+
+}
+
+.mensaje-error{
+
+color:#fecaca;
+
+background:#7f1d1d;
+
+border:1px solid #ef4444;
+
+border-radius:6px;
+
+padding:14px;
+
+margin-top:20px;
+
+text-align:center;
+
+font-size:16px;
+
+}

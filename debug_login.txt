@@ -1,0 +1,12 @@
+Array
+(
+    [id] => 5
+    [nombre_jugador] => fwe
+    [email] => wqd@gmail.com
+    [contrasena] => $2y$10$plAFRm4jZOTOuxXxfxlRDuWoLd4Key7WYT4AQ/oN1Y0zSHeHhPM6O
+    [fecha_registro] => 2025-07-08 10:57:20
+    [fecha_nacimiento] => 0000-00-00
+    [genero] => 
+    [nivel] => 1
+    [puntos] => 0
+)
