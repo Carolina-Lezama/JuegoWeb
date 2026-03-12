@@ -1,0 +1,119 @@
+.dashboard-container{
+
+margin-left:320px;
+padding:40px;
+color:#e2e8f0;
+
+}
+
+.panel-sidebar.collapsed ~ .dashboard-container{
+
+margin-left:70px;
+
+}
+
+.cards{
+
+display:grid;
+
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+
+gap:25px;
+
+margin-top:30px;
+
+}
+
+.card{
+
+background:#1e293b;
+
+padding:25px;
+
+border-radius:12px;
+
+text-align:center;
+
+box-shadow:0 8px 25px rgba(0,0,0,0.35);
+
+transition:0.2s;
+
+}
+
+.card:hover{
+
+transform:translateY(-4px);
+
+}
+
+.card i{
+
+font-size:32px;
+
+color:#3b82f6;
+
+margin-bottom:10px;
+
+}
+
+.card h3{
+
+margin:10px 0;
+
+font-weight:500;
+
+}
+
+.card p{
+
+font-size:28px;
+
+font-weight:700;
+
+}
+
+.ranking{
+
+margin-top:50px;
+
+background:#1e293b;
+
+padding:25px;
+
+border-radius:12px;
+
+box-shadow:0 8px 25px rgba(0,0,0,0.35);
+
+}
+
+.ranking table{
+
+width:100%;
+
+border-collapse:collapse;
+
+margin-top:15px;
+
+}
+
+.ranking th{
+
+background:#2563eb;
+
+padding:12px;
+
+}
+
+.ranking td{
+
+padding:10px;
+
+border-bottom:1px solid #334155;
+
+}
+
+.ranking tr:hover{
+
+background:#26324a;
+
+}

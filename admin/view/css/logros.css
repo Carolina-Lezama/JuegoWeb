@@ -1,75 +1,76 @@
 body{
-
 background:#0f172a;
 color:#e2e8f0;
 font-family:'Montserrat',Arial;
-
 margin:0;
-
 }
 
+/* CONTENEDOR GENERAL */
 .logros-flex-container{
-
 display:flex;
-
 gap:40px;
-
 margin-left:320px;
-
 padding:30px;
-
 min-height:100vh;
-
 }
 
+/* cuando el sidebar se colapsa */
 .panel-sidebar.collapsed ~ .logros-flex-container{
-
 margin-left:70px;
-
 }
 
+/* CONTENIDO PRINCIPAL */
 .main-content-logros{
 
-width:420px;
+flex:1; /* ocupa todo el espacio disponible */
 
 background:#1e293b;
 
-padding:25px;
+padding:40px;
 
 border-radius:12px;
 
 box-shadow:0 10px 30px rgba(0,0,0,0.35);
 
+display:flex;
+flex-direction:column;
+align-items:center;
 }
 
+/* TITULO */
 .main-content-logros h2{
-
 text-align:center;
-
-margin-bottom:20px;
-
+margin-bottom:25px;
 color:#f1f5f9;
-
+font-size:28px;
 }
 
+/* FORMULARIO */
 .formulario{
 
-display:flex;
+width:100%;
+max-width:500px; /* evita que el form sea gigante */
 
+display:flex;
 flex-direction:column;
 
-gap:12px;
+gap:14px;
 
 }
 
+/* LABEL */
 label{
 
 font-weight:500;
-
 color:#cbd5f5;
+
+display:flex;
+flex-direction:column;
+gap:6px;
 
 }
 
+/* INPUTS */
 input,
 textarea,
 select{
@@ -80,16 +81,17 @@ border:1px solid #334155;
 
 color:#e2e8f0;
 
-padding:10px;
+padding:11px;
 
 border-radius:6px;
+
+font-size:14px;
 
 }
 
 textarea{
-
 resize:vertical;
-
+min-height:70px;
 }
 
 input:focus,
@@ -102,13 +104,14 @@ outline:none;
 
 }
 
+/* BOTON */
 .guardar{
 
 background:#2563eb;
 
 border:none;
 
-padding:12px;
+padding:13px;
 
 border-radius:6px;
 
@@ -120,6 +123,8 @@ cursor:pointer;
 
 transition:.2s;
 
+margin-top:5px;
+
 }
 
 .guardar:hover{
@@ -128,76 +133,7 @@ background:#3b82f6;
 
 }
 
-.tabla-logros-container{
-
-flex:1;
-
-background:#1e293b;
-
-padding:25px;
-
-border-radius:12px;
-
-box-shadow:0 10px 30px rgba(0,0,0,0.35);
-
-overflow-x:auto;
-
-}
-
-.tabla-logros{
-
-width:100%;
-
-border-collapse:collapse;
-
-}
-
-.tabla-logros th{
-
-background:#2563eb;
-
-color:white;
-
-padding:12px;
-
-}
-
-.tabla-logros td{
-
-padding:10px;
-
-border-bottom:1px solid #334155;
-
-}
-
-.tabla-logros tr:hover{
-
-background:#26324a;
-
-}
-
-.eliminar{
-
-background:#dc2626;
-
-border:none;
-
-padding:6px 10px;
-
-border-radius:4px;
-
-color:white;
-
-cursor:pointer;
-
-}
-
-.eliminar:hover{
-
-background:#ef4444;
-
-}
-
+/* MENSAJE ERROR */
 .mensaje-error{
 
 background:#7f1d1d;
@@ -208,12 +144,16 @@ padding:12px;
 
 border-radius:6px;
 
-margin-bottom:15px;
+margin-bottom:20px;
 
 text-align:center;
 
+width:100%;
+max-width:500px;
+
 }
 
+/* RESPONSIVE */
 @media(max-width:991px){
 
 .logros-flex-container{
@@ -221,6 +161,12 @@ text-align:center;
 flex-direction:column;
 
 margin-left:0;
+
+}
+
+.main-content-logros{
+
+padding:25px;
 
 }
 

@@ -26,6 +26,41 @@ $panel = $_SESSION['panel'] ?? 'creador';
 </a>
 </li>
 
+<li class="main_nav_item">
+<a href="verLogros.php">
+<span class="menu-icon"><i class="bi bi-trophy"></i></span>
+<span class="menu-text">Logros</span>
+</a>
+</li>
+
+<li class="main_nav_item">
+<a href="dashboard.php">
+<span class="menu-icon"><i class="bi bi-speedometer2"></i></span>
+<span class="menu-text">Dashboard</span>
+</a>
+</li>
+
+<li class="main_nav_item">
+<a href="estadisticas.php">
+<span class="menu-icon"><i class="bi bi-bar-chart-line"></i></span>
+<span class="menu-text">Estadísticas</span>
+</a>
+</li>
+
+<li class="main_nav_item">
+<a href="jugadores_2.php">
+<span class="menu-icon"><i class="bi bi-person-gear"></i></span>
+<span class="menu-text">Modificar jugadores</span>
+</a>
+</li>
+
+<li class="main_nav_item">
+<a href="inventario.php">
+<span class="menu-icon"><i class="bi bi-box-seam"></i></span>
+<span class="menu-text">Modificar inventario</span>
+</a>
+</li>
+
 <?php } else { ?>
 
 <li class="main_nav_item">
