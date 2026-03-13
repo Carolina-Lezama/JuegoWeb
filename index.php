@@ -17,7 +17,7 @@ if ($action === 'submit' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 } else {
     // Si no hay acción válida, redirigir a la página de inicio de sesión/registro
-    header('Location: view/inicio.php');
+    header('Location: view/catalogo.php');
     exit;
 }
 ?>

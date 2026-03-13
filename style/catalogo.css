@@ -1,0 +1,165 @@
+@font-face {
+    font-family: 'Silkscreen';
+    src: url('../assets/fonts/Silkscreen-Regular.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+header{
+font-family:'Silkscreen','Montserrat',sans-serif;
+}
+
+*{
+font-family:'Silkscreen','Montserrat',sans-serif;
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+
+background:#0f0f1a;
+font-family:'Poppins', sans-serif;
+color:white;
+
+}
+
+/* HEADER */
+
+header{
+
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:20px 60px;
+background:#161625;
+border-bottom:2px solid #222;
+font-size:20px; 
+
+}
+
+.logo{
+font-size:24px;
+color:#00ffd5;
+
+}
+
+nav a{
+
+margin-left:20px;
+text-decoration:none;
+color:white;
+font-weight:500;
+transition:0.2s;
+
+}
+
+nav a:hover{
+
+color:#00ffd5;
+
+}
+
+.search{
+
+padding:10px 15px;
+border:none;
+border-radius:6px;
+background:#1f1f35;
+color:white;
+width:220px;
+
+}
+
+/* CATEGORIAS */
+
+.categories{
+
+padding:20px 60px;
+display:flex;
+gap:15px;
+flex-wrap:wrap;
+
+}
+
+.categories button{
+
+padding:10px 18px;
+background:#1f1f35;
+border:none;
+border-radius:8px;
+color:white;
+cursor:pointer;
+transition:0.2s;
+
+}
+
+.categories button:hover{
+
+background:#00ffd5;
+color:black;
+
+}
+
+/* GRID JUEGOS */
+
+.games{
+
+padding:40px 60px;
+
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+gap:30px;
+
+/* fondo */
+background-image:url("../assets/style/catalogo.png");
+background-size:cover;
+background-position:center;
+background-repeat:no-repeat;
+
+/* efecto desplazamiento */
+background-attachment:fixed;
+
+}
+
+
+/* TARJETA */
+
+.game-card{
+
+background:#161625;
+border-radius:14px;
+overflow:hidden;
+cursor:pointer;
+transition:0.3s;
+
+}
+
+.game-card img{
+
+width:100%;
+height:160px;
+object-fit:cover;
+
+}
+
+.game-card h3{
+
+padding:15px;
+font-size:18px;
+
+}
+
+.game-card p{
+
+padding:0 15px 15px;
+color:#aaa;
+
+}
+
+.game-card:hover{
+
+transform:translateY(-6px);
+box-shadow:0 10px 30px rgba(0,255,213,0.3);
+
+}
