@@ -7,12 +7,12 @@ $controller = new RegisterController();
 
 if ($action === 'submit' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($controller->submitForm()) {
-        header('Location: view/juego.php');
+        header('Location: view/catalogo.php');
         exit;
     }
 } elseif ($action === 'login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($controller->login()) {
-        header('Location: view/juego.php');
+        header('Location: view/catalogo.php');
         exit;
     }
 } else {

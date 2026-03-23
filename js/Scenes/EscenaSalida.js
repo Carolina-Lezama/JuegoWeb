@@ -6,7 +6,7 @@ export class EscenaSalida extends Phaser.Scene {
     super({ key: 'EscenaSalida' });
   }
   create() {
-    this.fondo = this.add.image(0, 0, 'FondoCabaña');
+    this.fondo = this.add.image(0, 0, 'FondoCabana');
     this.fondoObjeto = this.add.image(0, 0, 'FondoObjetoAmarillo').setVisible(false).setDepth(4);
     this.recuadroMa = this.add.image(0, 0, 'recuadroM').setDepth(2).setVisible(true);
     this.botonD = this.add.image(0, 0, 'botonDescripcion').setDepth(4).setVisible(false);

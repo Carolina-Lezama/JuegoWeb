@@ -8,6 +8,8 @@
 </head>
 <body>
 <div class="registro-container">
+<a href="catalogo.php" class="btn-catalogo">← Regresar a Catálogo</a>
+
     <h2 id="form-title">Registro de Jugador</h2>
     <form id="form-registro" method="POST" action="../index.php?action=submit">
         <div id="registro-fields">

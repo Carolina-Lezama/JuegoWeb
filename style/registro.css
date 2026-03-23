@@ -1,16 +1,50 @@
 /* =========================
-   ESTILO GENERAL
+   FONDO GENERAL
 ========================= */
 
 body{
 
 margin:0;
-
 font-family:'Montserrat', Arial, sans-serif;
 
-background:#0f172a;
+background:
+linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.25)),
+url("../assets/style/sesion.png");
+
+background-position:center;
+background-size:cover;
+background-repeat:no-repeat;
+background-attachment:fixed;
 
 color:#e2e8f0;
+min-height:100vh;
+
+}
+
+.btn-catalogo{
+
+position:fixed;
+top:20px;
+left:20px;
+z-index:1000;
+
+display:inline-block;
+padding:10px 18px;
+background:linear-gradient(135deg, #00ffd5, #00d9ff);
+color:#000;
+text-decoration:none;
+border-radius:20px;
+font-weight:bold;
+font-size:0.95rem;
+transition:0.3s;
+box-shadow:0 0 15px rgba(0, 255, 213, 0.6);
+
+}
+
+.btn-catalogo:hover{
+
+transform:scale(1.05);
+box-shadow:0 0 25px rgba(0, 255, 213, 0.8);
 
 }
 
@@ -23,16 +57,16 @@ color:#e2e8f0;
 min-height:100vh;
 
 display:flex;
-
 flex-direction:column;
-
 align-items:center;
-
 justify-content:center;
 
 padding:20px;
 
+gap:30px;
+
 }
+
 
 /* =========================
    TARJETA REGISTRO
@@ -41,24 +75,38 @@ padding:20px;
 #form-registro{
 
 width:100%;
+max-width:450px;
 
-max-width:420px;
+padding:45px 40px;
 
-background:#1e293b;
+border-radius:20px;
 
-padding:35px 30px;
+/* glass effect */
+background:rgba(15,23,42,0.7);
+backdrop-filter:blur(16px);
 
-border-radius:14px;
+/* borde suave */
+border:1px solid rgba(255,255,255,0.12);
 
-box-shadow:0 12px 35px rgba(0,0,0,0.45);
+/* sombra */
+box-shadow:
+0 25px 70px rgba(0,0,0,0.7),
+0 0 30px rgba(80,120,255,0.2);
 
 display:flex;
-
 flex-direction:column;
-
-gap:14px;
+gap:20px;
 
 }
+
+#registro-fields{
+
+display:flex;
+flex-direction:column;
+gap:18px;
+
+}
+
 
 /* =========================
    TITULO
@@ -68,15 +116,22 @@ gap:14px;
 
 text-align:center;
 
-margin-bottom:20px;
+margin:0 0 10px 0;
 
-font-size:1.8rem;
+font-size:2.1rem;
+font-weight:800;
 
-font-weight:700;
+letter-spacing:1.5px;
 
-color:#f1f5f9;
+background:linear-gradient(135deg, #60a5fa, #3b82f6);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+background-clip:text;
+
+text-shadow:0 2px 10px rgba(59,130,246,0.3);
 
 }
+
 
 /* =========================
    LABELS
@@ -84,13 +139,20 @@ color:#f1f5f9;
 
 label{
 
-font-weight:600;
+font-weight:700;
 
-font-size:0.9rem;
+font-size:0.95rem;
 
-color:#cbd5f5;
+color:#a8d5ff;
+
+display:block;
+margin-bottom:6px;
+
+text-transform:uppercase;
+letter-spacing:0.5px;
 
 }
+
 
 /* =========================
    INPUTS
@@ -100,31 +162,47 @@ input{
 
 width:100%;
 
-padding:11px 12px;
+padding:14px 15px;
 
-border:1px solid #334155;
+border:2px solid rgba(255,255,255,0.1);
+border-radius:10px;
 
-border-radius:6px;
-
-background:#0f172a;
+background:rgba(15,23,42,0.5);
 
 color:#e2e8f0;
 
 font-size:15px;
+font-family:'Montserrat', Arial, sans-serif;
+
+box-sizing:border-box;
 
 outline:none;
 
-transition:.2s;
+transition:.3s;
 
 }
 
-/* focus */
+input::placeholder{
+
+color:rgba(255,255,255,0.4);
+
+}
+
+input:hover{
+
+border-color:rgba(96,165,250,0.4);
+background:rgba(15,23,42,0.6);
+
+}
 
 input:focus{
 
-border-color:#2563eb;
+border-color:#60a5fa;
+background:rgba(15,23,42,0.8);
+box-shadow:0 0 15px rgba(96,165,250,0.5), inset 0 0 10px rgba(96,165,250,0.1);
 
 }
+
 
 /* =========================
    BOTON REGISTRO
@@ -132,86 +210,165 @@ border-color:#2563eb;
 
 #main-submit{
 
-margin-top:8px;
+width:100%;
 
-padding:12px;
+margin-top:15px;
 
-background:#2563eb;
+padding:15px;
+
+background:linear-gradient(135deg, #4f46e5, #3b82f6);
 
 color:white;
 
 border:none;
 
-border-radius:6px;
+border-radius:10px;
 
-font-size:16px;
-
-font-weight:600;
+font-size:17px;
+font-weight:700;
 
 cursor:pointer;
 
-transition:.2s;
+transition:.3s;
+
+text-transform:uppercase;
+letter-spacing:1px;
+
+box-shadow:0 8px 20px rgba(79,70,229,0.4);
 
 }
 
 #main-submit:hover{
 
-background:#3b82f6;
+transform:translateY(-3px);
+
+box-shadow:0 12px 30px rgba(79,70,229,0.6);
+
+background:linear-gradient(135deg, #5b56f0, #4a8bff);
 
 }
 
+#main-submit:active{
+
+transform:translateY(-1px);
+
+}
+
+
 /* =========================
-   MENSAJES DE ERROR (por si usas JS o PHP)
+   MENSAJES
 ========================= */
 
 .error{
 
-background:#7f1d1d;
-
+background:rgba(127,29,29,0.85);
 color:#fecaca;
 
-padding:10px;
+padding:12px 14px;
 
-border-radius:6px;
+border-radius:8px;
+border-left:4px solid #dc2626;
 
 font-size:14px;
+font-weight:600;
 
 text-align:center;
+
+animation:slideIn 0.3s ease;
 
 }
 
 .exito{
 
-background:#064e3b;
-
+background:rgba(6,78,59,0.85);
 color:#a7f3d0;
 
-padding:10px;
+padding:12px 14px;
 
-border-radius:6px;
+border-radius:8px;
+border-left:4px solid #10b981;
 
 font-size:14px;
+font-weight:600;
 
 text-align:center;
 
+animation:slideIn 0.3s ease;
+
 }
+
+@keyframes slideIn{
+  from{
+    opacity:0;
+    transform:translateY(-10px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
 
 /* =========================
    RESPONSIVE
 ========================= */
 
-@media(max-width:480px){
+@media(max-width:600px){
+
+.registro-container{
+  padding:15px;
+}
 
 #form-registro{
 
-padding:30px 22px;
+max-width:100%;
+padding:35px 25px;
 
 }
 
 #form-title{
 
-font-size:1.6rem;
+font-size:1.8rem;
 
+}
+
+label{
+  font-size:0.9rem;
+}
+
+input{
+  padding:12px 13px;
+  font-size:14px;
+}
+
+#main-submit{
+  padding:13px;
+  font-size:16px;
+}
+
+}
+
+@media(max-width:480px){
+
+#form-registro{
+
+padding:30px 20px;
+
+}
+
+#form-title{
+
+font-size:1.5rem;
+margin:0 0 5px 0;
+
+}
+
+label{
+  font-size:0.85rem;
+}
+
+#registro-fields{
+  gap:15px;
 }
 
 }

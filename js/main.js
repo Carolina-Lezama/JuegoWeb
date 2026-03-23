@@ -80,7 +80,7 @@ class PreloadScene extends Phaser.Scene {
         this.load.image('recuadroP', '/Juego/assets/static/recuadroPersona.png');
         this.load.image('fondoBosque', '/Juego/assets/static/EscenaBosque2.png');
         this.load.image('recuadro', '/Juego/assets/static/recuadro2.png');
-        this.load.image('FondoCabaña', '/Juego/assets/static/fondoCabaña.png');
+        this.load.image('FondoCabana', '/Juego/assets/static/fondoCabana.png');
 
 
         this.load.image('fondoMenuNegro', '/Juego/assets/static/fondoMenuNegro.png');
@@ -116,7 +116,9 @@ class PreloadScene extends Phaser.Scene {
         if (logrosData && Array.isArray(logrosData)) {
         logrosData.forEach(logro => {
             if (logro.imagen) {
-            this.load.image(`${logro.imagen}`, `/Juego/assets/static/Logros/${logro.imagen}.png`);
+            // Verificación doble: evitar agregar .png si ya está incluido
+            const extension = logro.imagen.toLowerCase().endsWith('.png') ? '' : '.png';
+            this.load.image(`${logro.imagen}`, `/Juego/assets/static/Logros/${logro.imagen}${extension}`);
             }
         });
         }
@@ -257,20 +259,24 @@ window.ultimaEscenaActiva = null;
 
 
 
+const container = document.getElementById('game');
+
 const config = {
     type: Phaser.AUTO,
-    width: window.innerWidth,
-    height: window.innerHeight,
-    backgroundColor: '#fff',
+    width: 1650,   // 🔥 resolución base
+    height: 900,
+    backgroundColor: '#000',
     parent: 'game',
+
     physics: {
         default: 'arcade',
         arcade: {
-            debug: false  // o true si quieres ver los cuerpos de colisión
+            debug: false
         }
     },
+
     scale: {
-        mode: Phaser.Scale.RESIZE,
+        mode: Phaser.Scale.FIT,   // 🔥 CLAVE
         autoCenter: Phaser.Scale.CENTER_BOTH
     },
     scene: [PreloadScene, EscenaCementerio,EscenaFinal,EscenaCasaAbandonada,EscenaCastilloIfernal,EscenaInicio, EscenaIntroduccionUno, EscenaElegir, EscenaBosque, EscenaBosque2, EscenaCabanaAfuera, EscenaCabanaAdentro, EscenaInventario, EscenaTutorialUno,EscenaSalida,EscenaLogros,EscenaMenu,EscenaParteUno,EscenaMapa,EscenaPeleaSlime,EscenaMuerte]

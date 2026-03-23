@@ -16,6 +16,8 @@
 
 <div class="login-screen">
 
+<a href="catalogo.php" class="btn-catalogo">← Regresar a Catálogo</a>
+
 <div class="registro-container">
 
 <h2>Iniciar Sesión</h2>

@@ -10,7 +10,7 @@ export class EscenaCabanaAfuera  extends Phaser.Scene {
     preload() {
     }
         create() {
-        this.fondo = this.add.image(0, 0, 'FondoCabaña');
+        this.fondo = this.add.image(0, 0, 'FondoCabana');
         this.recuadro = this.add.image(0, 0, 'recuadro').setInteractive().setDepth(2);
         this.recuadroMa = this.add.image(0, 0, 'recuadroM').setInteractive().setDepth(2).setVisible(false);
         this.recuadroPe = this.add.image(0, 0, 'recuadroP').setInteractive().setDepth(2).setVisible(false);

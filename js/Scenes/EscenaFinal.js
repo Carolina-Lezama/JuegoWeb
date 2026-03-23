@@ -215,6 +215,11 @@ export class EscenaFinal extends Phaser.Scene {
                     this.ImagenFinal.setVisible(true);
                     this.ImagenFinal.setDepth(10);
                 }
+                    this.time.delayedCall(2000, () => {
+                    this.sound.stopAll();
+                    this.scene.start('EscenaInicio'); 
+    });
+
                 
             });
             musicaFinal.play();

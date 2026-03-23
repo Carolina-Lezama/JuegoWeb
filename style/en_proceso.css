@@ -1,0 +1,112 @@
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Montserrat',Arial,sans-serif;
+}
+
+body{
+
+min-height:100vh;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+/* fondo igual que el catálogo */
+
+background:
+linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
+url("../assets/style/catalogo.png");
+
+background-position:center;
+background-size:cover;
+background-repeat:no-repeat;
+background-attachment:fixed;
+
+color:#e2e8f0;
+
+}
+
+/* contenedor */
+
+.dev-container{
+
+padding:20px;
+
+}
+
+/* tarjeta */
+
+.dev-card{
+
+max-width:480px;
+
+text-align:center;
+
+padding:45px 40px;
+
+border-radius:16px;
+
+background:rgba(15,23,42,0.7);
+
+backdrop-filter:blur(10px);
+
+border:1px solid rgba(255,255,255,0.08);
+
+box-shadow:
+0 20px 50px rgba(0,0,0,0.7);
+
+}
+
+/* titulo */
+
+.dev-card h1{
+
+font-size:2rem;
+margin-bottom:15px;
+
+}
+
+/* texto */
+
+.dev-card p{
+
+font-size:1rem;
+line-height:1.6;
+
+color:#cbd5f5;
+
+margin-bottom:25px;
+
+}
+
+/* botón */
+
+.btn-volver{
+
+display:inline-block;
+
+padding:12px 22px;
+
+background:linear-gradient(135deg,#4f46e5,#3b82f6);
+
+color:white;
+
+text-decoration:none;
+
+border-radius:8px;
+
+font-weight:600;
+
+transition:.25s;
+
+}
+
+.btn-volver:hover{
+
+transform:translateY(-2px);
+
+box-shadow:0 8px 20px rgba(79,70,229,0.5);
+
+}

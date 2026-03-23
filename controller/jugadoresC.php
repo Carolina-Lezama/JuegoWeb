@@ -52,7 +52,7 @@ class RegisterController {
             $_SESSION['fecha_registro'] = $result['fecha_registro'] ?? 0;
             $_SESSION['fecha_nacimiento'] = $result['fecha_nacimiento'] ?? 0;
 
-            header('Location: view/juego.php');
+            header('Location: view/catalogo.php');
             exit;
         } else {
             echo "<script>alert('Usuario o contraseña incorrectos.'); window.history.back();</script>";

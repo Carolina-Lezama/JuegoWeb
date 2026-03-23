@@ -204,8 +204,6 @@ export class EscenaLogros extends Phaser.Scene {
           // Añadir todo al contenedor scrollable
       this.scrollContainer.add([recuadro, img, nombre, desc]);
       this.elementosLogros.push(recuadro, img, nombre, desc);
-
-      this.elementosLogros.push(recuadro, img, nombre, desc);
       const totalAltura = logros.length * espacioY;
       this.scrollContainer.setSize(this.scale.width, totalAltura);
 
