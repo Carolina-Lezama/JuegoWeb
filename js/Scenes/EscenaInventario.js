@@ -2,25 +2,40 @@ import { objetosDelPersonaje,  objetos_jugador,objetosActivos, datosObjetos, obj
 import { isMobile, getPosEscala, reescalarGlobalFlexible, cargarPersonajeActual, cargarGatoActual, createAndAdaptTextFlexible, extraerDatosObjetoPorId } from '../responsive.js';
 //--- ESCENA DEL INVENTARIO
 
+function normalizarId(obj) {
+    return obj.objetos_id || obj.id;
+}
+
 function getInventarioUnificado() {
-    // Unifica ambos conjuntos evitando repeticiones por id
-    // Prioriza los objetos de la base de datos
     const inventario = {};
-    // Primero los de la base de datos
+
+    // 🔥 1. LOCAL (invitado o fallback)
+    let inventarioLocal = {};
+    try {
+        inventarioLocal = JSON.parse(localStorage.getItem('inventario_temp')) || {};
+    } catch (e) {
+        console.warn("Error leyendo localStorage");
+    }
+
+    Object.values(inventarioLocal).forEach(obj => {
+        const id = normalizarId(obj);
+        if (id) inventario[id] = obj;
+    });
+
+    // 🔥 2. MEMORIA (siempre)
+    Object.values(objetosDelPersonaje).forEach(obj => {
+        const id = normalizarId(obj);
+        if (id) inventario[id] = obj;
+    });
+
+    // 🔥 3. BD (tiene prioridad)
     if (Array.isArray(objetos_jugador)) {
         objetos_jugador.forEach(obj => {
-            // Usar objeto_id o id según lo que venga de la BD
-            const id = obj.objetos_id;
-            inventario[id] = obj;
+            const id = normalizarId(obj);
+            if (id) inventario[id] = obj;
         });
     }
-    // Luego los locales, usando objetos_id
-    Object.values(objetosDelPersonaje).forEach(obj => {
-        const id = obj.objetos_id;
-        if (id && !inventario[id]) {
-            inventario[id] = obj;
-        }
-    });
+
     return inventario;
 }
 
@@ -58,14 +73,19 @@ export class EscenaInventario extends Phaser.Scene {
             }
         });
         this.objetosImgs = {};
-
         // --- INVENTARIO UNIFICADO ---
         const inventarioUnificado = getInventarioUnificado();
         let idx = 0;
+        console.log("Inventario unificado:", inventarioUnificado);
         Object.keys(inventarioUnificado).forEach(id => {
             // Para el sprite, el id debe ser el nombre de la textura
             // Si tienes un mapeo de id a nombre de textura, úsalo aquí
-            const spriteKey = id; // Ajusta si necesitas mapear a otro nombre
+            const dataObj = datosObjetos[id] || extraerDatosObjetoPorId(id);
+            if (!dataObj) {
+            console.warn("Objeto sin datos:", id);
+            return;
+            }
+            const spriteKey = dataObj?.sprite || dataObj?.imagen || id;
             const sprite = this.add.sprite(0, 0, spriteKey)
                 .setDepth(2)
                 .setVisible(true)
@@ -107,15 +127,20 @@ export class EscenaInventario extends Phaser.Scene {
         this.scale.on('resize', () => {
             this.aplicarReescalado();
         });
-        this.botonE.on('pointerdown', () => {
-            objetosActivos.push(this.objetoSeleccionado);
-            if (this.objetoSeleccionado) {
-                this.texto.setVisible(true);
-                this.time.delayedCall(2000, () => {
-                    this.texto.setVisible(false);
-                });
-            }
-        });
+this.botonE.on('pointerdown', () => {
+
+    if (!this.objetoSeleccionado) return;
+
+    if (!objetosActivos.includes(this.objetoSeleccionado)) {
+        objetosActivos.push(this.objetoSeleccionado);
+    }
+
+    this.texto.setVisible(true);
+
+    this.time.delayedCall(2000, () => {
+        this.texto.setVisible(false);
+    });
+});
         this.texto = createAndAdaptTextFlexible(this, {
             text: 'Agregado correctamente a tu barra de herramientas',
             posX: 0.48,

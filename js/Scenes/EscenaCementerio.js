@@ -1,4 +1,4 @@
-import { objetosDelPersonaje, setPuntosTotales,puntos,puntosTotales, actualizarPuntosTotales, jugador,datosObjetos,objetos,objetosActivos, personajeHumanoEnUso, personajeGatoEnUso, ApartadoMenu, setPersonajeHumanoEnUso, setPersonajeGatoEnUso, setApartadoMenu,objetos_jugador } from '../globals.js';
+import { objetosDelPersonaje, setPuntosTotales,puntos,puntosTotales, actualizarPuntosTotales, jugador,datosObjetos,objetos,objetosActivos, personajeHumanoEnUso, personajeGatoEnUso, ApartadoMenu, setPersonajeHumanoEnUso, setPersonajeGatoEnUso, setApartadoMenu,objetos_jugador, todosEnemigosVencidos } from '../globals.js';
 import { isMobile, getPosEscala, reescalarGlobalFlexible,cargarPersonajeActual, cargarGatoActual, createAndAdaptTextFlexible, extraerDatosObjetoPorId  } from '../responsive.js';
 //--- ESCENA DE LA CABAÑA ADENTRO
 window.ultimaEscenaActiva = null;
@@ -174,6 +174,9 @@ export class EscenaCementerio  extends Phaser.Scene {
     this.personaje.setScale(1);
     this.personaje.setCollideWorldBounds(true);
     this.cameras.main.startFollow(this.personaje);
+    
+    // 🔧 Desactivar el body del animal inicialmente (solo el humano está activo)
+    this.animal.body.enable = false;
 
     // Añadir colisiones solo con paredes (NO con enemigos para evitar daño constante)
     if (this.personaje && this.paredes) {
@@ -221,9 +224,9 @@ export class EscenaCementerio  extends Phaser.Scene {
              .setOrigin(sprite.originX, sprite.originY);
         });
     });
-    this.aplicarReescalado();
+    this.inicializarEscala();
     this.scale.on('resize', () => {
-        this.aplicarReescalado();
+        this.reescalarSoloUI();
     });
 
     // Crear animaciones de movimiento
@@ -289,10 +292,16 @@ export class EscenaCementerio  extends Phaser.Scene {
         if(this.personajeA === 'humano') {
             this.personaje.setVisible(false);
             this.animal.setVisible(true);
+            this.animal.body.enable = true;
+            this.personaje.body.enable = false;
+            this.cameras.main.startFollow(this.animal);
             this.personajeA = 'gato';
         }else{
             this.personaje.setVisible(true);
             this.animal.setVisible(false);
+            this.personaje.body.enable = true;
+            this.animal.body.enable = false;
+            this.cameras.main.startFollow(this.personaje);
             this.personajeA = 'humano';
         }
     }
@@ -346,20 +355,20 @@ export class EscenaCementerio  extends Phaser.Scene {
       this.barraVida.strokeRect(this.scale.width * 0.05, this.scale.height * 0.05, ancho, alto);
   }
 
-    aplicarReescalado() {
+    inicializarEscala() {
       reescalarGlobalFlexible(this.scale, [
         {
           obj: this.personaje,
-          posX: 0.1,
-          posY: 0.7 ,
+          posX: 0.2,
+          posY: 0.7,
           escalaRelativa: 0.19,
           originX: 0.5,
           originY: 0.5
         },
         {
           obj: this.animal,
-          posX: 0.5,
-          posY: 0.5,
+          posX: 0.2,
+          posY: 0.7,
           escalaRelativa: 0.19,
           originX: 0.5,
           originY: 0.5
@@ -394,7 +403,7 @@ export class EscenaCementerio  extends Phaser.Scene {
             originY: 0.5
         },        {
           obj: this.regreso,
-          posX: getPosEscala(0.3, 0),
+          posX: getPosEscala(0.35, 0),
           posY: getPosEscala(0.09, 0),
           escalaRelativa: getPosEscala(0.15, 0),
           originX: 0.5,
@@ -447,8 +456,107 @@ export class EscenaCementerio  extends Phaser.Scene {
         }).filter(Boolean)
       ].flat());
       if (this.fondo) this.fondo.setPosition(this.scale.width / 2, this.scale.height );
-          this.FinalCompletado.setPosition(this.scale.width / 2, this.scale.height / 2);
-    this.RegresarMenu.setPosition(this.scale.width / 2, this.scale.height / 2);
+      this.FinalCompletado.setPosition(this.scale.width / 2, this.scale.height / 2);
+      this.RegresarMenu.setPosition(this.scale.width / 2, this.scale.height / 2);
+    }
+
+    reescalarSoloUI() {
+      // Reescalado en resize: solo escala UI, mantiene posición del personaje
+      reescalarGlobalFlexible(this.scale, [
+        {
+          obj: this.barra,
+          posX: 0.45,
+          posY: 0.93,
+          escalaRelativa: 0.5,
+          originX: 0.5,
+          originY: 0.5
+        },
+        {
+          obj: this.botonI,
+          posX: getPosEscala(0.28, 0),
+          posY: getPosEscala(0.93, 0),
+          escalaRelativa: getPosEscala(0.1, 0),
+          originX: 0.5,
+          originY: 0.5
+        },
+        {
+          obj: this.botonSiguiente,
+          posX: getPosEscala(0.5, 0),
+          posY: getPosEscala(0.65, 0),
+          escalaRelativa: getPosEscala(0.5, 0),
+          originX: 0.5,
+          originY: 0.5
+        },
+        {
+            obj: this.FinalCompletado,
+            autoFill: true,
+            originX: 0.5,
+            originY: 0.5
+        },        
+        {
+          obj: this.regreso,
+          posX: getPosEscala(0.35, 0),
+          posY: getPosEscala(0.09, 0),
+          escalaRelativa: getPosEscala(0.15, 0),
+          originX: 0.5,
+          originY: 0.5
+        },
+        {
+            obj: this.RegresarMenu,
+            autoFill: true,
+            originX: 0.5,
+            originY: 0.5
+        },        {
+          obj: this.siBoton,
+          posX: getPosEscala(0.4, 0),
+          posY: getPosEscala(0.6, 0),
+          escalaRelativa: getPosEscala(0.3, 0),
+          originX: 0.5,
+          originY: 0.5
+        },        {
+          obj: this.noBoton,
+          posX: getPosEscala(0.6, 0),
+          posY: getPosEscala(0.6, 0),
+          escalaRelativa: getPosEscala(0.3, 0),
+          originX: 0.5,
+          originY: 0.5
+        },
+        // Objetos de la barra en orden de agregado
+        ...Object.values(this.objetosImgs).map((obj, idx) => {
+          // Posiciones predefinidas para los objetos de la barra
+          const posiciones = [
+            { posX: getPosEscala(0.35, 0), posY: getPosEscala(0.93, 0) },
+            { posX: getPosEscala(0.389, 0), posY: getPosEscala(0.93, 0) },
+            { posX: getPosEscala(0.43, 0), posY: getPosEscala(0.93, 0) }
+          ];
+          if (posiciones[idx]) {
+            return {
+              obj: obj,
+              posX: posiciones[idx].posX,
+              hitbox: {
+                width: obj.width,
+                height: obj.height
+              },
+              vida: 100,
+              posY: posiciones[idx].posY,
+              escalaRelativa: getPosEscala(0.06),
+              originX: 0.5,
+              originY: 0.5
+            };
+          }
+          return null;
+        }).filter(Boolean)
+      ].flat());
+      
+      // Reescalar personajes sin cambiar posición
+      const escalaPersonaje = (Math.min(this.scale.width, this.scale.height) * 0.19) / this.personaje.width;
+      const escalaAnimal = (Math.min(this.scale.width, this.scale.height) * 0.19) / this.animal.width;
+      this.personaje.setScale(escalaPersonaje);
+      this.animal.setScale(escalaAnimal);
+      
+      if (this.fondo) this.fondo.setPosition(this.scale.width / 2, this.scale.height );
+      this.FinalCompletado.setPosition(this.scale.width / 2, this.scale.height / 2);
+      this.RegresarMenu.setPosition(this.scale.width / 2, this.scale.height / 2);
 
     }
     
@@ -538,6 +646,8 @@ export class EscenaCementerio  extends Phaser.Scene {
     const teclas = this.teclasMovimiento;
     const personaje = (this.personajeA === 'gato') ? this.animal : this.personaje;
     const otroPersonaje = (this.personajeA === 'gato') ? this.personaje : this.animal;
+    personaje.body.enable = true;
+    otroPersonaje.body.enable = false;
     const velocidad = (this.personajeA === 'gato') ? 220 : 150;
     let vx = 0, vy = 0;
     if (teclas.izquierda.isDown) { vx = -velocidad; personaje.setFlipX(true); }
@@ -566,14 +676,14 @@ export class EscenaCementerio  extends Phaser.Scene {
 
     // Ampliar hitbox si la espada está seleccionada
     if (this.objetoSeleccionado == 2) {
-        this.personaje.body.setSize(this.personaje.width + 30, this.personaje.height + 30, true);
+        personaje.body.setSize(personaje.width + 30, personaje.height + 30, true);
 
         // Actualizar posición del indicador de arma
         if (this.indicadorArma) {
             this.indicadorArma.setPosition(personaje.x + 20, personaje.y - 20);
         }
     } else {
-        this.personaje.body.setSize(this.personaje.width, this.personaje.height, true);
+        personaje.body.setSize(personaje.width, personaje.height, true);
     }
 
     // Lógica de enemigos

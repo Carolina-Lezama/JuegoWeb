@@ -44,7 +44,7 @@ export class EscenaInicio extends Phaser.Scene {
         animarPersonaje();
         this.botonInicio = this.add.image(0, 0, 'botonInicio').setInteractive();
             this.botonInicio.on('pointerdown', () => {
-            this.scene.start('EscenaIntroduccionUno');});// CAMBIAR LUEGO A EscenaIntroduccionUno
+            this.scene.start('EscenaEleccion');});// CAMBIAR LUEGO A EscenaIntroduccionUno
         this.botonPersonaje = this.add.image(0, 0, 'botonPersonaje').setInteractive();
             this.botonPersonaje.on('pointerdown', () => {
             this.scene.start('EscenaElegir');
@@ -60,8 +60,14 @@ export class EscenaInicio extends Phaser.Scene {
             window.ultimaEscenaActiva = this.scene.key;
             this.scene.launch('EscenaLogros');
             this.scene.pause();
-
         });
+        this.icono_instrucciones = this.add.image(0, 0, 'icono_instrucciones').setInteractive();
+            this.icono_instrucciones.on('pointerdown', () => {
+            window.ultimaEscenaActiva = this.scene.key;
+            this.scene.launch('EscenaInstrucciones');
+            this.scene.pause();
+        });
+        
         this.aplicarReescalado();
         this.scale.on('resize', () => {
             this.aplicarReescalado();
@@ -99,6 +105,13 @@ export class EscenaInicio extends Phaser.Scene {
                 posX: getPosEscala(0.2, 0),
                 posY: getPosEscala(0.6, 0),
                 escalaRelativa: getPosEscala(0.16, 0),
+                originX: 0.5,
+                originY: 0.5
+            },{
+                obj: this.icono_instrucciones,
+                posX: getPosEscala(0.8, 0),
+                posY: getPosEscala(0.6, 0),
+                escalaRelativa: getPosEscala(0.17, 0),
                 originX: 0.5,
                 originY: 0.5
             },

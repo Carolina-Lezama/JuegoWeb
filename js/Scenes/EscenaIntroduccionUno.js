@@ -10,6 +10,7 @@ export class EscenaIntroduccionUno extends Phaser.Scene {
     }
     create() {
         this.fondo = this.add.image(0, 0, 'fondoIntroduccionUno');
+        this.regreso=this.add.image(0,0, 'regreso').setOrigin(0, 0).setDepth(10).setInteractive();
         this.recuadro = this.add.image(0, 0, 'recuadro').setInteractive().setDepth(2);
         this.personaje = this.add.sprite(0, 0, 'personajeUsar');
         this.anims.create({
@@ -25,6 +26,9 @@ export class EscenaIntroduccionUno extends Phaser.Scene {
             frameRate: 8,
             repeat: 0
         });
+        this.regreso.on('pointerdown', () => {
+            this.scene.start('EscenaInicio');
+    });
         this.boton = this.add.image(0, 0, 'botonSiguiente').setInteractive();
         this.botonS = this.add.image(0, 0, 'botonSaltar').setInteractive();
         let estatico_uno = 'Había una vez un niño que adoraba los mundos de fantasía, las historias de magia y los caballeros.';
@@ -119,6 +123,13 @@ export class EscenaIntroduccionUno extends Phaser.Scene {
                 escalaRelativa: getPosEscala(0.35, 0),
                 originX: 0.5,
                 originY: 0.5
+            },{
+            obj: this.regreso,
+            posX: getPosEscala(0.05, 0),
+            posY: getPosEscala(0.1, 0),
+            escalaRelativa: getPosEscala(0.16, 0),
+            originX: 0.5,
+            originY: 0.5
             },
             {
                 obj: this.animacionFondo,

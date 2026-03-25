@@ -14,13 +14,16 @@ import { EscenaMuerte } from './Scenes/EscenaMuerte.js';
 import { EscenaPeleaSlime } from './Scenes/EscenaPeleaSlime.js';
 import { EscenaMapa } from './Scenes/EscenaMapa.js';
 import { EscenaIntroduccionUno } from './Scenes/EscenaIntroduccionUno.js';
+import { EscenaInstrucciones } from './Scenes/EscenaInstrucciones.js';
 import { EscenaLogros } from './Scenes/EscenaLogros.js';
 import { EscenaMenu } from './Scenes/EscenaMenu.js';
 import { EscenaFinal } from './Scenes/EscenaFinal.js';
-
 import { EscenaCementerio } from './Scenes/EscenaCementerio.js';
 import { EscenaCasaAbandonada } from './Scenes/EscenaCasaAbandonada.js';
 import { EscenaCastilloIfernal } from './Scenes/EscenaCastilloIfernal.js';
+
+import { EscenaEleccion } from './Scenes/escenaeleccion.js';
+
 
 import { personajeHumanoEnUso, personajeGatoEnUso, ApartadoMenu, setPersonajeHumanoEnUso, setPersonajeGatoEnUso, setApartadoMenu,setLogros,setObjetosUser,getObjetosUser, objetos_jugador, logros, getLogros, setUser } from './globals.js';
 import { puntos,puntosTotales,actualizarPuntosTotales,setDialogosRecuperados, objetosDelPersonaje, datosObjetos, setObjetos, objetos, } from './globals.js';
@@ -30,7 +33,7 @@ fetch('/Juego/api/obtener_dialogos.php')
     .then(data => {
         if (data && !data.error) {
             setDialogosRecuperados(data);//.introduccion_uno,introduccion_dos,introduccion_tres
-    }
+    } 
 });
 
 //--- ESCENA DE PRE CARGA
@@ -94,10 +97,9 @@ class PreloadScene extends Phaser.Scene {
             });
         }
         
-        this.load.image('fondoInicio', '/Juego/assets/static/inicioEstatico2.png');
-        this.load.image('FondoCabanaAdentro', '/Juego/assets/static/FondoCasa.png');
-        this.load.image('FondoObjeto', '/Juego/assets/static/fondoObjeto2.png');
-        this.load.image('FondoObjetoAmarillo', '/Juego/assets/static/fondoObjeto3.png');
+
+        this.load.image('FondoObjeto', '../assets/static/fondoObjeto2.png');
+        this.load.image('FondoObjetoAmarillo', '../assets/static/fondoObjeto3.png');
 
 
 
@@ -135,32 +137,43 @@ class PreloadScene extends Phaser.Scene {
 
 //FONDOS
 
-        this.load.image('EscenaMapa', '/Juego/assets/static/EscenaMapa.png');
-        this.load.image('FondoTelevision', '/Juego/assets/static/FondoTelevision.png');
+        this.load.image('EscenaMapa', '../assets/static/EscenaMapa.png');
+        this.load.image('FondoTelevision', '../assets/static/FondoTelevision.png');
+
+
+
+// FONDOS ESCENAS
+        this.load.image('fondoInicio', '../assets/static/inicioEstatico2.png');
+        this.load.image('FondoCabanaAdentro', '../assets/static/FondoCasa.png');
+        this.load.image('instrucciones', '../assets/static/instrucciones.png');
+        this.load.image('eleccion', '../assets/static/eleccion.png');
 
 //BOTONES
-        this.load.image('botonSiguiente', '/Juego/assets/static/Botones/botonSiguiente.png');
-        this.load.image('botonSalir', '/Juego/assets/static/Botones/botonSalir.png');
-        this.load.image('botonInicio', '/Juego/assets/static/Botones/botonInicio.png');
-        this.load.image('botonRegresar', '/Juego/assets/static/Botones/botonRegresar.png');
-        this.load.image('botonSaltar', '/Juego/assets/static/Botones/botonSaltar.png');
-        this.load.image('botonEquipar', '/Juego/assets/static/Botones/botonEquipar.png');
-        this.load.image('botonPersonaje', '/Juego/assets/static/Botones/botonPersonaje.png');
-        this.load.image('botonInventario', '/Juego/assets/static/Botones/inventarioIcono.png');
-        this.load.image('botonFinalizar', '/Juego/assets/static/Botones/botonFinalizar.png');
-        this.load.image('siBoton', '/Juego/assets/static/Botones/si.png');
-        this.load.image('noBoton', '/Juego/assets/static/Botones/no.png');
-        this.load.image('regreso', '/Juego/assets/static/Botones/regreso.png');
+        this.load.image('botonSiguiente', '../assets/static/Botones/botonSiguiente.png');
+        this.load.image('botonSalir', '../assets/static/Botones/botonSalir.png');
+        this.load.image('botonInicio', '../assets/static/Botones/botonInicio.png');
+        this.load.image('botonRegresar', '../assets/static/Botones/botonRegresar.png');
+        this.load.image('botonSaltar', '../assets/static/Botones/botonSaltar.png');
+        this.load.image('botonEquipar', '../assets/static/Botones/botonEquipar.png');
+        this.load.image('botonPersonaje', '../assets/static/Botones/botonPersonaje.png');
+        this.load.image('botonInventario', '../assets/static/Botones/inventarioIcono.png');
+        this.load.image('botonFinalizar', '../assets/static/Botones/botonFinalizar.png');
+        this.load.image('siBoton', '../assets/static/Botones/si.png');
+        this.load.image('noBoton', '../assets/static/Botones/no.png');
+        this.load.image('regreso', '../assets/static/Botones/regreso.png');
+        this.load.image('icono_instrucciones', '../assets/static/Botones/icono_instrucciones.png');
+        this.load.image('icono_lucha', '../assets/static/Botones/icono_lucha.png');
+        this.load.image('icono_historia', '../assets/static/Botones/icono_historia.png');
 
 
 //MENSAJES
-        this.load.image('FinalCompletado', '/Juego/assets/static/Mensajes/FinalCompletado.png');
-        this.load.image('IconoCaballero', '/Juego/assets/static/Mensajes/IconoCaballero.png');
-        this.load.image('IconoCalaca', '/Juego/assets/static/Mensajes/IconoCalaca.png');
-        this.load.image('IconoDuende', '/Juego/assets/static/Mensajes/IconoDuende.png');
-        this.load.image('IconoSlime', '/Juego/assets/static/Mensajes/IconoSlime.png');
-        this.load.image('RegresarMenu', '/Juego/assets/static/Mensajes/RegresarMenu.png');
-        this.load.image('ImagenFinal', '/Juego/assets/static/Mensajes/ImagenFinal.png');
+        this.load.image('FinalCompletado', '../assets/static/Mensajes/FinalCompletado.png');
+        this.load.image('IconoCaballero', '../assets/static/Mensajes/IconoCaballero.png');
+        this.load.image('IconoCalaca', '../assets/static/Mensajes/IconoCalaca.png');
+        this.load.image('IconoDuende', '../assets/static/Mensajes/IconoDuende.png');
+        this.load.image('IconoSlime', '../assets/static/Mensajes/IconoSlime.png');
+        this.load.image('RegresarMenu', '../assets/static/Mensajes/RegresarMenu.png');
+        this.load.image('ImagenFinal', '../assets/static/Mensajes/ImagenFinal.png');
 
 //ANIMACIONES
         this.load.spritesheet('fondoAnimado', '/Juego/assets/static/Animaciones/FondoAnimado.png', {
@@ -279,7 +292,38 @@ const config = {
         mode: Phaser.Scale.FIT,   // 🔥 CLAVE
         autoCenter: Phaser.Scale.CENTER_BOTH
     },
-    scene: [PreloadScene, EscenaCementerio,EscenaFinal,EscenaCasaAbandonada,EscenaCastilloIfernal,EscenaInicio, EscenaIntroduccionUno, EscenaElegir, EscenaBosque, EscenaBosque2, EscenaCabanaAfuera, EscenaCabanaAdentro, EscenaInventario, EscenaTutorialUno,EscenaSalida,EscenaLogros,EscenaMenu,EscenaParteUno,EscenaMapa,EscenaPeleaSlime,EscenaMuerte]
+    scene: [
+PreloadScene, 
+
+EscenaInicio,
+
+EscenaInstrucciones,
+EscenaLogros,
+EscenaElegir, 
+EscenaMenu,
+
+EscenaEleccion,
+
+// Historia
+EscenaIntroduccionUno, 
+EscenaBosque,
+EscenaBosque2,
+EscenaCabanaAfuera, 
+EscenaCabanaAdentro, 
+EscenaInventario, 
+EscenaTutorialUno,
+EscenaSalida,
+EscenaParteUno,
+
+// Pelea
+EscenaMapa,
+EscenaPeleaSlime,
+EscenaCastilloIfernal,
+EscenaCementerio,
+EscenaMuerte,
+EscenaCasaAbandonada,
+EscenaFinal
+]
 };
 
 

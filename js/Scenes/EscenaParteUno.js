@@ -1,4 +1,5 @@
-import { objetosDelPersonaje, datosObjetos,objetos,objetosActivos, personajeHumanoEnUso, personajeGatoEnUso, ApartadoMenu, setPersonajeHumanoEnUso, setPersonajeGatoEnUso, setApartadoMenu } from '../globals.js';
+import { objetosDelPersonaje, datosObjetos,objetos,objetosActivos, personajeHumanoEnUso, personajeGatoEnUso, ApartadoMenu, setPersonajeHumanoEnUso, setPersonajeGatoEnUso, setApartadoMenu, usuarioAutenticado, guardarObjetoBD, guardarObjetoLocal, 
+guardarLogroLocal, cargarLogrosLocales, sumarPuntosLogro } from '../globals.js';
 import { isMobile, getPosEscala, reescalarGlobalFlexible,cargarPersonajeActual, cargarGatoActual, createAndAdaptTextFlexible, extraerDatosObjetoPorId  } from '../responsive.js';
 //--- ESCENA DE COMO SE MUEVE EL USUARIO Y USO DEL ESPEJO
 window.ultimaEscenaActiva = null;
@@ -17,6 +18,33 @@ export class EscenaParteUno extends Phaser.Scene {
   }
 
   create() {
+    // --- ANIMACIONES PERSONAJE ---
+if (!this.anims.exists('caminar_abajo')) {
+  this.anims.create({
+    key: 'caminar_abajo',
+    frames: this.anims.generateFrameNumbers('niñoCaminando', { start: 1, end: 2 }),
+    frameRate: 8,
+    repeat: -1
+  });
+}
+
+if (!this.anims.exists('caminar_arriba')) {
+  this.anims.create({
+    key: 'caminar_arriba',
+    frames: this.anims.generateFrameNumbers('niñoCaminando', { start: 4, end: 5 }),
+    frameRate: 8,
+    repeat: -1
+  });
+}
+
+if (!this.anims.exists('caminar_derecha')) {
+  this.anims.create({
+    key: 'caminar_derecha',
+    frames: this.anims.generateFrameNumbers('niñoCaminando', { start: 6, end: 7 }),
+    frameRate: 8,
+    repeat: -1
+  });
+}
 
     // ---------------- UI ----------------
     this.fondoObjeto = this.add.image(0, 0, 'FondoObjeto').setVisible(false).setDepth(4);
@@ -216,30 +244,36 @@ export class EscenaParteUno extends Phaser.Scene {
             }
           } else if (obj.texto === 'Ser curioso merece su recompensa') {
             if (!this.logroObtenido) {
-              // Guardar logro en BD
-              fetch('/Juego/api/guardar_logro_usuario.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ logro_id: 1 })
-              })
-              .then(res => res.json())
-              .then(data => {
-                if (data && !data.error) {
-                  console.log('Logro guardado en BD:', data);
-                } else {
-                  console.warn('Error al guardar logro en BD:', data.error);
-                }
-              })
-              .catch(err => console.error('Error AJAX guardar logro:', err));
 
+if (usuarioAutenticado()) {
+  fetch('/Juego/api/guardar_logro_usuario.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ logro_id: 1 })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data && !data.error) {
+      console.log('Logro guardado en BD:', data);
+      // Sumar puntos del logro
+      sumarPuntosLogro(1);
+    } else {
+      console.warn('Error al guardar logro en BD:', data.error);
+    }
+  })
+  .catch(err => console.error('Error AJAX guardar logro:', err));
+} else {
+  guardarLogroLocal(1);
+  console.log('Logro guardado LOCAL (invitado)');
+  // Sumar puntos del logro
+  sumarPuntosLogro(1);
+}
               this.logroObtenido = true;
-              this.Logro1.setVisible(true).setPosition(850, 950).setDisplaySize(750, 300);
+              this.Logro1.setVisible(true).setPosition(850, 850).setDisplaySize(750, 300);
               this.time.delayedCall(3000, () => {
                 this.Logro1.setVisible(false);
               });
-            } else {
-              this.mostrarMensaje('Ser curioso merece su recompensa');
-            }
+            } 
           } else {
             this.mostrarMensaje(obj.texto || '');
           }

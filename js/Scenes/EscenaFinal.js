@@ -1,5 +1,5 @@
-import { objetosDelPersonaje, datosObjetos, objetos, objetosActivos, personajeHumanoEnUso, personajeGatoEnUso, ApartadoMenu, setPersonajeHumanoEnUso, setPersonajeGatoEnUso, setApartadoMenu, jugador, puntosTotales } from '../globals.js';
-import { isMobile, getPosEscala, reescalarGlobalFlexible, cargarPersonajeActual, cargarGatoActual, createAndAdaptTextFlexible, extraerDatosObjetoPorId } from '../responsive.js';
+import { actualizarPuntosBD, guardarPuntosLocal, puntos, objetosDelPersonaje, datosObjetos,objetos, personajeHumanoEnUso, personajeGatoEnUso, ApartadoMenu, setPersonajeHumanoEnUso, setPersonajeGatoEnUso, setApartadoMenu, usuarioAutenticado, guardarObjetoBD, guardarObjetoLocal, puntosTotales } from '../globals.js';
+import { isMobile, getPosEscala, reescalarGlobalFlexible,cargarPersonajeActual, cargarGatoActual, createAndAdaptTextFlexible, extraerDatosObjetoPorId  } from '../responsive.js';
 
 //--- ESCENA DE LA CABAÑA ADENTRO
 export class EscenaFinal extends Phaser.Scene {
@@ -130,26 +130,27 @@ export class EscenaFinal extends Phaser.Scene {
                 this.musica.play();
             }
         }
-        console.log(jugador.email)
-                console.log(puntosTotales)
 
-            fetch('/Juego/api/actualizar_puntos.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: jugador.email,
-                puntos: puntosTotales
-             })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data && !data.error) {
-                console.log('Objeto guardado en BD:', data);
-            } else {
-                console.warn('Error al guardar objeto en BD:', data.error);
-            }
-        })
-        .catch(err => console.error('Error AJAX guardar objeto:', err));
-        ;
+
+const puntosGanados = puntosTotales
+
+if (usuarioAutenticado()) {
+
+    actualizarPuntosBD(puntosGanados).then(success => {
+        if (!success) {
+            console.warn("Error BD, fallback local");
+            guardarPuntosLocal(puntosGanados);
+        }
+    });
+
+} else {
+    // 👤 Invitado → local
+    guardarPuntosLocal(puntosGanados);
+}
+
+
+
+        // 
     } // end create
 
     // Función que inicia la secuencia final (parte2 -> parte3 -> musicaFinal)

@@ -1,5 +1,6 @@
-import { objetosDelPersonaje, datosObjetos,objetos, personajeHumanoEnUso, personajeGatoEnUso, ApartadoMenu, setPersonajeHumanoEnUso, setPersonajeGatoEnUso, setApartadoMenu } from '../globals.js';
+import { objetosDelPersonaje, datosObjetos,objetos, personajeHumanoEnUso, personajeGatoEnUso, ApartadoMenu, setPersonajeHumanoEnUso, setPersonajeGatoEnUso, setApartadoMenu, usuarioAutenticado, guardarObjetoBD, guardarObjetoLocal } from '../globals.js';
 import { isMobile, getPosEscala, reescalarGlobalFlexible,cargarPersonajeActual, cargarGatoActual, createAndAdaptTextFlexible, extraerDatosObjetoPorId  } from '../responsive.js';
+
 //--- ESCENA DE LA CABAÑA ADENTRO
 
 export class EscenaCabanaAdentro  extends Phaser.Scene {
@@ -44,23 +45,35 @@ export class EscenaCabanaAdentro  extends Phaser.Scene {
         });
         let e_uno = 'Thalor: Primero te dare un objeto que te ayudara a volver a ser humano, dejame buscarlo';
         let e_dos = 'Thalor: Aqui tienes';
-        // Agregar el objeto con id 1 a objetosDelPersonaje después de e_dos
-        objetosDelPersonaje[1] = extraerDatosObjetoPorId(1) || {id:0, nombre:'',descripcion:'',cantidad:0,rareza:''};
-        // Guardar el objeto en la base de datos para el usuario activo
-        fetch('/Juego/api/guardar_objeto_usuario.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ objeto_id: 1 })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data && !data.error) {
-                console.log('Objeto guardado en BD:', data);
-            } else {
-                console.warn('Error al guardar objeto en BD:', data.error);
-            }
-        })
-        .catch(err => console.error('Error AJAX guardar objeto:', err));
+
+
+// 🎁 Crear objeto
+const objeto = extraerDatosObjetoPorId(1) || {
+    id: 1,
+    nombre: '',
+    descripcion: '',
+    cantidad: 0,
+    rareza: ''
+};
+
+// Guardar en memoria del juego SIEMPRE
+objetosDelPersonaje[1] = objeto;
+
+// 🔥 Lógica inteligente
+if (usuarioAutenticado()) {
+
+    guardarObjetoBD(1).then(success => {
+        if (!success) {
+            guardarObjetoLocal(objeto);
+        }
+    });
+
+} else {
+    // 👤 Invitado → local
+    guardarObjetoLocal(objeto);
+}
+
+
         let e_tres = '';
         let e_cuatro = 'Carlitos: ¿Cómo debo usarlo?';
         let e_cinco = 'Thalor: Abre el inventario (click en el icono o presiona R) y equipa el objeto, puedes colocarte hasta 6 objetos; los demas seguiran en inventario.';

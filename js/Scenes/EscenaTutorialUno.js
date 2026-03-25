@@ -32,10 +32,11 @@ export class EscenaTutorialUno extends Phaser.Scene {
 
     this.personaje = this.physics.add.sprite(0, 0, 'niñoCaminando');
     this.animal = this.physics.add.sprite(0, 0, 'gatoCaminando').setVisible(false);
-    this.personaje.setScale(0);
+    this.animal.body.enable = false;
+    
     this.personaje.setCollideWorldBounds(true);
     this.cameras.main.startFollow(this.personaje);
-    this.cameras.main.startFollow(this.animal);
+    
     this.barra = this.add.image(0, 0, 'barraobjetos').setInteractive().setDepth(5).setVisible(true);
     this.botonI = this.add.image(0, 0, 'botonInventario').setInteractive().setDepth(5).setVisible(true);
         this.botonI.on('pointerdown', () => {
@@ -85,9 +86,9 @@ export class EscenaTutorialUno extends Phaser.Scene {
          .setOrigin(sprite.originX, sprite.originY);
       });
     });
-    this.aplicarReescalado();
+    this.inicializarEscala();
     this.scale.on('resize', () => {
-      this.aplicarReescalado();
+      this.reescalarSoloUI();
     });
 
 
@@ -160,21 +161,36 @@ export class EscenaTutorialUno extends Phaser.Scene {
     this.physics.add.collider(this.animal, this.paredes);
   }
 
-  cambiarPersonaje(){
-    if (this.objetoSeleccionado && this.objetoSeleccionado == 1){
-      if(this.personajeA === 'humano') {
-        this.personaje.setVisible(false);
-        this.animal.setVisible(true);
-        this.personajeA = 'gato';
-      }else{
-        this.personaje.setVisible(true);
-        this.animal.setVisible(false);
-        this.personajeA = 'humano';
-      }
+cambiarPersonaje() {
+  if (this.objetoSeleccionado && this.objetoSeleccionado == 1){
+
+    if(this.personajeA === 'humano') {
+
+      this.personaje.setVisible(false);
+      this.animal.setVisible(true);
+      this.animal.body.enable = true;
+      this.personaje.body.enable = false;
+      this.personajeA = 'gato';
+
+      // 🔥 CAMBIAR CÁMARA
+      this.cameras.main.startFollow(this.animal);
+
+    } else {
+
+      this.personaje.setVisible(true);
+      this.animal.setVisible(false);
+      this.personaje.body.enable = true;
+      this.animal.body.enable = false;
+      this.personajeA = 'humano';
+
+      // 🔥 CAMBIAR CÁMARA
+      this.cameras.main.startFollow(this.personaje);
     }
   }
+}
 
-    aplicarReescalado() {
+    inicializarEscala() {
+      // Primera inicialización: posiciona el personaje en el centro
       reescalarGlobalFlexible(this.scale, [
         {
           obj: this.personaje,
@@ -219,6 +235,44 @@ export class EscenaTutorialUno extends Phaser.Scene {
       ].filter(Boolean));
       if (this.fondo) this.fondo.setPosition(this.scale.width / 2, this.scale.height );
     }
+
+    reescalarSoloUI() {
+      // Reescalado en resize: solo escala UI, mantiene posición del personaje
+      reescalarGlobalFlexible(this.scale, [
+        {
+          obj: this.barra,
+          posX: 0.45,
+          posY: 0.93,
+          escalaRelativa: 0.5,
+          originX: 0.5,
+          originY: 0.5
+        },
+        {
+          obj: this.botonI,
+          posX: getPosEscala(0.28, 0),
+          posY: getPosEscala(0.93, 0),
+          escalaRelativa: getPosEscala(0.1, 0),
+          originX: 0.5,
+          originY: 0.5
+        },
+        this.objetosImgs[1] ? {
+          obj: this.objetosImgs[1],
+          posX: getPosEscala(0.35, 0),
+          posY: getPosEscala(0.93, 0),
+          escalaRelativa: getPosEscala(0.06),
+          originX: 0.5,
+          originY: 0.5
+        } : null
+      ].filter(Boolean));
+      
+      // Reescalar personajes sin cambiar posición
+      const escalaPersonaje = (Math.min(this.scale.width, this.scale.height) * 0.07) / this.personaje.width;
+      const escalaAnimal = (Math.min(this.scale.width, this.scale.height) * 0.1) / this.animal.width;
+      this.personaje.setScale(escalaPersonaje);
+      this.animal.setScale(escalaAnimal);
+      
+      if (this.fondo) this.fondo.setPosition(this.scale.width / 2, this.scale.height );
+    }
     
   mostrarMensaje(texto) {
     this.mensajeTexto.setText(texto).setVisible(true);
@@ -232,6 +286,8 @@ export class EscenaTutorialUno extends Phaser.Scene {
     // Determina qué personaje está activo
     const personaje = (this.personajeA === 'gato') ? this.animal : this.personaje;
     const otroPersonaje = (this.personajeA === 'gato') ? this.personaje : this.animal;
+    personaje.body.enable = true;
+    otroPersonaje.body.enable = false;
 
     const velocidad = 150;
     let vx = 0, vy = 0;
@@ -252,8 +308,7 @@ export class EscenaTutorialUno extends Phaser.Scene {
 
     personaje.setVelocity(vx, vy);
     // Sincroniza la posición del otro personaje
-    otroPersonaje.x = personaje.x;
-    otroPersonaje.y = personaje.y;
+    otroPersonaje.setPosition(personaje.x, personaje.y);
 
     if (vx !== 0 || vy !== 0) {
       if (this.personajeA === 'gato') {

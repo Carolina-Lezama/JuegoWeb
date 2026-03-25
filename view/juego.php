@@ -15,6 +15,7 @@ require_once __DIR__ . '/../includes/database.php';
 <link rel="stylesheet" href="/Juego/style/style.css">
 
 <script src="/Juego/js/phaser.min.js"></script>
+<script src="../js/juego.js"></script>
 <script type="module" src="/Juego/js/main.js"></script>
 
 <!-- SCRIPT PARA OPCIONES DEL SIDEBAR -->
@@ -79,18 +80,73 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<body>
+<body data-usuario="<?php echo isset($_SESSION['id']) ? '1' : '0'; ?>">
 
 <!-- HEADER -->
 <header class="main-header">
     <h1>PIXEL DCY STUDIO</h1>
 
-    <div class="user-info">
-        <?php if (isset($_SESSION['nombre_jugador'])): ?>
-            <span><?php echo $_SESSION['nombre_jugador']; ?> (Activo)</span>
-        <?php else: ?>
-            <span>Invitado</span>
-        <?php endif; ?>
+    <!-- CONTENEDOR HORIZONTAL DE SECCIONES -->
+    <div class="header-sections">
+        
+        <!-- INFORMACIÓN DEL JUEGO -->
+        <div class="game-info">
+            <!-- SISTEMA DE CALIFICACIÓN -->
+            <div class="rating-section">
+                <div class="rating-stars">
+                    <span class="star filled">★</span>
+                    <span class="star filled">★</span>
+                    <span class="star filled">★</span>
+                    <span class="star filled">★</span>
+                    <span class="star half">★</span>
+                    <span class="rating-text">(4.5)</span>
+                </div>
+            </div>
+
+            <!-- ETIQUETAS DEL JUEGO -->
+            <div class="game-tags">
+                <span class="tag">Acción</span>
+                <span class="tag">Aventura</span>
+            </div>
+        </div>
+
+        <!-- ESTADÍSTICAS DEL JUGADOR -->
+        <div class="player-stats">
+            <div class="stat-item">
+                <span class="stat-label">Nivel</span>
+                <span class="stat-value"><?php echo $_SESSION['nivel'] ?? '1'; ?></span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Exp</span>
+                <span class="stat-value" id="puntos-display"><?php echo $_SESSION['puntos'] ?? '0'; ?></span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Logros</span>
+                <span class="stat-value" id="logros-count">0</span>
+            </div>
+        </div>
+
+        <!-- PROGRESO DEL JUEGO -->
+        <div class="game-progress">
+            <div class="progress-item">
+                <span class="progress-label">Progreso</span>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 5%"></div>
+                </div>
+                <span class="progress-percent">5%</span>
+            </div>
+        </div>
+
+        <!-- INFORMACIÓN DEL USUARIO -->
+        <div class="user-info">
+            <?php if (isset($_SESSION['nombre_jugador'])): ?>
+                <img class="icono-jugador"  src="../assets/style/registrado.png" alt="">
+                <span><?php echo $_SESSION['nombre_jugador']; ?> (Activo)</span>
+            <?php else: ?>
+                <img class="icono-jugador" src="../assets/style/invitado.png" alt="">
+                <span>Invitado</span>
+            <?php endif; ?>
+        </div>
     </div>
 </header>
 
@@ -130,6 +186,15 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>
 </div>
+
+<!-- LOGROS -->
+<section class="logros-section">
+    <h2>🏆 Logros</h2>
+
+    <div id="logros-container" class="logros-grid">
+        <!-- Se llenará con JS -->
+    </div>
+</section>
 
 <!-- FOOTER -->
 <footer class="game-footer">
@@ -177,3 +242,5 @@ document.addEventListener('DOMContentLoaded', function() {
 
 </body>
 </html>
+
+

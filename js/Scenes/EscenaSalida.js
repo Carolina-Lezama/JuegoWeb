@@ -1,4 +1,4 @@
-import { objetosDelPersonaje, datosObjetos,objetos,objetosActivos, personajeHumanoEnUso, personajeGatoEnUso, ApartadoMenu, setPersonajeHumanoEnUso, setPersonajeGatoEnUso, setApartadoMenu } from '../globals.js';
+import { objetosDelPersonaje, datosObjetos,objetos,objetosActivos, personajeHumanoEnUso, personajeGatoEnUso, ApartadoMenu, setPersonajeHumanoEnUso, setPersonajeGatoEnUso, setApartadoMenu, usuarioAutenticado, guardarObjetoBD, guardarObjetoLocal } from '../globals.js';
 import { isMobile, getPosEscala, reescalarGlobalFlexible,cargarPersonajeActual, cargarGatoActual, createAndAdaptTextFlexible, extraerDatosObjetoPorId  } from '../responsive.js';
 //--- ESCENA DESPEDIDA Y ENTREGA DEL ARMA
 export class EscenaSalida extends Phaser.Scene {
@@ -71,20 +71,31 @@ this.input.keyboard.on('keydown-R', () => {
     let e_dos ='Te dare un ultimo regalo para protegerte.';
     let e_tres ='Es facil usar esta arma.';
 
-        fetch('/Juego/api/guardar_objeto_usuario.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ objeto_id: 2 })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data && !data.error) {
-                console.log('Objeto guardado en BD:', data);
-            } else {
-                console.warn('Error al guardar objeto en BD:', data.error);
-            }
-        })
-        .catch(err => console.error('Error AJAX guardar objeto:', err));
+const objeto = extraerDatosObjetoPorId(2) || {
+    id: 2,
+    nombre: '',
+    descripcion: '',
+    cantidad: 0,
+    rareza: ''
+};
+
+// Guardar SIEMPRE en memoria
+objetosDelPersonaje[2] = objeto;
+
+// 🔥 Lógica híbrida
+if (usuarioAutenticado()) {
+
+    guardarObjetoBD(2).then(success => {
+        if (!success) {
+            guardarObjetoLocal(objeto);
+        }
+    });
+
+} else {
+    guardarObjetoLocal(objeto);
+}
+
+
         let e_cuatro =''
         let e_cinco ='Equipa en tu inventario como hiciste antes.'
         let e_seis ='Es hora de partir, Carlitos.'
@@ -136,29 +147,7 @@ this.input.keyboard.on('keydown-R', () => {
         this.mago.anims.play('mago-movimiento', true);
         this.botonS.on('pointerdown', () => {
             this.scene.start('EscenaParteUno');});
-        this.botonI.on('pointerdown', () => {
-    this.dialogoActual++;
-    window.ultimaEscenaActiva = this.scene.key;
 
-    if (!this.scene.isActive('EscenaInventario')) {
-        this.scene.launch('EscenaInventario');
-    }
-
-    this.scene.bringToTop('EscenaInventario');
-    this.scene.pause();
-});
-
-this.input.keyboard.on('keydown-R', () => {
-    this.dialogoActual++;
-    window.ultimaEscenaActiva = this.scene.key;
-
-    if (!this.scene.isActive('EscenaInventario')) {
-        this.scene.launch('EscenaInventario');
-    }
-
-    this.scene.bringToTop('EscenaInventario');
-    this.scene.pause();
-});
         this.boton.on('pointerdown', () => {
         this.dialogoActual++;
         if (this.dialogoActual < this.dialogos.length) {
@@ -193,21 +182,30 @@ this.input.keyboard.on('keydown-R', () => {
 
         if (mostrarMago.includes(dialogoIndex)) {
             if (dialogoIndex === 3) {
+
                 this.objetoEspada.anims.play('objetoEspada-movimiento').setVisible(true);
-                        fetch('/Juego/api/guardar_objeto_usuario.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ objeto_id: 2 })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data && !data.error) {
-                console.log('Objeto guardado en BD:', data);
-            } else {
-                console.warn('Error al guardar objeto en BD:', data.error);
-            }
-        })
-        .catch(err => console.error('Error AJAX guardar objeto:', err));
+
+                const objeto = extraerDatosObjetoPorId(2) || {
+                    id: 2,
+                    nombre: '',
+                    descripcion: '',
+                    cantidad: 0,
+                    rareza: ''
+                };
+
+                objetosDelPersonaje[2] = objeto;
+
+                if (usuarioAutenticado()) {
+
+                    guardarObjetoBD(2).then(success => {
+                        if (!success) {
+                            guardarObjetoLocal(objeto);
+                        }
+                    });
+
+                } else {
+                    guardarObjetoLocal(objeto);
+                }
 
                 this.recuadroMa.setVisible(false);
                 this.mago.setVisible(false);
