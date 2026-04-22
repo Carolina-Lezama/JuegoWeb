@@ -9,6 +9,7 @@ export class EscenaMapa  extends Phaser.Scene {
     preload() {
     }
         create() {
+        this.regreso=this.add.image(0,0, 'regreso').setOrigin(0, 0).setDepth(10).setInteractive();
         this.EscenaMapa = this.add.image(0, 0, 'EscenaMapa');
         this.botonFinalizar = this.add.image(0, 0, 'botonFinalizar').setInteractive().setDepth(10).setVisible(true);
         this.IconoCaballero = this.add.image(0, 0, 'IconoCaballero').setInteractive().setDepth(10).setVisible(true);
@@ -31,7 +32,9 @@ export class EscenaMapa  extends Phaser.Scene {
             frameRate: 5,
             repeat: -1
         });
-
+        this.regreso.on('pointerdown', () => {
+            this.scene.start('EscenaInicio');
+        });
         this.gato.anims.play('gato-movimiento', true);
         this.mago.anims.play('mago-movimiento', true);
 
@@ -114,6 +117,13 @@ export class EscenaMapa  extends Phaser.Scene {
                 escalaRelativa: getPosEscala(0.22, 0),
                 originX: 0.5,
                 originY: 0.5
+            },{
+            obj: this.regreso,
+            posX: getPosEscala(0.05, 0),
+            posY: getPosEscala(0.1, 0),
+            escalaRelativa: getPosEscala(0.16, 0),
+            originX: 0.5,
+            originY: 0.5
             },           
             {
                 obj: this.botonFinalizar,
