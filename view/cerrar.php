@@ -1,3 +1,4 @@
+<!-- Revisado -->
 <?php
 session_start();
 

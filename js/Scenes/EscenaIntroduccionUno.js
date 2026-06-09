@@ -1,6 +1,6 @@
 import { personajeHumanoEnUso, personajeGatoEnUso, ApartadoMenu, setPersonajeHumanoEnUso, setPersonajeGatoEnUso, setApartadoMenu } from '../globals.js';
 import { dialogosRecuperados } from '../globals.js';
-import { isMobile, getPosEscala, reescalarGlobalFlexible,cargarPersonajeActual, cargarGatoActual, createAndAdaptTextFlexible } from '../responsive.js';
+import { isMobile, getPosEscala, reescalarGlobalFlexible,cargarPersonajeActual, cargarGatoActual, createAndAdaptTextFlexible } from '../uiHelpers.js';
 //---ESCENA DE ENCUENTRO ENTRE NIÑO Y MAGO
 export class EscenaIntroduccionUno extends Phaser.Scene {
     constructor() {

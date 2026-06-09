@@ -5,6 +5,29 @@
     font-style: normal;
 }
 
+.categories button.active {
+    background-color: #6a0dad; /* Tu color morado/activo */
+    color: white;
+    font-weight: bold;
+}
+
+/* Opción 1: Aplicarlo específicamente a las tarjetas de los juegos (recomendado) */
+.game-link {
+    text-decoration: none;
+    color: inherit; 
+}
+
+/* Opción 2: Aplicarlo de forma global a todos los enlaces de la página */
+a {
+    text-decoration: none;
+    color: inherit; /* Hereda el color del contenedor padre */
+}
+
+/* Evita específicamente que el enlace se vuelva morado después de hacerle clic */
+a:visited {
+    color: inherit; 
+}
+
 header{
 font-family:'Silkscreen','Montserrat',sans-serif;
 display:flex;

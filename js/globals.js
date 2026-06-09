@@ -1,213 +1,144 @@
-export let objetos = null;
-export function setObjetos(val) { objetos = val; }
-export function getObjetos() { return objetos; }
+/**
+ * Gestor de Estado Global (Single Source of Truth)
+ * Centraliza los datos del jugador, inventario y progreso.
+ */
 
-export let logros = null;
-export function setLogros(val) { logros = val;}
-export function getLogros() { return logros;}
+// 1. ESTADO PRIVADO (Nadie puede modificar esto directamente desde afuera)
+const state = {
+    usuarioAutenticado: document.body.dataset.usuario === "1",
+    jugador: null,
+    
+    // Progresión
+    puntosLocales: 0,
+    puntosTotales: 0,
+    logrosDesbloqueados: [],
+    
+    // Inventario y Configuración
+    objetosGlobales: [],
+    objetosJugador: [],
+    objetosDelPersonaje: {},
+    objetosActivos: [],
+    
+    // Personajes
+    personajeHumanoEnUso: 'personaje1',
+    personajeGatoEnUso: 'gato1',
+    
+    // Textos y Flags
+    dialogos: null,
+    apartadoMenu: true,
+    todosEnemigosVencidos: false
+};
 
-export let jugador = null;
-export function setUser(val) { jugador = val; }
-export function getUser() { return jugador; }
+// 2. GETTERS Y SETTERS BÁSICOS
+export const getState = () => state;
 
-export let objetos_jugador = null;
-export function setObjetosUser(val) { objetos_jugador = val; }
-export function getObjetosUser() { return objetos_jugador; }
+export const setUsuario = (val) => { state.jugador = val; };
+export const setObjetos = (val) => { state.objetosGlobales = val; };
+export const setObjetosUser = (val) => { state.objetosJugador = val; };
+export const setDialogosRecuperados = (val) => { state.dialogos = val; };
+export const setLogros = (val) => { state.logrosGlobales = val; };
 
-export let personajeHumanoEnUso = 'personaje1';
-export let personajeGatoEnUso = 'gato1';
-export let ApartadoMenu = true;
+export const setPersonajesEnUso = (humano, gato) => {
+    if (humano) state.personajeHumanoEnUso = humano;
+    if (gato) state.personajeGatoEnUso = gato;
+};
 
-export function setPersonajeHumanoEnUso(val) { personajeHumanoEnUso = val; }
-export function setPersonajeGatoEnUso(val) { personajeGatoEnUso = val; }
-export function setApartadoMenu(val) { ApartadoMenu = val; }
-
-export let dialogosRecuperados = null;
-export function setDialogosRecuperados(val) { dialogosRecuperados = val; }
-
-// 🎬 Actualizar puntos en el DOM del header
-export function actualizarPuntosDOM(nuevoPuntos) {
-  const puntosDisplay = document.getElementById('puntos-display');
-  if (puntosDisplay) {
-    puntosDisplay.textContent = nuevoPuntos;
-  }
+// 3. ACTUALIZACIÓN DE INTERFAZ (UI)
+function actualizarPuntosDOM(nuevoTotal) {
+    const display = document.getElementById('puntos-display');
+    if (display) display.textContent = nuevoTotal;
 }
 
-export function setPuntosTotales(valor) {
-    puntosTotales = valor;
-    // Actualizar DOM del header
-    actualizarPuntosDOM(valor);
-}
-export let nombre='Carlitos';
-export let objetosActivos = [];
+// 4. LÓGICA DE PUNTOS Y LOGROS (Unificada)
+export async function sumarPuntos(cantidad) {
+    if (cantidad <= 0) return true;
 
-export let objetosDelPersonaje = {}
-export let datosObjetos = {};//buscar por posicion o algun campo del objeto
-// Fetch dialogosRecuperados globally and set
-export async function fetchDialogosRecuperados() {
-    try {
-        const res = await fetch('/Juego/api/obtener_dialogos.php');
-        const data = await res.json();
-        if (data && !data.error) {
-            setDialogosRecuperados(data);
-        }
-    } catch (e) {
-        console.error('Error fetching dialogos:', e);
+    if (state.usuarioAutenticado) {
+        return await guardarPuntosBD(cantidad);
+    } else {
+        return guardarPuntosLocal(cantidad);
     }
 }
-// Variable local para puntos aún no guardados en la BD
-export let puntos = 0;
 
-// Variable para el total de puntos (local + BD)
-export let puntosTotales = 0;
-
-// Función para actualizar el total de puntos
-export function actualizarPuntosTotales(jugador) {
-    // jugadores.puntos es string, puntos es number
-    const puntosBD = parseInt(jugador.puntos || "0", 10);
-    puntosTotales = puntos + puntosBD;
-    return puntosTotales;
+function guardarPuntosLocal(cantidad) {
+    const puntosActuales = parseInt(localStorage.getItem('puntos_invitado') || '0', 10);
+    const nuevoTotal = puntosActuales + cantidad;
+    
+    localStorage.setItem('puntos_invitado', nuevoTotal.toString());
+    
+    state.puntosLocales = nuevoTotal;
+    state.puntosTotales = nuevoTotal;
+    actualizarPuntosDOM(nuevoTotal);
+    
+    console.log(`[Local] Puntos sumados: ${cantidad}. Total: ${nuevoTotal}`);
+    return true;
 }
 
-export let todosEnemigosVencidos = false;
-
-// 🔥 Detectar si hay sesión activa
-export function usuarioAutenticado() {
-    return document.body.dataset.usuario === "1"; 
-    // 👆 esto lo pondrás desde PHP
-}
-
-// 📦 Guardado temporal (para invitados)
-export function guardarObjetoLocal(objeto) {
-    let inventario = JSON.parse(localStorage.getItem('inventario_temp')) || {};
-
-    inventario[objeto.id] = objeto;
-
-    localStorage.setItem('inventario_temp', JSON.stringify(inventario));
-
-    console.log("Objeto guardado LOCAL:", objeto);
-}
-
-// ☁️ Guardado en BD
-export async function guardarObjetoBD(objeto_id) {
+async function guardarPuntosBD(cantidad) {
     try {
-        const res = await fetch('/Juego/api/guardar_objeto_usuario.php', {
+        const puntosBase = parseInt(state.jugador?.puntos || '0', 10);
+        const res = await fetch('/Juego/api/actualizar_puntos.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ objeto_id })
+            body: JSON.stringify({ 
+                email: state.jugador?.email,
+                puntos: puntosBase + cantidad 
+            })
         });
 
-        if (res.status === 401) {
-            throw new Error("No autenticado");
-        }
-
         const data = await res.json();
-
-        if (data.error) {
-            throw new Error(data.error);
+        if (data.success) {
+            state.puntosTotales = data.puntos;
+            if (state.jugador) state.jugador.puntos = data.puntos.toString();
+            
+            actualizarPuntosDOM(data.puntos);
+            console.log(`[BD] Puntos sumados: ${cantidad}. Total: ${data.puntos}`);
+            return true;
         }
-
-        console.log("Objeto guardado BD:", data);
-
+        return false;
     } catch (err) {
-        console.warn("Fallo BD, fallback local:", err.message);
+        console.error("Error al guardar puntos en BD:", err);
         return false;
     }
-
-    return true;
 }
 
-export let logros_jugador = [];
+export async function otorgarLogro(logroId) {
+    if (!state.logrosGlobales) return false;
 
-// Cargar logros locales (para invitado)
-export function cargarLogrosLocales() {
-  const data = localStorage.getItem('logros_invitado');
-  logros_jugador = data ? JSON.parse(data) : [];
-}
+    const datosLogro = state.logrosGlobales.find(l => l.id === logroId);
+    if (!datosLogro) return false;
 
-// Guardar logro local
-export function guardarLogroLocal(logro_id) {
-  if (!logros_jugador.includes(logro_id)) {
-    logros_jugador.push(logro_id);
-    localStorage.setItem('logros_invitado', JSON.stringify(logros_jugador));
-  }
-}
-
-// 📦 Guardar puntos localmente (para invitados)
-export function guardarPuntosLocal(cantidad) {
-  const puntosActuales = parseInt(localStorage.getItem('puntos_invitado') || '0', 10);
-  const nuevoTotal = puntosActuales + cantidad;
-  localStorage.setItem('puntos_invitado', nuevoTotal.toString());
-  puntos = nuevoTotal;
-  puntosTotales = nuevoTotal;
-  // Actualizar DOM del header
-  actualizarPuntosDOM(nuevoTotal);
-  console.log("Puntos guardados LOCAL: +", cantidad, "Total:", nuevoTotal);
-  return nuevoTotal;
-}
-
-// ☁️ Actualizar puntos en BD
-export async function actualizarPuntosBD(cantidad) {
-  try {
-    const res = await fetch('/Juego/api/actualizar_puntos.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        email: jugador?.email,
-        puntos: (parseInt(jugador?.puntos || '0', 10)) + cantidad 
-      })
-    });
-
-    const data = await res.json();
+    const puntosAGanar = parseInt(datosLogro.puntos || '0', 10);
     
-    if (data.success) {
-      console.log("Puntos guardados BD: +", cantidad, "Total:", data.puntos);
-      // Actualizar puntos locales también
-      puntosTotales = data.puntos;
-      if (jugador) {
-        jugador.puntos = data.puntos.toString();
-      }
-      // Actualizar DOM del header
-      actualizarPuntosDOM(data.puntos);
-      return true;
-    } else {
-      console.warn("Error al guardar puntos en BD:", data.error);
-      return false;
+    // Aquí podrías agregar la lógica de guardar el logro en BD/Local
+    // similar a los puntos.
+    
+    if (puntosAGanar > 0) {
+        await sumarPuntos(puntosAGanar);
     }
-  } catch (err) {
-    console.error("Error AJAX guardar puntos:", err);
-    return false;
-  }
+    return true;
 }
 
-// 🎁 Obtener datos del logro por ID
-export function extraerDatosLogroPorId(logro_id) {
-  if (!logros || !Array.isArray(logros)) {
-    return null;
-  }
-  return logros.find(logro => logro.id === logro_id) || null;
-}
-
-// 🎊 Función unificada para sumar puntos del logro
-export async function sumarPuntosLogro(logro_id) {
-  const datosLogro = extraerDatosLogroPorId(logro_id);
-  
-  if (!datosLogro) {
-    console.warn("Logro no encontrado:", logro_id);
-    return false;
-  }
-
-  const puntosAGanar = parseInt(datosLogro.puntos || '0', 10);
-  
-  if (puntosAGanar <= 0) {
-    console.log("El logro no otorga puntos");
-    return true;
-  }
-
-  if (usuarioAutenticado()) {
-    return await actualizarPuntosBD(puntosAGanar);
-  } else {
-    guardarPuntosLocal(puntosAGanar);
-    return true;
-  }
+// 5. LÓGICA DE INVENTARIO
+export async function agregarObjetoInventario(objetoId) {
+    if (state.usuarioAutenticado) {
+        try {
+            const res = await fetch('/Juego/api/guardar_objeto_usuario.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ objeto_id: objetoId })
+            });
+            const data = await res.json();
+            if (data.error) throw new Error(data.error);
+            return true;
+        } catch (err) {
+            console.warn("Fallo al guardar objeto en BD:", err.message);
+            return false;
+        }
+    } else {
+        let inventario = JSON.parse(localStorage.getItem('inventario_temp')) || {};
+        inventario[objetoId] = { id: objetoId, timestamp: Date.now() };
+        localStorage.setItem('inventario_temp', JSON.stringify(inventario));
+        return true;
+    }
 }

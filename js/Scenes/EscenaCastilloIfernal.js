@@ -1,5 +1,5 @@
 import { objetosDelPersonaje, setPuntosTotales,puntos,puntosTotales, actualizarPuntosTotales, jugador,datosObjetos,objetos,objetosActivos, personajeHumanoEnUso, personajeGatoEnUso, ApartadoMenu, setPersonajeHumanoEnUso, setPersonajeGatoEnUso, setApartadoMenu,objetos_jugador, todosEnemigosVencidos } from '../globals.js';
-import { isMobile, getPosEscala, reescalarGlobalFlexible,cargarPersonajeActual, cargarGatoActual, createAndAdaptTextFlexible, extraerDatosObjetoPorId  } from '../responsive.js';
+import { isMobile, getPosEscala, reescalarGlobalFlexible,cargarPersonajeActual, cargarGatoActual, createAndAdaptTextFlexible, extraerDatosObjetoPorId  } from '../uiHelpers.js';
 //--- ESCENA DE LA CABAÑA ADENTRO
 window.ultimaEscenaActiva = null;
 export class EscenaCastilloIfernal  extends Phaser.Scene {
