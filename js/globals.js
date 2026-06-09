@@ -142,3 +142,56 @@ export async function agregarObjetoInventario(objetoId) {
         return true;
     }
 }
+
+// Añadir en globals.js (cerca de la sección 5. LÓGICA DE INVENTARIO)
+
+export function obtenerInventarioUnificado() {
+    const inventario = {};
+    const estado = getState();
+
+    // Función helper para normalizar IDs (asegura que las claves sean las mismas)
+    const getId = (obj) => obj.objetos_id || obj.id;
+
+    // 1. Datos del Personaje Actual (Memoria local temporal)
+    Object.values(estado.objetosDelPersonaje || {}).forEach(obj => {
+        const id = getId(obj);
+        if (id) inventario[id] = obj;
+    });
+
+    // 2. Base de Datos
+    if (estado.usuarioAutenticado && Array.isArray(estado.objetosJugador)) {
+        estado.objetosJugador.forEach(obj => {
+            const id = getId(obj);
+            if (id) inventario[id] = obj;
+        });
+    } else if (!estado.usuarioAutenticado) {
+        // 3. Fallback a LocalStorage para Invitados
+        try {
+            const inventarioLocal = JSON.parse(localStorage.getItem('inventario_temp')) || {};
+            Object.values(inventarioLocal).forEach(obj => {
+                const id = getId(obj);
+                if (id) inventario[id] = obj;
+            });
+        } catch (e) {
+            console.warn("Error leyendo inventario desde localStorage");
+        }
+    }
+
+    return inventario;
+}
+
+// Para la funcionalidad de "Equipar"
+export function alternarObjetoActivo(id) {
+    const index = state.objetosActivos.indexOf(id);
+    if (index === -1) {
+        if (state.objetosActivos.length < 6) { // Límite de 6 objetos equipados
+            state.objetosActivos.push(id);
+            return true; // Se equipó con éxito
+        }
+        return false; // Inventario lleno
+    } else {
+        // Si ya está activo, lo desequipamos
+        state.objetosActivos.splice(index, 1);
+        return false; 
+    }
+}

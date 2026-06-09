@@ -80,3 +80,17 @@ export function createAndAdaptTextFlexible(scene, {
 
     return textObj;
 }
+
+// Añadir al final de uiHelpers.js
+export function agregarEfectoHover(boton, multiplicador = 1.1) {
+    if (!boton || !boton.on) return;
+    
+    boton.on('pointerover', () => {
+        if (boton.escalaBase === undefined) boton.escalaBase = boton.scale;
+        boton.setScale(boton.escalaBase * multiplicador);
+    });
+    
+    boton.on('pointerout', () => {
+        if (boton.escalaBase !== undefined) boton.setScale(boton.escalaBase);
+    });
+}

@@ -1,87 +1,101 @@
-import { personajeHumanoEnUso, personajeGatoEnUso, ApartadoMenu, setPersonajeHumanoEnUso, setPersonajeGatoEnUso, setApartadoMenu } from '../globals.js';
-import { dialogosRecuperados } from '../globals.js';
-import { isMobile, getPosEscala, reescalarGlobalFlexible,cargarPersonajeActual, cargarGatoActual, createAndAdaptTextFlexible } from '../uiHelpers.js';
-//---ESCENA DEL BOSQUE PRIMERA PARTE
+import { reescalarGlobalFlexible, createAndAdaptTextFlexible, agregarEfectoHover } from '../uiHelpers.js';
+
 export class EscenaBosque extends Phaser.Scene {
     constructor() {
         super({ key: 'EscenaBosque' });
     }
-    preload() {
-    }
+
     create() {
-        this.fondo = this.add.image(0, 0, 'fondoBosque');
-        this.recuadro = this.add.image(0, 0, 'recuadro').setInteractive().setDepth(2);
-        this.recuadroMa = this.add.image(0, 0, 'recuadroM').setInteractive().setDepth(2).setVisible(false);
-        this.recuadroPe = this.add.image(0, 0, 'recuadroP').setInteractive().setDepth(2).setVisible(false);
-        this.personaje = this.add.sprite(0, 0, 'personajeUsar');
-        this.anims.create({
-            key: 'personaje-movimiento',
-            frames: this.anims.generateFrameNumbers('personajeUsar', { start: 0, end: 4 }),
-            frameRate: 5,
-            repeat: -1
-        });
-        this.mago = this.add.sprite(0, 0, 'mago').setVisible(false).setDepth(10);
-        this.anims.create({
-            key: 'mago-movimiento',
-            frames: this.anims.generateFrameNumbers('mago', { start: 0, end: 4 }),
-            frameRate: 5,
-            repeat: -1
-        });
-        this.animacionFondoBosque = this.add.sprite(0, 0, 'fondoAnimadoBosque').setVisible(false).setDepth(10);
-        this.anims.create({
-            key: 'fondoAnimadoBosqueFinal',
-            frames: this.anims.generateFrameNumbers('fondoAnimadoBosque', { start: 0, end: 36 }),
-            frameRate: 5,
-            repeat: 0
-        });
-        this.boton = this.add.image(0, 0, 'botonSiguiente').setInteractive();
-        this.botonS = this.add.image(0, 0, 'botonSaltar').setInteractive();
-        let e_uno = 'El niño fue llevado a un mundo desconocido que él no podía reconocer: ¿dónde estaba y qué hacía él allí?';
-        let e_dos = 'A lo lejos, escuchó que alguien se acercaba; parecía ser un hombre alto, con ropas extrañas.';
-        let e_tres = 'Mago desconocido: ¿Quién eres tú? No eres de por aquí, ¿verdad? ¿Necesitas ayuda?';
-        let e_cuatro = 'Niño: No sé qué pasó… Tengo miedo. ¿Qué debo hacer?';
-        let e_cinco = '(El hombre pensó por un instante, con la mirada fija en el niño.)';
-        let e_seis = 'Mago desconocido: A veces, los sueños que dan miedo… solo están tomando una nueva forma. Pero primero necesitas valor, pequeño viajero. ¿Estás dispuesto a descubrir lo que este mundo guarda para ti?';
-        let e_siete ='(El niño lo miró con duda, cuidadoso por el miedo. No sabía qué responder.)';
-        let e_ocho = 'Te daré una pequeña ayuda… algo que te guíe para descubrir tu propósito aquí.';
+        // 1. ELEMENTOS VISUALES ESTÁTICOS Y DE INTERFAZ
+        this.fondo = this.add.image(0, 0, 'fondoBosque').setDepth(1);
+        
+        // Recuadros de diálogo
+        this.recuadro = this.add.image(0, 0, 'recuadro').setDepth(2);
+        this.recuadroMa = this.add.image(0, 0, 'recuadroM').setDepth(2).setVisible(false);
+        this.recuadroPe = this.add.image(0, 0, 'recuadroP').setDepth(2).setVisible(false);
+        
+        // Botones interactivos
+        this.boton = this.add.image(0, 0, 'botonSiguiente').setDepth(4).setInteractive({ useHandCursor: true });
+        this.botonS = this.add.image(0, 0, 'botonSaltar').setDepth(4).setInteractive({ useHandCursor: true });
+
+        // 2. PERSONAJES Y ANIMACIONES
+        this.personaje = this.add.sprite(0, 0, 'personajeUsar').setDepth(3);
+        this.mago = this.add.sprite(0, 0, 'mago').setDepth(3).setVisible(false);
+        this.animacionFondoBosque = this.add.sprite(0, 0, 'fondoAnimadoBosque').setDepth(10).setVisible(false);
+
+        // Protección de animaciones (vital si la escena se reinicia)
+        if (!this.anims.exists('personaje-movimiento')) {
+            this.anims.create({
+                key: 'personaje-movimiento',
+                frames: this.anims.generateFrameNumbers('personajeUsar', { start: 0, end: 4 }),
+                frameRate: 5,
+                repeat: -1
+            });
+        }
+        if (!this.anims.exists('mago-movimiento')) {
+            this.anims.create({
+                key: 'mago-movimiento',
+                frames: this.anims.generateFrameNumbers('mago', { start: 0, end: 4 }),
+                frameRate: 5,
+                repeat: -1
+            });
+        }
+        if (!this.anims.exists('fondoAnimadoBosqueFinal')) {
+            this.anims.create({
+                key: 'fondoAnimadoBosqueFinal',
+                frames: this.anims.generateFrameNumbers('fondoAnimadoBosque', { start: 0, end: 36 }),
+                frameRate: 5,
+                repeat: 0
+            });
+        }
+
+        this.personaje.play('personaje-movimiento');
+
+        // 3. SISTEMA DE DIÁLOGOS
         this.dialogos = [
-            e_uno,e_dos,e_tres,e_cuatro,e_cinco,e_seis,e_siete,e_ocho
+            'El niño fue llevado a un mundo desconocido que él no podía reconocer: ¿dónde estaba y qué hacía él allí?',
+            'A lo lejos, escuchó que alguien se acercaba; parecía ser un hombre alto, con ropas extrañas.',
+            'Mago desconocido: ¿Quién eres tú? No eres de por aquí, ¿verdad? ¿Necesitas ayuda?',
+            'Niño: No sé qué pasó… Tengo miedo. ¿Qué debo hacer?',
+            '(El hombre pensó por un instante, con la mirada fija en el niño.)',
+            'Mago desconocido: A veces, los sueños que dan miedo… solo están tomando una nueva forma. Pero primero necesitas valor, pequeño viajero. ¿Estás dispuesto a descubrir lo que este mundo guarda para ti?',
+            '(El niño lo miró con duda, cuidadoso por el miedo. No sabía qué responder.)',
+            'Te daré una pequeña ayuda… algo que te guíe para descubrir tu propósito aquí.'
         ];
+        
         this.dialogoActual = 0;
+        
         this.texto = createAndAdaptTextFlexible(this, {
             text: this.dialogos[this.dialogoActual],
             posX: 0.31,
             posY: 0.19,
             maxWidth: 970,
-            maxHeight: 500,
             fontSizeInicial: 38,
-            fontSizeMinimo: 10,
             originX: 0.5,
             originY: 0.5,
-            config: {
-                fontFamily: 'Silkscreen',
-                color: '#000000',
-                align: 'center'
-            }
-        });
-        this.personaje.anims.play('personaje-movimiento', true);
+            color: '#000000'
+        }).setDepth(5);
+
+        // 4. LÓGICA DE EVENTOS Y TRANSICIÓN
         const animarFondo = () => {
             this.texto.setVisible(false);
             this.boton.setVisible(false);
             this.botonS.setVisible(false);
+            this.recuadro.setVisible(false);
             this.recuadroMa.setVisible(false);
+            this.recuadroPe.setVisible(false);
             this.personaje.setVisible(false);
             this.mago.setVisible(false);
+            
             this.animacionFondoBosque.setVisible(true);
-            this.animacionFondoBosque.setDepth(10);
-            this.animacionFondoBosque.anims.play('fondoAnimadoBosqueFinal', true);
+            this.animacionFondoBosque.play('fondoAnimadoBosqueFinal');
+            
             this.animacionFondoBosque.once('animationcomplete', () => {
                 this.scene.start('EscenaBosque2');
             });
         };
-        this.botonS.on('pointerdown', () => {
-                animarFondo();
-        });
+
+        this.botonS.on('pointerdown', () => animarFondo());
         
         this.boton.on('pointerdown', () => {
             this.dialogoActual++;
@@ -92,18 +106,25 @@ export class EscenaBosque extends Phaser.Scene {
                 animarFondo();
             }
         });
+
+        // 5. RESPONSIVIDAD Y EFECTOS
         this.aplicarReescalado();
-        this.scale.on('resize', () => {
-            this.aplicarReescalado();
-        });
+        this.scale.on('resize', () => this.aplicarReescalado());
+
+        agregarEfectoHover(this.boton);
+        agregarEfectoHover(this.botonS);
     }
+
     actualizarEscenaPorDialogo(dialogoIndex) {
+        // NOTA DE ARQUITECTURA: Esto está "hardcodeado". En el futuro, si los diálogos
+        // vienen de la base de datos, cada diálogo debería incluir un campo 'actor' 
+        // (ej: { texto: "...", actor: "mago" }) para evitar usar estos arreglos fijos.
         const mostrarMago = [2, 5, 7];
         const mostrarPe = [3];
         const mostrarNormal = [4, 6];
         const mostrarAnimacion = [0, 1];
 
-        // Oculta todo primero (evita inconsistencias)
+        // Oculta todo primero (Reset visual)
         this.recuadro.setVisible(false);
         this.recuadroMa.setVisible(false);
         this.recuadroPe.setVisible(false);
@@ -112,7 +133,7 @@ export class EscenaBosque extends Phaser.Scene {
         if (mostrarMago.includes(dialogoIndex)) {
             this.mago.setVisible(true);
             this.recuadroMa.setVisible(true);
-            this.mago.anims.play('mago-movimiento', true);
+            this.mago.play('mago-movimiento', true);
         } else if (mostrarPe.includes(dialogoIndex)) {
             this.recuadroPe.setVisible(true);
             this.mago.setVisible(true);
@@ -121,86 +142,31 @@ export class EscenaBosque extends Phaser.Scene {
             this.mago.setVisible(true);
         } else if (mostrarAnimacion.includes(dialogoIndex)) {
             this.recuadro.setVisible(true);
-            this.mago.setVisible(false);
+            // El mago se queda oculto
         }
     }
-    aplicarReescalado() {
-        reescalarGlobalFlexible(this.scale, [
-            {
-                obj: this.fondo,
-                autoFill: true,
-                originX: 0.5,
-                originY: 0.5
-            },
-            {
-                obj: this.recuadro,
-                posX: getPosEscala(0.43, 0),
-                posY: getPosEscala(0.22, 0),
-                escalaRelativa: getPosEscala(1.7, 0),
-                originX: 0.5,
-                originY: 0.5
-            },
-            {
-                obj: this.recuadroPe,
-                posX: getPosEscala(0.3, 0),
-                posY: getPosEscala(0.2, 0),
-                escalaRelativa: getPosEscala(1.18, 0),
-                originX: 0.5,
-                originY: 0.5
-            },
-            {
-                obj: this.recuadroMa,
-                posX: getPosEscala(0.3, 0),
-                posY: getPosEscala(0.2, 0),
-                escalaRelativa: getPosEscala(1.18, 0),
-                originX: 0.5,
-                originY: 0.5
-            },
-            {
-                obj: this.boton,
-                posX: getPosEscala(0.3, 0),
-                posY: getPosEscala(0.44, 0),
-                escalaRelativa: getPosEscala(0.34, 0),
-                originX: 0.5,
-                originY: 0.5
-            },
-            {
-                obj: this.botonS,
-                posX: getPosEscala(0.1, 0),
-                posY: getPosEscala(0.43, 0),
-                escalaRelativa: getPosEscala(0.34, 0),
-                originX: 0.5,
-                originY: 0.5
-            },
-            {
-                obj: this.personaje,
-                posX: getPosEscala(0.51, 0),
-                posY: getPosEscala(0.69, 0),
-                escalaRelativa: getPosEscala(0.32, 0),
-                originX: 0.5,
-                originY: 0.5
-            },
-            {
-                obj: this.mago,
-                posX: getPosEscala(0.72, 0),
-                posY: getPosEscala(0.62, 0),
-                escalaRelativa: getPosEscala(0.38, 0),
-                originX: 0.5,
-                originY: 0.5
-            },
-            {
-                obj: this.animacionFondoBosque,
-                autoFill: true,
-                originX: 0.5,
-                originY: 0.5
-            }
-        ]);
-        this.fondo.setPosition(this.scale.width / 2, this.scale.height / 2);
-        this.texto.setOrigin(0.5, 0.5).setDepth(3);
-        this.boton.setOrigin(0.5, 0.5).setDepth(4);
-        this.botonS.setOrigin(0.5, 0.5).setDepth(4);
-        this.animacionFondoBosque.setPosition(this.scale.width / 2, this.scale.height/2);
 
+    aplicarReescalado() {
+        reescalarGlobalFlexible(this, [
+            { obj: this.fondo, posX: 0.5, posY: 0.5, escalaRelativa: 1, autoFill: true },
+            { obj: this.animacionFondoBosque, posX: 0.5, posY: 0.5, escalaRelativa: 1, autoFill: true },
+            
+            // Recuadros de texto (Se enciman en la misma posición)
+            { obj: this.recuadro, posX: 0.43, posY: 0.22, escalaRelativa: 1.7 },
+            { obj: this.recuadroPe, posX: 0.3, posY: 0.2, escalaRelativa: 1.18 },
+            { obj: this.recuadroMa, posX: 0.3, posY: 0.2, escalaRelativa: 1.18 },
+            
+            // Interfaz
+            { obj: this.boton, posX: 0.3, posY: 0.44, escalaRelativa: 0.34 },
+            { obj: this.botonS, posX: 0.1, posY: 0.43, escalaRelativa: 0.34 },
+            
+            // Actores
+            { obj: this.personaje, posX: 0.51, posY: 0.69, escalaRelativa: 0.32 },
+            { obj: this.mago, posX: 0.72, posY: 0.62, escalaRelativa: 0.38 }
+        ]);
+
+        // Guardamos escalas para el Hover
+        this.boton.escalaBase = this.boton.scale;
+        this.botonS.escalaBase = this.botonS.scale;
     }
-    update() {}
 }

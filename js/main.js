@@ -258,9 +258,19 @@ const config = {
         PreloadScene,
         EscenaMenu,
         EscenaInicio, 
-        
-        EscenaInstrucciones, EscenaLogros, EscenaElegir,  EscenaEleccion,
-        EscenaIntroduccionUno, EscenaBosque, EscenaBosque2, EscenaCabanaAfuera, EscenaCabanaAdentro, EscenaInventario, EscenaTutorialUno, EscenaSalida, EscenaParteUno,
+        EscenaInstrucciones,
+        EscenaLogros,
+        EscenaElegir,
+        EscenaEleccion,
+        EscenaIntroduccionUno, 
+        EscenaBosque,
+        EscenaBosque2, 
+        EscenaCabanaAfuera, 
+        EscenaCabanaAdentro, 
+        EscenaInventario,
+        EscenaTutorialUno, 
+        EscenaSalida,
+        EscenaParteUno,
         EscenaMapa, EscenaPeleaSlime, EscenaCastilloIfernal, EscenaCementerio, EscenaMuerte, EscenaCasaAbandonada, EscenaFinal
     ]
 };

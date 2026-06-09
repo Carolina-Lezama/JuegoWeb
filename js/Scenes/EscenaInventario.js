@@ -1,43 +1,5 @@
-import { objetosDelPersonaje,  objetos_jugador,objetosActivos, datosObjetos, objetos, personajeHumanoEnUso, personajeGatoEnUso, ApartadoMenu, setPersonajeHumanoEnUso, setPersonajeGatoEnUso, setApartadoMenu } from '../globals.js';
-import { isMobile, getPosEscala, reescalarGlobalFlexible, cargarPersonajeActual, cargarGatoActual, createAndAdaptTextFlexible, extraerDatosObjetoPorId } from '../uiHelpers.js';
-//--- ESCENA DEL INVENTARIO
-
-function normalizarId(obj) {
-    return obj.objetos_id || obj.id;
-}
-
-function getInventarioUnificado() {
-    const inventario = {};
-
-    // 🔥 1. LOCAL (invitado o fallback)
-    let inventarioLocal = {};
-    try {
-        inventarioLocal = JSON.parse(localStorage.getItem('inventario_temp')) || {};
-    } catch (e) {
-        console.warn("Error leyendo localStorage");
-    }
-
-    Object.values(inventarioLocal).forEach(obj => {
-        const id = normalizarId(obj);
-        if (id) inventario[id] = obj;
-    });
-
-    // 🔥 2. MEMORIA (siempre)
-    Object.values(objetosDelPersonaje).forEach(obj => {
-        const id = normalizarId(obj);
-        if (id) inventario[id] = obj;
-    });
-
-    // 🔥 3. BD (tiene prioridad)
-    if (Array.isArray(objetos_jugador)) {
-        objetos_jugador.forEach(obj => {
-            const id = normalizarId(obj);
-            if (id) inventario[id] = obj;
-        });
-    }
-
-    return inventario;
-}
+import { getState, obtenerInventarioUnificado, alternarObjetoActivo } from '../globals.js';
+import { reescalarGlobalFlexible, createAndAdaptTextFlexible, agregarEfectoHover } from '../uiHelpers.js';
 
 export class EscenaInventario extends Phaser.Scene {
     constructor() {
@@ -45,53 +7,62 @@ export class EscenaInventario extends Phaser.Scene {
         this.objetoSeleccionado = null;
         this.marcadorSeleccion = null;
     }
-    preload() {}
 
     create() {
-        this.fondo = this.add.image(0, 0, 'fondoInventario');
-        this.botonI = this.add.image(0, 0, 'botonInventario').setDepth(1).setVisible(true).setInteractive();
-        this.inventariopanel = this.add.image(0, 0, 'inventariopanel').setDepth(1).setVisible(true);
-        this.botonE = this.add.image(0, 0, 'botonEquipar').setInteractive().setDepth(2).setVisible(true);
-        this.botonI.on('pointerdown', () => {
-            if (window.ultimaEscenaActiva === 'EscenaCabanaAdentro' || window.ultimaEscenaActiva === 'EscenaSalida' ) {
-                this.cerrarInventarioPorPausa();
-            } else if (window.ultimaEscenaActiva === 'EscenaTutorialUno') {
-                this.cerrarInventarioPorCambio();
-                return objetosActivos;
-            }else if (window.ultimaEscenaActiva === 'EscenaPeleaSlime' || window.ultimaEscenaActiva === 'EscenaCementerio'|| window.ultimaEscenaActiva === 'EscenaCasaAbandonada'|| window.ultimaEscenaActiva === 'EscenaCastilloIfernal'){
-                this.cerrarInventarioPorSwich();
+        // 1. FONDOS E INTERFAZ
+        this.fondo = this.add.image(0, 0, 'fondoInventario').setDepth(0);
+        this.inventariopanel = this.add.image(0, 0, 'inventariopanel').setDepth(1);
+        
+        // Botones interactivos
+        this.botonI = this.add.image(0, 0, 'botonInventario').setDepth(2).setInteractive({ useHandCursor: true });
+        this.botonE = this.add.image(0, 0, 'botonEquipar').setDepth(2).setInteractive({ useHandCursor: true });
+
+        // 2. LÓGICA DE CIERRE UNIVERSAL (Enrutamiento)
+        // Ya no necesitamos hardcodear los nombres de las escenas.
+        // Verificamos si esta escena fue "Lanzada" (Launch, que no pausa el update)
+        // o si fue iniciada normalmente (Start).
+        const cerrarInventario = () => {
+            if (window.ultimaEscenaActiva) {
+                this.scene.stop();
+                // Si la escena anterior sigue existiendo, la reanudamos
+                if (this.scene.manager.getScene(window.ultimaEscenaActiva)) {
+                     this.scene.resume(window.ultimaEscenaActiva);
+                } else {
+                    // Fallback de seguridad
+                     this.scene.start(window.ultimaEscenaActiva);
+                }
             }
-        });
-        this.input.keyboard.on('keydown-R', () => {
-            if (window.ultimaEscenaActiva === 'EscenaCabanaAdentro' ) {
-                this.cerrarInventarioPorPausa();
-            } else if (window.ultimaEscenaActiva === 'EscenaTutorialUno') {
-                this.cerrarInventarioPorCambio();
-                return objetosActivos;
-            }else if (window.ultimaEscenaActiva === 'EscenaPeleaSlime' || window.ultimaEscenaActiva === 'EscenaCementerio'|| window.ultimaEscenaActiva === 'EscenaCasaAbandonada'|| window.ultimaEscenaActiva === 'EscenaCastilloIfernal'){
-                this.cerrarInventarioPorSwich();
-            }
-        });
+        };
+
+        this.botonI.on('pointerdown', cerrarInventario);
+        this.input.keyboard.on('keydown-R', cerrarInventario);
+
+        // 3. CARGA DE DATOS UNIFICADOS
         this.objetosImgs = {};
-        // --- INVENTARIO UNIFICADO ---
-        const inventarioUnificado = getInventarioUnificado();
-        let idx = 0;
-        console.log("Inventario unificado:", inventarioUnificado);
+        const inventarioUnificado = obtenerInventarioUnificado();
+        
+        // 4. RENDERIZADO DEL GRID DE OBJETOS
+        let indiceObjeto = 0;
+        const baseGlobal = getState().objetosGlobales || [];
+
         Object.keys(inventarioUnificado).forEach(id => {
-            // Para el sprite, el id debe ser el nombre de la textura
-            // Si tienes un mapeo de id a nombre de textura, úsalo aquí
-            const dataObj = datosObjetos[id] || extraerDatosObjetoPorId(id);
+            // Buscamos los datos completos del objeto en la base de datos de objetos
+            const dataObj = baseGlobal.find(o => o.id == id) || inventarioUnificado[id];
+            
             if (!dataObj) {
-            console.warn("Objeto sin datos:", id);
-            return;
+                console.warn(`No se encontraron datos para el objeto con ID: ${id}`);
+                return;
             }
-            const spriteKey = dataObj?.sprite || dataObj?.imagen || id;
+
+            const spriteKey = dataObj.sprite || dataObj.imagen || String(id);
             const sprite = this.add.sprite(0, 0, spriteKey)
-                .setDepth(2)
-                .setVisible(true)
-                .setInteractive();
+                .setDepth(3)
+                .setInteractive({ useHandCursor: true });
+            
             this.objetosImgs[id] = sprite;
-            const animKey = spriteKey + 'movimiento';
+
+            // Manejo de animaciones seguras
+            const animKey = spriteKey + '-movimiento';
             if (!this.anims.exists(animKey)) {
                 try {
                     this.anims.create({
@@ -101,126 +72,106 @@ export class EscenaInventario extends Phaser.Scene {
                         repeat: -1
                     });
                 } catch (err) {
-                    console.warn(`No se pudieron generar los frames para '${spriteKey}'`);
+                    console.warn(`No se pudo generar animación para ${spriteKey}. Usando imagen estática.`);
                 }
             }
+
             if (this.anims.exists(animKey)) {
-                sprite.anims.play(animKey, true);
+                sprite.play(animKey);
             }
-            // Manejo del clic: al hacer click se selecciona el objeto
+
+            // Manejo de selección (Click en el objeto)
             sprite.on('pointerdown', () => {
                 this.objetoSeleccionado = id;
+                
+                // Limpiar marcador anterior
                 if (this.marcadorSeleccion) {
                     this.marcadorSeleccion.destroy();
                 }
+
+                // Dibujar nuevo marcador encima del sprite
                 this.marcadorSeleccion = this.add.rectangle(
-                    sprite.x, sprite.y,
-                    sprite.displayWidth, sprite.displayHeight,
-                    0x00ff00, 0.2
-                )
-                    .setDepth(sprite.depth + 1)
-                    .setOrigin(sprite.originX, sprite.originY);
+                    sprite.x, sprite.y, 
+                    sprite.displayWidth + 10, sprite.displayHeight + 10, // Un poco más grande que el sprite
+                    0x00ff00, 0.3 // Verde semitransparente
+                ).setDepth(2).setOrigin(0.5); // El origin debe coincidir con el sprite
             });
-            idx++;
+
+            indiceObjeto++;
         });
-        this.aplicarReescalado();
-        this.scale.on('resize', () => {
-            this.aplicarReescalado();
-        });
-this.botonE.on('pointerdown', () => {
 
-    if (!this.objetoSeleccionado) return;
-
-    if (!objetosActivos.includes(this.objetoSeleccionado)) {
-        objetosActivos.push(this.objetoSeleccionado);
-    }
-
-    this.texto.setVisible(true);
-
-    this.time.delayedCall(2000, () => {
-        this.texto.setVisible(false);
-    });
-});
-        this.texto = createAndAdaptTextFlexible(this, {
+        // 5. SISTEMA DE NOTIFICACIONES (Botón Equipar)
+        this.textoNotificacion = createAndAdaptTextFlexible(this, {
             text: 'Agregado correctamente a tu barra de herramientas',
-            posX: 0.48,
-            posY: 0.14,
-            maxWidth: 850,
-            maxHeight: 500,
-            fontSizeInicial: 38,
-            fontSizeMinimo: 10,
-            originX: 0.5,
-            originY: 0.5,
-            config: {
-                fontFamily: 'Silkscreen',
-                color: '#ffffff',
-                align: 'center'
+            posX: 0.48, posY: 0.14, maxWidth: 850, fontSizeInicial: 38,
+            originX: 0.5, originY: 0.5, color: '#ffffff'
+        }).setDepth(5).setVisible(false);
+
+        this.botonE.on('pointerdown', () => {
+            if (!this.objetoSeleccionado) return;
+
+            // Usamos nuestra nueva función global para equipar/desequipar
+            const fueEquipado = alternarObjetoActivo(this.objetoSeleccionado);
+
+            if (fueEquipado) {
+                this.textoNotificacion.setText('Objeto equipado correctamente.');
+                this.textoNotificacion.setColor('#00ff00'); // Verde
+            } else {
+                this.textoNotificacion.setText('Objeto retirado de tu barra.');
+                this.textoNotificacion.setColor('#ff9900'); // Naranja
             }
+
+            this.textoNotificacion.setVisible(true);
+
+            // Ocultar notificación tras 2 segundos
+            this.time.delayedCall(2000, () => {
+                this.textoNotificacion.setVisible(false);
+            });
         });
-        this.texto.setOrigin(0.5, 0.5).setDepth(3).setVisible(false);
+
+        // 6. RESPONSIVIDAD Y EFECTOS
+        this.aplicarReescalado();
+        this.scale.on('resize', () => this.aplicarReescalado());
+
+        agregarEfectoHover(this.botonI, 1.15);
+        agregarEfectoHover(this.botonE);
     }
 
     aplicarReescalado() {
-        reescalarGlobalFlexible(this.scale.gameSize, [
-            {
-                obj: this.fondo,
-                autoFill: true,
-                originX: 0.5,
-                originY: 1
-            },
-            {
-                obj: this.botonI,
-                posX: getPosEscala(0.05, 0),
-                posY: getPosEscala(0.1, 0),
-                escalaRelativa: getPosEscala(0.15, 0),
-                originX: 0.5,
-                originY: 0.5
-            },
-            {
-                obj: this.inventariopanel,
-                posX: getPosEscala(0.5, 0),
-                posY: getPosEscala(0.62, 0),
-                escalaRelativa: getPosEscala(1.25, 0),
-                originX: 0.5,
-                originY: 0.5
-            },
-            {
-                obj: this.botonE,
-                posX: getPosEscala(0.82, 0),
-                posY: getPosEscala(0.15, 0),
-                escalaRelativa: getPosEscala(0.3, 0),
-                originX: 0.5,
-                originY: 0.5
-            },
-            // Reescalado de los objetos del inventario unificado
-            ...Object.keys(this.objetosImgs).map((id, i) => ({
+        const elementosAReescalar = [
+            { obj: this.fondo, posX: 0.5, posY: 1, originX: 0.5, originY: 1, escalaRelativa: 1, autoFill: true },
+            { obj: this.inventariopanel, posX: 0.5, posY: 0.62, escalaRelativa: 1.25 },
+            { obj: this.botonI, posX: 0.05, posY: 0.1, escalaRelativa: 0.15 },
+            { obj: this.botonE, posX: 0.82, posY: 0.15, escalaRelativa: 0.3 }
+        ];
+
+        // Añadimos los sprites del inventario a la lista de reescalado
+        // Usamos la misma matemática de grid, pero limpia y legible
+        const IDs = Object.keys(this.objetosImgs);
+        IDs.forEach((id, index) => {
+            const columna = index % 5;
+            const fila = Math.floor(index / 5);
+            
+            elementosAReescalar.push({
                 obj: this.objetosImgs[id],
-                posX: getPosEscala(0.265 + 0.1 * (i % 5), 0),
-                posY: getPosEscala(0.425 + 0.13 * Math.floor(i / 5), 0),
-                escalaRelativa: getPosEscala(0.10),
-                originX: 0.5,
-                originY: 0.5
-            }))
-        ]);
-        this.fondo.setPosition(this.scale.width / 2, this.scale.height);
-    }
-    cerrarInventarioPorPausa() {
-        if (window.ultimaEscenaActiva) {
-            this.scene.stop();
-            this.scene.resume(window.ultimaEscenaActiva);
+                // Ajustes de cuadrícula basados en el modo FIT (1650x900)
+                posX: 0.265 + (0.1 * columna),
+                posY: 0.425 + (0.13 * fila),
+                escalaRelativa: 0.10
+            });
+        });
+
+        reescalarGlobalFlexible(this, elementosAReescalar);
+
+        // Si hay un marcador activo durante el redimensionado, ajustamos su posición
+        if (this.marcadorSeleccion && this.objetoSeleccionado) {
+            const spriteActivo = this.objetosImgs[this.objetoSeleccionado];
+            if (spriteActivo) {
+                this.marcadorSeleccion.setPosition(spriteActivo.x, spriteActivo.y);
+            }
         }
+
+        this.botonI.escalaBase = this.botonI.scale;
+        this.botonE.escalaBase = this.botonE.scale;
     }
-    cerrarInventarioPorCambio() {
-        if (window.ultimaEscenaActiva) {
-            this.scene.stop();
-            this.scene.start(window.ultimaEscenaActiva);
-        }
-    }
-        cerrarInventarioPorSwich() {
-        if (window.ultimaEscenaActiva) {
-            this.scene.stop();
-            this.scene.start(window.ultimaEscenaActiva);
-        }
-    }
-    update() {}
 }

@@ -1,162 +1,110 @@
-import { objetosDelPersonaje, datosObjetos,objetos,objetosActivos, personajeHumanoEnUso, personajeGatoEnUso, ApartadoMenu, setPersonajeHumanoEnUso, setPersonajeGatoEnUso, setApartadoMenu, usuarioAutenticado, guardarObjetoBD, guardarObjetoLocal } from '../globals.js';
-import { isMobile, getPosEscala, reescalarGlobalFlexible,cargarPersonajeActual, cargarGatoActual, createAndAdaptTextFlexible, extraerDatosObjetoPorId  } from '../uiHelpers.js';
-//--- ESCENA DESPEDIDA Y ENTREGA DEL ARMA
+import { getState, agregarObjetoInventario } from '../globals.js';
+import { reescalarGlobalFlexible, createAndAdaptTextFlexible, agregarEfectoHover } from '../uiHelpers.js';
+
 export class EscenaSalida extends Phaser.Scene {
-  constructor() {
-    super({ key: 'EscenaSalida' });
-  }
-  create() {
-    this.fondo = this.add.image(0, 0, 'FondoCabana');
-    this.fondoObjeto = this.add.image(0, 0, 'FondoObjetoAmarillo').setVisible(false).setDepth(4);
-    this.recuadroMa = this.add.image(0, 0, 'recuadroM').setDepth(2).setVisible(true);
-    this.botonD = this.add.image(0, 0, 'botonDescripcion').setDepth(4).setVisible(false);
-    this.botonI = this.add.image(0, 0, 'botonInventario').setInteractive().setDepth(10).setVisible(true);
-    this.botonSa = this.add.image(0, 0, 'botonSalir').setInteractive().setDepth(4).setVisible(false);
-    this.boton = this.add.image(0, 0, 'botonSiguiente').setInteractive();
-    this.botonS = this.add.image(0, 0, 'botonSaltar').setInteractive();
-    this.gato = this.add.sprite(0, 0, 'gato');
-    this.gato.setFlipX(true); 
-    this.mago = this.add.sprite(0, 0, 'mago');
-    this.mago.setFlipX(true); 
-    this.anims.create({
-      key: 'gato-movimiento',
-      frames: this.anims.generateFrameNumbers('gato', { start: 0, end: 7 }),
-      frameRate: 3,
-      repeat: -1
-    });
-this.botonI.on('pointerdown', () => {
-    this.dialogoActual++;
-    window.ultimaEscenaActiva = this.scene.key;
-    
-    // Verifica si la escena ya está activa antes de lanzarla
-    if (!this.scene.isActive('EscenaInventario')) {
-        this.scene.launch('EscenaInventario');
+    constructor() {
+        super({ key: 'EscenaSalida' });
     }
-    
-    // Trae la escena del inventario al frente
-    this.scene.bringToTop('EscenaInventario');
-    this.scene.pause();
-});
 
-this.input.keyboard.on('keydown-R', () => {
-    this.dialogoActual++;
-    window.ultimaEscenaActiva = this.scene.key;
-    
-    // Verifica si la escena ya está activa antes de lanzarla
-    if (!this.scene.isActive('EscenaInventario')) {
-        this.scene.launch('EscenaInventario');
-    }
-    
-    // Trae la escena del inventario al frente
-    this.scene.bringToTop('EscenaInventario');
-    this.scene.pause();
-});
-    this.anims.create({
-      key: 'mago-movimiento',
-      frames: this.anims.generateFrameNumbers('mago', { start: 0, end: 4 }),
-      frameRate: 5,
-      repeat: -1
-    });
-    this.objetoEspada = this.add.sprite(0, 0, 'objetoEspada').setVisible(false).setDepth(10);
-    this.anims.create({
-        key: 'objetoEspada-movimiento',
-        frames: this.anims.generateFrameNumbers('objetoEspada', { start: 0, end: 6 }),
-        frameRate: 6,
-        repeat: -1});
-    this.aplicarReescalado();
-    this.scale.on('resize', () => {
-        this.aplicarReescalado();
-    });
-    let e_uno ='Ahora que saber como usar el espejo, es hora de explorar el mundo.';
-    let e_dos ='Te dare un ultimo regalo para protegerte.';
-    let e_tres ='Es facil usar esta arma.';
+    create() {
+        // 1. ELEMENTOS VISUALES Y FONDOS
+        this.fondo = this.add.image(0, 0, 'FondoCabana').setDepth(1);
+        this.fondoObjeto = this.add.image(0, 0, 'FondoObjetoAmarillo').setDepth(4).setVisible(false);
+        
+        // Recuadros de diálogo
+        this.recuadroMa = this.add.image(0, 0, 'recuadroM').setDepth(2).setVisible(true);
+        
+        // Botones e Interfaz
+        this.botonD = this.add.image(0, 0, 'botonDescripcion').setDepth(4).setVisible(false);
+        this.botonI = this.add.image(0, 0, 'botonInventario').setDepth(10).setInteractive({ useHandCursor: true });
+        this.botonSa = this.add.image(0, 0, 'botonSalir').setDepth(4).setInteractive({ useHandCursor: true }).setVisible(false);
+        this.boton = this.add.image(0, 0, 'botonSiguiente').setDepth(4).setInteractive({ useHandCursor: true });
+        this.botonS = this.add.image(0, 0, 'botonSaltar').setDepth(4).setInteractive({ useHandCursor: true });
 
-const objeto = extraerDatosObjetoPorId(2) || {
-    id: 2,
-    nombre: '',
-    descripcion: '',
-    cantidad: 0,
-    rareza: ''
-};
+        // 2. PERSONAJES Y OBJETOS ANIMADOS
+        this.gato = this.add.sprite(0, 0, 'gato').setDepth(3).setFlipX(true);
+        this.mago = this.add.sprite(0, 0, 'mago').setDepth(3).setFlipX(true);
+        this.objetoEspada = this.add.sprite(0, 0, 'objetoEspada').setDepth(10).setVisible(false);
 
-// Guardar SIEMPRE en memoria
-objetosDelPersonaje[2] = objeto;
-
-// 🔥 Lógica híbrida
-if (usuarioAutenticado()) {
-
-    guardarObjetoBD(2).then(success => {
-        if (!success) {
-            guardarObjetoLocal(objeto);
+        // Protección de animaciones
+        if (!this.anims.exists('gato-movimiento')) {
+            this.anims.create({ key: 'gato-movimiento', frames: this.anims.generateFrameNumbers('gato', { start: 0, end: 7 }), frameRate: 3, repeat: -1 });
         }
-    });
+        if (!this.anims.exists('mago-movimiento')) {
+            this.anims.create({ key: 'mago-movimiento', frames: this.anims.generateFrameNumbers('mago', { start: 0, end: 4 }), frameRate: 5, repeat: -1 });
+        }
+        if (!this.anims.exists('objetoEspada-movimiento')) {
+            this.anims.create({ key: 'objetoEspada-movimiento', frames: this.anims.generateFrameNumbers('objetoEspada', { start: 0, end: 6 }), frameRate: 6, repeat: -1 });
+        }
 
-} else {
-    guardarObjetoLocal(objeto);
-}
+        this.gato.play('gato-movimiento');
+        this.mago.play('mago-movimiento');
 
+        // 3. LÓGICA DE INVENTARIO (Delegada al Store)
+        const ITEM_ID = 2; // ID de la Espada
+        agregarObjetoInventario(ITEM_ID); 
 
-        let e_cuatro =''
-        let e_cinco ='Equipa en tu inventario como hiciste antes.'
-        let e_seis ='Es hora de partir, Carlitos.'
+        // Recuperamos los datos del objeto de forma segura
+        const objetosGlobales = getState().objetosGlobales || [];
+        const itemData = objetosGlobales.find(o => o.id == ITEM_ID) || {
+            nombre: 'Espada de Madera',
+            descripcion: 'Un arma básica para defenderte de los monstruos.',
+            cantidad: 'Sin límite',
+            rareza: 'Común'
+        };
+
+        // 4. SISTEMA DE DIÁLOGOS Y TEXTOS
+        const nombreJugador = getState().jugador?.jugador || getState().jugador?.nombre_jugador || 'Viajero';
 
         this.dialogos = [
-            e_uno,e_dos,e_tres,e_cuatro,e_cinco,e_seis
+            'Ahora que sabes cómo usar el espejo, es hora de explorar el mundo.',
+            'Te daré un último regalo para protegerte.',
+            'Es fácil usar esta arma.',
+            '', // Espacio para el Pop-Up de la Espada
+            'Equípala en tu inventario como hiciste antes.',
+            `Es hora de partir, ${nombreJugador}.` // Nombre dinámico inyectado
         ];
         this.dialogoActual = 0;
+
+        // Texto principal de diálogo
         this.texto = createAndAdaptTextFlexible(this, {
             text: this.dialogos[this.dialogoActual],
-            posX: 0.74,
-            posY: 0.19,
-            maxWidth: 850,
-            maxHeight: 500,
-            fontSizeInicial: 36,
-            fontSizeMinimo: 10,
-            originX: 0.5,
-            originY: 0.5,
-            config: {
-                fontFamily: 'Silkscreen',
-                color: '#000000',
-                align: 'center'
-            }
-        });
-        this.texto.setOrigin(0.5, 0.5).setDepth(3);
+            posX: 0.74, posY: 0.19, maxWidth: 850, fontSizeInicial: 36,
+            originX: 0.5, originY: 0.5, color: '#000000'
+        }).setDepth(5);
 
-        objetosDelPersonaje[2]= extraerDatosObjetoPorId(2) || {id:0, nombre:'',descripcion:'',cantidad:0,rareza:''};
+        // Texto de descripción del objeto (UI emergente)
+        const textoDescripcionObjeto = `${itemData.nombre}\n\n${itemData.descripcion}\n\nCantidad de usos máximo: ${itemData.cantidad}\n\nRareza: ${itemData.rareza}`;
+        
         this.texto2 = createAndAdaptTextFlexible(this, {
-            text: (objetosDelPersonaje[2].nombre || '') + '\n\n' +
-                  (objetosDelPersonaje[2].descripcion || '') + '\n\nCantidad de usos maximo: ' +
-                  (objetosDelPersonaje[2].cantidad || 'Sin limite') + '\n\nRareza: ' +
-                  (objetosDelPersonaje[2].rareza || ''),
-            posX: 0.3,
-            posY: 0.49,
-            maxWidth: 850,
-            maxHeight: 500,
-            fontSizeInicial: 38,
-            fontSizeMinimo: 10,
-            originX: 0.5,
-            originY: 0.5,
-            config: {
-                fontFamily: 'Silkscreen',
-                color: '#ffffff',
-                align: 'center'
-            }
-        });
-        this.texto2.setVisible(false);
-        this.gato.anims.play('gato-movimiento', true);
-        this.mago.anims.play('mago-movimiento', true);
-        this.botonS.on('pointerdown', () => {
-            this.scene.start('EscenaParteUno');});
+            text: textoDescripcionObjeto,
+            posX: 0.3, posY: 0.49, maxWidth: 850, fontSizeInicial: 38,
+            originX: 0.5, originY: 0.5, color: '#ffffff'
+        }).setDepth(20).setVisible(false);
+
+        // 5. EVENTOS E INTERACCIÓN
+        const abrirInventario = () => {
+            this.dialogoActual++;
+            window.ultimaEscenaActiva = this.scene.key;
+            this.scene.launch('EscenaInventario');
+            this.scene.pause();
+        };
+
+        this.botonI.on('pointerdown', abrirInventario);
+        this.input.keyboard.on('keydown-R', abrirInventario);
+
+        this.botonS.on('pointerdown', () => this.scene.start('EscenaParteUno'));
 
         this.boton.on('pointerdown', () => {
-        this.dialogoActual++;
-        if (this.dialogoActual < this.dialogos.length) {
-            this.texto.setText(this.dialogos[this.dialogoActual]);
-            this.actualizarEscenaPorDialogo(this.dialogoActual);
-        } else {
-            this.scene.start('EscenaParteUno');
-        }
+            this.dialogoActual++;
+            if (this.dialogoActual < this.dialogos.length) {
+                this.texto.setText(this.dialogos[this.dialogoActual]);
+                this.actualizarEscenaPorDialogo(this.dialogoActual);
+            } else {
+                this.scene.start('EscenaParteUno');
+            }
         });
+
         this.botonSa.on('pointerdown', () => {
             this.dialogoActual++;
             if (this.dialogoActual < this.dialogos.length) {
@@ -164,153 +112,84 @@ if (usuarioAutenticado()) {
                 this.actualizarEscenaPorDialogo(this.dialogoActual);
             }
         });
-  }
+
+        // 6. RESPONSIVIDAD Y EFECTOS
+        this.aplicarReescalado();
+        this.scale.on('resize', () => this.aplicarReescalado());
+
+        agregarEfectoHover(this.boton);
+        agregarEfectoHover(this.botonS);
+        agregarEfectoHover(this.botonI, 1.15);
+        agregarEfectoHover(this.botonSa);
+    }
+
     actualizarEscenaPorDialogo(dialogoIndex) {
-        const mostrarMago = [0, 1, 2, 3, 4];
+        const mostrarMago = [0, 1, 2, 3, 4, 5]; // El mago habla en todos los diálogos
+
+        // Restablecer vista por defecto
         this.recuadroMa.setVisible(true);
         this.mago.setVisible(true);
         this.gato.setVisible(true);
+        this.boton.setVisible(true);
+        this.botonS.setVisible(true);
+        this.botonI.setVisible(true);
+        this.fondo.setVisible(true);
+        
+        // Ocultar Pop-Up
         this.fondoObjeto.setVisible(false);
         this.botonD.setVisible(false);
-        this.botonI.setVisible(true);
-        this.boton.setVisible(true);
-        this.botonS.setVisible(true);      
         this.botonSa.setVisible(false);
         this.texto2.setVisible(false);
-
         this.objetoEspada.setVisible(false);
 
         if (mostrarMago.includes(dialogoIndex)) {
             if (dialogoIndex === 3) {
+                this.objetoEspada.play('objetoEspada-movimiento').setVisible(true);
 
-                this.objetoEspada.anims.play('objetoEspada-movimiento').setVisible(true);
-
-                const objeto = extraerDatosObjetoPorId(2) || {
-                    id: 2,
-                    nombre: '',
-                    descripcion: '',
-                    cantidad: 0,
-                    rareza: ''
-                };
-
-                objetosDelPersonaje[2] = objeto;
-
-                if (usuarioAutenticado()) {
-
-                    guardarObjetoBD(2).then(success => {
-                        if (!success) {
-                            guardarObjetoLocal(objeto);
-                        }
-                    });
-
-                } else {
-                    guardarObjetoLocal(objeto);
-                }
-
+                // Ocultar fondo y personajes para centrarse en el objeto
                 this.recuadroMa.setVisible(false);
                 this.mago.setVisible(false);
                 this.gato.setVisible(false);
                 this.boton.setVisible(false);
                 this.botonS.setVisible(false);
+                this.fondo.setVisible(false);
+                
+                // Mostrar Pop-Up del objeto
                 this.fondoObjeto.setVisible(true);
                 this.botonD.setVisible(true);
                 this.botonSa.setVisible(true);
                 this.texto2.setVisible(true);
-                this.texto2.setDepth(20);
             }
         }   
     }
-      aplicarReescalado() {
-          reescalarGlobalFlexible(this.scale, [
-              {
-                  obj: this.fondo,
-                  autoFill: true,
-                  originX: 0.5,
-                  originY: 1
-              },
-              {
-                obj: this.recuadroMa,
-                posX: getPosEscala(0.73, 0),
-                posY: getPosEscala(0.19, 0),
-                escalaRelativa: getPosEscala(1.04, 0),
-                originX: 0.5,
-                originY: 0.5
-              },
-              {
-                obj: this.boton,
-                posX: getPosEscala(0.73, 0),
-                posY: getPosEscala(0.4207, 0),
-                escalaRelativa: getPosEscala(0.32, 0),
-                originX: 0.5,
-                originY: 0.5
-              },
-              {
-                obj: this.botonS,
-                posX: getPosEscala(0.9, 0),
-                posY: getPosEscala(0.409, 0),
-                escalaRelativa: getPosEscala(0.32, 0),
-                originX: 0.5,
-                originY: 0.5
-              },
-              {
-                obj: this.gato,
-                posX: getPosEscala(0.44, 0),
-                posY: getPosEscala(0.81, 0),
-                escalaRelativa: getPosEscala(0.24, 0),
-                originX: 0.5,
-                originY: 0.5
-              },
-              {
-                obj: this.mago,
-                posX: getPosEscala(0.24, 0),
-                posY: getPosEscala(0.67, 0),
-                escalaRelativa: getPosEscala(0.3, 0),
-                originX: 0.5,
-                originY: 0.5
-            },
-            {
-                obj: this.objetoEspada,
-                posX: getPosEscala(0.73, 0),
-                posY: getPosEscala(0.5, 0),
-                escalaRelativa: getPosEscala(0.7, 0),
-                originX: 0.5,
-                originY: 0.5
-            },            
-            {
-                obj: this.fondoObjeto,
-                posX: getPosEscala(0.5, 0),
-                posY: getPosEscala(0.5, 0),
-                escalaRelativa: getPosEscala(2, 0),
-                originX: 0.5,
-                originY: 0.5
-            },            
-            {
-                obj: this.botonD,
-                posX: getPosEscala(0.3, 0),
-                posY: getPosEscala(0.2, 0),
-                escalaRelativa: getPosEscala(0.55, 0),
-                originX: 0.5,
-                originY: 0.5
-            },            
-            {
-                obj: this.botonSa,
-                posX: getPosEscala(0.3, 0),
-                posY: getPosEscala(0.8, 0),
-                escalaRelativa: getPosEscala(0.3, 0),
-                originX: 0.5,
-                originY: 0.5
-            },            
-            {
-                obj: this.botonI,
-                posX: getPosEscala(0.05, 0),
-                posY: getPosEscala(0.1, 0),
-                escalaRelativa: getPosEscala(0.15, 0),
-                originX: 0.5,
-                originY: 0.5
-            }         
-            ]);
-        this.fondo.setPosition(this.scale.width / 2, this.scale.height );
-}
-  update(){
-  }
+
+    aplicarReescalado() {
+        reescalarGlobalFlexible(this, [
+            { obj: this.fondo, posX: 0.5, posY: 1, originX: 0.5, originY: 1, escalaRelativa: 1, autoFill: true },
+            
+            // Layout de diálogo
+            { obj: this.recuadroMa, posX: 0.73, posY: 0.19, escalaRelativa: 1.04 },
+            { obj: this.boton, posX: 0.73, posY: 0.4207, escalaRelativa: 0.32 },
+            { obj: this.botonS, posX: 0.9, posY: 0.409, escalaRelativa: 0.32 },
+            
+            // Actores
+            { obj: this.gato, posX: 0.44, posY: 0.81, escalaRelativa: 0.24 },
+            { obj: this.mago, posX: 0.24, posY: 0.67, escalaRelativa: 0.3 },
+            
+            // Pop-Up de Objeto
+            { obj: this.objetoEspada, posX: 0.73, posY: 0.5, escalaRelativa: 0.7 },
+            { obj: this.fondoObjeto, posX: 0.5, posY: 0.5, escalaRelativa: 2 },
+            { obj: this.botonD, posX: 0.3, posY: 0.2, escalaRelativa: 0.55 },
+            { obj: this.botonSa, posX: 0.3, posY: 0.8, escalaRelativa: 0.3 },
+            
+            // UI Global
+            { obj: this.botonI, posX: 0.05, posY: 0.1, escalaRelativa: 0.15 }
+        ]);
+
+        // Guardar escalas base para Hover
+        this.boton.escalaBase = this.boton.scale;
+        this.botonS.escalaBase = this.botonS.scale;
+        this.botonI.escalaBase = this.botonI.scale;
+        this.botonSa.escalaBase = this.botonSa.scale;
+    }
 }
