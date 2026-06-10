@@ -271,7 +271,13 @@ const config = {
         EscenaTutorialUno, 
         EscenaSalida,
         EscenaParteUno,
-        EscenaMapa, EscenaPeleaSlime, EscenaCastilloIfernal, EscenaCementerio, EscenaMuerte, EscenaCasaAbandonada, EscenaFinal
+        EscenaMapa,
+        EscenaPeleaSlime, 
+        EscenaCastilloIfernal, 
+        EscenaCementerio, 
+        EscenaCasaAbandonada,
+        EscenaMuerte,
+        EscenaFinal
     ]
 };
 

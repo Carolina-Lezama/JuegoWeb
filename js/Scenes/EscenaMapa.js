@@ -1,172 +1,104 @@
-import { objetosDelPersonaje, datosObjetos,objetos,objetosActivos, personajeHumanoEnUso, personajeGatoEnUso, ApartadoMenu, setPersonajeHumanoEnUso, setPersonajeGatoEnUso, setApartadoMenu, puntosTotales } from '../globals.js';
-import { isMobile, getPosEscala, reescalarGlobalFlexible,cargarPersonajeActual, cargarGatoActual, createAndAdaptTextFlexible, extraerDatosObjetoPorId  } from '../uiHelpers.js';
-//--- ESCENA DE LA CABAÑA ADENTRO
+import { getState } from '../globals.js';
+import { reescalarGlobalFlexible, createAndAdaptTextFlexible, agregarEfectoHover } from '../uiHelpers.js';
 
-export class EscenaMapa  extends Phaser.Scene {
+export class EscenaMapa extends Phaser.Scene {
     constructor() {
         super({ key: 'EscenaMapa' });
     }
-    preload() {
-    }
-        create() {
-        this.regreso=this.add.image(0,0, 'regreso').setOrigin(0, 0).setDepth(10).setInteractive();
-        this.EscenaMapa = this.add.image(0, 0, 'EscenaMapa');
-        this.botonFinalizar = this.add.image(0, 0, 'botonFinalizar').setInteractive().setDepth(10).setVisible(true);
-        this.IconoCaballero = this.add.image(0, 0, 'IconoCaballero').setInteractive().setDepth(10).setVisible(true);
-        this.IconoCalaca = this.add.image(0, 0, 'IconoCalaca').setInteractive().setDepth(10).setVisible(true);
-        this.IconoDuende = this.add.image(0, 0, 'IconoDuende').setInteractive().setDepth(10).setVisible(true);
-        this.IconoSlime = this.add.image(0, 0, 'IconoSlime').setInteractive().setDepth(10).setVisible(true);
-        this.gato = this.add.sprite(0, 0, 'gato');
-        this.gato.setFlipX(true); 
-        this.mago = this.add.sprite(0, 0, 'mago');
-        this.mago.setFlipX(true); 
-        this.anims.create({
-            key: 'gato-movimiento',
-            frames: this.anims.generateFrameNumbers('gato', { start: 0, end: 7 }),
-            frameRate: 3,
-            repeat: -1
-        });
-        this.anims.create({
-            key: 'mago-movimiento',
-            frames: this.anims.generateFrameNumbers('mago', { start: 0, end: 4 }),
-            frameRate: 5,
-            repeat: -1
-        });
-        this.regreso.on('pointerdown', () => {
-            this.scene.start('EscenaInicio');
-        });
-        this.gato.anims.play('gato-movimiento', true);
-        this.mago.anims.play('mago-movimiento', true);
 
-        this.botonFinalizar.on('pointerdown', () => {
-            this.scene.start('EscenaFinal');
-        });
-        this.IconoSlime.on('pointerdown', () => {
-            this.scene.start('EscenaPeleaSlime');
+    create() {
+        // 1. FONDOS Y ELEMENTOS ESTÁTICOS
+        this.EscenaMapa = this.add.image(0, 0, 'EscenaMapa').setDepth(0);
+        
+        // 2. BOTONES E INTERFAZ
+        this.regreso = this.add.image(0, 0, 'regreso').setDepth(10).setInteractive({ useHandCursor: true });
+        this.botonFinalizar = this.add.image(0, 0, 'botonFinalizar').setDepth(10).setInteractive({ useHandCursor: true });
+        
+        // Íconos de Niveles / Enemigos
+        this.IconoCaballero = this.add.image(0, 0, 'IconoCaballero').setDepth(10).setInteractive({ useHandCursor: true });
+        this.IconoCalaca = this.add.image(0, 0, 'IconoCalaca').setDepth(10).setInteractive({ useHandCursor: true });
+        this.IconoDuende = this.add.image(0, 0, 'IconoDuende').setDepth(10).setInteractive({ useHandCursor: true });
+        this.IconoSlime = this.add.image(0, 0, 'IconoSlime').setDepth(10).setInteractive({ useHandCursor: true });
 
-        });        
-        this.IconoCaballero.on('pointerdown', () => {
-            this.scene.start('EscenaCastilloIfernal');
+        // 3. PERSONAJES Y ANIMACIONES
+        this.gato = this.add.sprite(0, 0, 'gato').setDepth(5).setFlipX(true);
+        this.mago = this.add.sprite(0, 0, 'mago').setDepth(5).setFlipX(true);
 
-        });        
-        this.IconoCalaca.on('pointerdown', () => {
-            this.scene.start('EscenaCementerio');
+        // Protección de animaciones
+        if (!this.anims.exists('gato-movimiento')) {
+            this.anims.create({ key: 'gato-movimiento', frames: this.anims.generateFrameNumbers('gato', { start: 0, end: 7 }), frameRate: 3, repeat: -1 });
+        }
+        if (!this.anims.exists('mago-movimiento')) {
+            this.anims.create({ key: 'mago-movimiento', frames: this.anims.generateFrameNumbers('mago', { start: 0, end: 4 }), frameRate: 5, repeat: -1 });
+        }
 
-        });        
-        this.IconoDuende.on('pointerdown', () => {
-            this.scene.start('EscenaCasaAbandonada');
+        this.gato.play('gato-movimiento');
+        this.mago.play('mago-movimiento');
 
-        });
-    this.aplicarReescalado();
-    this.scale.on('resize', () => {
-        this.aplicarReescalado();
-    });
-            this.texto1 = createAndAdaptTextFlexible(this, {
+        // 4. TEXTOS (Puntuación)
+        // Extraemos los puntos actualizados desde el Gestor de Estado
+        const puntosActuales = getState().puntosTotales || 0;
+
+        this.texto1 = createAndAdaptTextFlexible(this, {
             text: 'Puntos',
-            posX: 0.5,
-            posY: 0.1,
-            maxWidth: 950,
-            maxHeight: 500,
-            fontSizeInicial: 110,
-            fontSizeMinimo: 18,
-            originX: 0.5,
-            originY: 0.5,
-            config: {
-                fontFamily: 'Silkscreen',
-                color: '#000000',
-                align: 'center'
-            }
-        });
+            posX: 0.5, posY: 0.1, maxWidth: 950, fontSizeInicial: 110,
+            originX: 0.5, originY: 0.5, color: '#000000'
+        }).setDepth(5);
+
         this.texto2 = createAndAdaptTextFlexible(this, {
-            text: puntosTotales,
-            posX: 0.5,
-            posY: 0.25,
-            maxWidth: 950,
-            maxHeight: 500,
-            fontSizeInicial: 85,
-            fontSizeMinimo: 18,
-            originX: 0.5,
-            originY: 0.5,
-            config: {
-                fontFamily: 'Silkscreen',
-                color: '#000000',
-                align: 'center'
-            }
-        });
-}
-    aplicarReescalado() {
-        reescalarGlobalFlexible(this.scale, [
-            {
-                obj: this.EscenaMapa,
-                autoFill: true,
-                originX: 0.5,
-                originY: 0.5
-            },
-            {
-                obj: this.gato,
-                posX: getPosEscala(0.58, 0),
-                posY: getPosEscala(0.9, 0),
-                escalaRelativa: getPosEscala(0.19, 0),
-                originX: 0.5,
-                originY: 0.5
-            },
-            {
-                obj: this.mago,
-                posX: getPosEscala(0.44, 0),
-                posY: getPosEscala(0.8, 0),
-                escalaRelativa: getPosEscala(0.22, 0),
-                originX: 0.5,
-                originY: 0.5
-            },{
-            obj: this.regreso,
-            posX: getPosEscala(0.05, 0),
-            posY: getPosEscala(0.1, 0),
-            escalaRelativa: getPosEscala(0.16, 0),
-            originX: 0.5,
-            originY: 0.5
-            },           
-            {
-                obj: this.botonFinalizar,
-                posX: getPosEscala(0.5, 0),
-                posY: getPosEscala(0.5, 0),
-                escalaRelativa: getPosEscala(0.5, 0),
-                originX: 0.5,
-                originY: 0.5
-            },           
-            {
-                obj: this.IconoCaballero,
-                posX: getPosEscala(0.8, 0),
-                posY: getPosEscala(0.7, 0),
-                escalaRelativa: getPosEscala(0.32, 0),
-                originX: 0.5,
-                originY: 0.5
-            }  ,           
-            {
-                obj: this.IconoCalaca,
-                posX: getPosEscala(0.2, 0),
-                posY: getPosEscala(0.7, 0),
-                escalaRelativa: getPosEscala(0.32, 0),
-                originX: 0.5,
-                originY: 0.5
-            }  ,           
-            {
-                obj: this.IconoDuende,
-                posX: getPosEscala(0.8, 0),
-                posY: getPosEscala(0.3, 0),
-                escalaRelativa: getPosEscala(0.32, 0),
-                originX: 0.5,
-                originY: 0.5
-            }  ,           
-            {
-                obj: this.IconoSlime,
-                posX: getPosEscala(0.2, 0),
-                posY: getPosEscala(0.3, 0),
-                escalaRelativa: getPosEscala(0.32, 0),
-                originX: 0.5,
-                originY: 0.5
-            }           
-        ]); 
-        this.EscenaMapa.setPosition(this.scale.width / 2, this.scale.height / 2);
+            text: String(puntosActuales), // Convertimos a string por seguridad
+            posX: 0.5, posY: 0.25, maxWidth: 950, fontSizeInicial: 85,
+            originX: 0.5, originY: 0.5, color: '#000000'
+        }).setDepth(5);
+
+        // 5. EVENTOS DE NAVEGACIÓN
+        this.regreso.on('pointerdown', () => this.scene.start('EscenaInicio'));
+        this.botonFinalizar.on('pointerdown', () => this.scene.start('EscenaFinal'));
+        
+        // Rutas de Combate
+        this.IconoSlime.on('pointerdown', () => this.scene.start('EscenaPeleaSlime'));
+        this.IconoCaballero.on('pointerdown', () => this.scene.start('EscenaCastilloIfernal'));
+        this.IconoCalaca.on('pointerdown', () => this.scene.start('EscenaCementerio'));
+        this.IconoDuende.on('pointerdown', () => this.scene.start('EscenaCasaAbandonada'));
+
+        // 6. EFECTOS VISUALES (Hover)
+        agregarEfectoHover(this.regreso);
+        agregarEfectoHover(this.botonFinalizar, 1.05); // Crece un poco menos por ser un botón grande
+        agregarEfectoHover(this.IconoSlime, 1.1);
+        agregarEfectoHover(this.IconoCaballero, 1.1);
+        agregarEfectoHover(this.IconoCalaca, 1.1);
+        agregarEfectoHover(this.IconoDuende, 1.1);
+
+        // 7. RESPONSIVIDAD
+        this.aplicarReescalado();
+        this.scale.on('resize', () => this.aplicarReescalado());
     }
-    update() {}
+
+    aplicarReescalado() {
+        reescalarGlobalFlexible(this, [
+            { obj: this.EscenaMapa, posX: 0.5, posY: 0.5, originX: 0.5, originY: 0.5, escalaRelativa: 1, autoFill: true },
+            
+            // Botones de sistema
+            { obj: this.regreso, posX: 0.05, posY: 0.1, escalaRelativa: 0.16 },
+            { obj: this.botonFinalizar, posX: 0.5, posY: 0.5, escalaRelativa: 0.5 },
+            
+            // Íconos de nivel (Distribución en cuadrícula)
+            { obj: this.IconoSlime, posX: 0.2, posY: 0.3, escalaRelativa: 0.32 },
+            { obj: this.IconoDuende, posX: 0.8, posY: 0.3, escalaRelativa: 0.32 },
+            { obj: this.IconoCalaca, posX: 0.2, posY: 0.7, escalaRelativa: 0.32 },
+            { obj: this.IconoCaballero, posX: 0.8, posY: 0.7, escalaRelativa: 0.32 },
+            
+            // Personajes decorativos
+            { obj: this.gato, posX: 0.58, posY: 0.9, escalaRelativa: 0.19 },
+            { obj: this.mago, posX: 0.44, posY: 0.8, escalaRelativa: 0.22 }
+        ]);
+
+        // Guardar escalas base para el efecto Hover
+        this.regreso.escalaBase = this.regreso.scale;
+        this.botonFinalizar.escalaBase = this.botonFinalizar.scale;
+        this.IconoSlime.escalaBase = this.IconoSlime.scale;
+        this.IconoCaballero.escalaBase = this.IconoCaballero.scale;
+        this.IconoCalaca.escalaBase = this.IconoCalaca.scale;
+        this.IconoDuende.escalaBase = this.IconoDuende.scale;
+    }
 }
