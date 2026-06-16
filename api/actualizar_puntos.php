@@ -1,44 +1,55 @@
 <?php
+// 1. Forzamos la respuesta en formato JSON para Phaser
 header('Content-Type: application/json');
 
-require_once __DIR__ . '/../includes/database.php'; // Tu clase Database
+// 2. Cargamos la configuración global y el modelo del jugador
+require_once __DIR__ . '/../includes/config.php';
+require_once __DIR__ . '/../model/jugadoresM.php';
+
+// 3. 🔥 CRÍTICO: Validamos la sesión de forma automatizada.
+// Si el usuario no está logueado, esta función cortará la ejecución aquí mismo
+// y le devolverá un error 401 en formato JSON limpio a Phaser.
+require_login();
 
 try {
-    // Conectar usando tu clase Database
-    $db = new Database();
-    $pdo = $db->connect();
-
-    // Leer datos del body
+    // 4. Leer datos del cuerpo de la petición (Body JSON)
     $input = json_decode(file_get_contents('php://input'), true);
 
-    if (!isset($input['email']) || !isset($input['puntos'])) {
+    // Ya NO validamos el email aquí. Lo extraemos directamente de la sesión segura del servidor ($_SESSION)
+    if (!isset($input['puntos'])) {
         http_response_code(400);
-        echo json_encode(['success' => false, 'error' => 'Faltan parámetros']);
+        echo json_encode(['success' => false, 'error' => 'Faltan parámetros indispensables (puntos)']);
         exit;
     }
 
-    $email = trim($input['email']);
-    $puntos = (int)$input['puntos'];
+    $emailActivo = $_SESSION['email']; // Email recuperado de forma blindada en el servidor
+    $nuevosPuntos = (int)$input['puntos'];
 
-    // Ejecutar el UPDATE
-    $stmt = $pdo->prepare("UPDATE jugadores SET puntos = :puntos WHERE email = :email");
-    $stmt->bindValue(':puntos', $puntos, PDO::PARAM_INT);
-    $stmt->bindValue(':email', $email, PDO::PARAM_STR);
-    $stmt->execute();
+    // 5. Instanciamos el modelo y ejecutamos la actualización validada
+    $playerModel = new Jugador();
+    $actualizacionExitosa = $playerModel->actualizarPuntos($emailActivo, $nuevosPuntos);
 
-    if ($stmt->rowCount() > 0) {
-        echo json_encode(['success' => true, 'puntos' => $puntos]);
-    } else {
+    if ($actualizacionExitosa) {
+        // Sincronizamos también la variable de sesión para que refleje el cambio de inmediato
+        $_SESSION['puntos'] = $nuevosPuntos;
+        
         echo json_encode([
-            'success' => false,
-            'error' => 'No se encontró el jugador o los puntos ya son iguales',
-            'debug_email' => $email
+            'success' => true, 
+            'puntos' => $nuevosPuntos,
+            'message' => 'Puntaje sincronizado con éxito'
+        ]);
+    } else {
+        // Nota: execute() o rowCount() pueden dar falso si mandas el mismo puntaje exacto que ya tenía
+        echo json_encode([
+            'success' => true, 
+            'message' => 'Los puntos ya estaban actualizados o son idénticos'
         ]);
     }
 
-    $db->disconnect();
-
 } catch (Exception $e) {
     http_response_code(500);
-    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    echo json_encode([
+        'success' => false, 
+        'error' => 'Error crítico en el servidor de base de datos'
+    ]);
 }

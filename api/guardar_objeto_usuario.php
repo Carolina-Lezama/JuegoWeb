@@ -1,41 +1,77 @@
 <?php
-ini_set('display_errors', 0);
-error_reporting(0);
-session_start();
+// 1. Forzamos formato JSON para la comunicación con Phaser
 header('Content-Type: application/json');
+
+// 2. Cargamos la infraestructura global de configuración y conexión
+require_once __DIR__ . '/../includes/config.php';
 require_once __DIR__ . '/../includes/database.php';
 
-if (!isset($_SESSION['id']) || !is_numeric($_SESSION['id'])) {
-    echo json_encode(['error' => 'No autenticado']);
+// Aseguramos que la sesión esté iniciada de forma limpia
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// 3. Control estricto del método HTTP
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    echo json_encode(['success' => false, 'error' => 'Método HTTP no permitido. Use POST.']);
     exit;
 }
 
-// Solo acepta POST y JSON
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    echo json_encode(['error' => 'Método no permitido']);
+// 4. 🔥 SOPORTE INVITADO (GUEST): Si no hay sesión, simulamos éxito inmediato.
+// Esto le da luz verde a Phaser para que proceda a persistir el ítem en el localStorage.
+if (!isset($_SESSION['usuario']) || !isset($_SESSION['id'])) {
+    echo json_encode([
+        'success' => true,
+        'mensaje' => 'Objeto procesado en modo local (Invitado)'
+    ]);
     exit;
 }
+
+// 5. Procesamiento seguro del Payload recibido desde el juego
 $input = json_decode(file_get_contents('php://input'), true);
+
 if (!isset($input['objeto_id']) || !is_numeric($input['objeto_id'])) {
-    echo json_encode(['error' => 'ID de objeto inválido']);
+    http_response_code(400);
+    echo json_encode(['success' => false, 'error' => 'ID de objeto inválido o faltante']);
     exit;
 }
-$objeto_id = intval($input['objeto_id']);
-$jugador_id = intval($_SESSION['id']);
+
+$objeto_id = (int)$input['objeto_id'];
+$jugador_id = (int)$_SESSION['id'];
 
 try {
-    $db = (new Database())->connect();
-    // Verifica si ya existe ese objeto para el usuario
-    $stmt = $db->prepare('SELECT id FROM objetos_jugador WHERE jugadores_id = ? AND objetos_id = ?');
+    $db = new Database();
+    $pdo = $db->connect();
+
+    // 6. Si ejecutaste el ALTER TABLE con la llave UNIQUE, puedes cambiar este bloque
+    // por un 'INSERT IGNORE INTO objetos_jugador...' como hicimos con los logros.
+    // De lo contrario, este flujo estándar integrado es 100% seguro:
+    
+    $stmt = $pdo->prepare('SELECT id FROM objetos_jugador WHERE jugadores_id = ? AND objetos_id = ?');
     $stmt->execute([$jugador_id, $objeto_id]);
+
     if ($stmt->fetch()) {
-        echo json_encode(['ok' => true, 'mensaje' => 'Ya posees este objeto']);
+        echo json_encode([
+            'success' => true,
+            'mensaje' => 'El jugador ya posee este objeto'
+        ]);
         exit;
     }
-    // Inserta el objeto para el usuario
-    $stmt = $db->prepare('INSERT INTO objetos_jugador (jugadores_id, objetos_id, usos) VALUES (?, ?, 0)');
+
+    // Inserción limpia utilizando los campos base
+    $stmt = $pdo->prepare('INSERT INTO objetos_jugador (jugadores_id, objetos_id, usos) VALUES (?, ?, 0)');
     $stmt->execute([$jugador_id, $objeto_id]);
-    echo json_encode(['ok' => true, 'mensaje' => 'Objeto guardado']);
+
+    echo json_encode([
+        'success' => true,
+        'mensaje' => 'Objeto guardado con éxito en el servidor'
+    ]);
+
 } catch (Exception $e) {
-    echo json_encode(['error' => 'Error en la base de datos']);
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'error' => 'No se pudo guardar el objeto debido a un error en el servidor.'
+    ]);
 }

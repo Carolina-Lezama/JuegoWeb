@@ -1,28 +1,36 @@
 <?php
-ini_set('display_errors', 0);
-error_reporting(0);
-session_start();
+// 1. Cabecera JSON indispensable para la comunicación con Phaser
 header('Content-Type: application/json');
+
+// 2. Cargamos el ecosistema global de configuración y conexión
+require_once __DIR__ . '/../includes/config.php';
 require_once __DIR__ . '/../includes/database.php';
 
 try {
+    // 3. Conexión gestionada a través de la clase segura
     $database = new Database();
-    $db = $database->connect();
+    $pdo = $database->connect();
     
-    // Obtener todos los logros disponibles en el juego
-    $stmt = $db->prepare('SELECT * FROM logros');
+    // 4. Consulta del catálogo completo de logros
+    // Recomendación: Si tu tabla tiene columnas sensibles o de uso puramente interno, 
+    // reemplaza el '*' por los nombres exactos (ej: 'SELECT id, nombre, descripcion, imagen')
+    $stmt = $pdo->prepare('SELECT * FROM logros');
     $stmt->execute();
-    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
-    // Debug: Mostrar resultados
-    error_log("Logros encontrados: " . count($data));
-    error_log("Datos: " . json_encode($data));
+    // El FETCH_ASSOC ya viene por defecto desde database.php
+    $logrosCatalogo = $stmt->fetchAll();
     
-    // Devolver todos los logros
-    echo json_encode($data);
+    // 5. Devolvemos el array empaquetado en nuestra estructura estándar
+    echo json_encode([
+        'success' => true,
+        'data' => $logrosCatalogo
+    ]);
     
 } catch (Exception $e) {
-    error_log("Error en obtener_logros.php: " . $e->getMessage());
-    echo json_encode(['error' => 'Error en la consulta', 'detalle' => $e->getMessage()]);
+    // 6. Manejo de excepciones silencioso hacia el cliente
+    http_response_code(500);
+    echo json_encode([
+        'success' => false, 
+        'error' => 'No se pudo recuperar el catálogo de logros del servidor.'
+    ]);
 }
-?>

@@ -283,39 +283,98 @@ const config = {
     ]
 };
 
-async function inicializarJuego() {
+// Función ayudante para depuración extrema
+async function fetchSeguro(url, nombreEtiqueta) {
+    console.log(`[Fetch - ${nombreEtiqueta}] ⏳ Iniciando petición a: ${url}`);
     try {
-        // 🔥 ARQUITECTURA: Ejecución de promesas en paralelo
-        // Promise.all dispara todos los fetch al mismo tiempo, reduciendo el tiempo de carga drásticamente.
+        const respuesta = await fetch(url);
+        
+        console.log(`[Fetch - ${nombreEtiqueta}] 📡 Status HTTP: ${respuesta.status}`);
+        
+        if (!respuesta.ok) {
+            console.warn(`[Fetch - ${nombreEtiqueta}] ⚠️ Advertencia: El servidor respondió con un error HTTP.`);
+        }
+
+        const json = await respuesta.json();
+        console.log(`[Fetch - ${nombreEtiqueta}] ✅ JSON Recibido:`, json);
+        
+        return json;
+    } catch (error) {
+        console.error(`[Fetch - ${nombreEtiqueta}] ❌ ERROR CRÍTICO de red o parseo JSON:`, error);
+        // Devolvemos un objeto estructurado simulando un fallo para que Promise.all no explote
+        return { success: false, error: error.message, data: null };
+    }
+}
+
+async function inicializarJuego() {
+    console.log('================================================');
+    console.log('🚀 INICIANDO CARGA DE DATOS EN PARALELO 🚀');
+    console.log('================================================');
+
+    try {
+        // Ejecución de promesas con trazabilidad total
         const [dialogosRes, objetosRes, logrosRes, objetosJRes, usuarioRes] = await Promise.all([
-            fetch('/Juego/api/obtener_dialogos.php').then(res => res.json()),
-            fetch('/Juego/api/obtener_objetos.php').then(res => res.json()),
-            fetch('/Juego/api/obtener_logros.php').then(res => res.json()),
-            fetch('/Juego/api/obtener_objetosJ.php').then(res => res.json()),
-            fetch('/Juego/api/obtener_usuario.php').then(res => res.json())
+            fetchSeguro('/Juego/api/obtener_dialogos.php', 'Diálogos'),
+            fetchSeguro('/Juego/api/obtener_objetos.php', 'Catálogo Objetos'),
+            fetchSeguro('/Juego/api/obtener_logros.php', 'Catálogo Logros'),
+            // NOTA: Asegúrate de que el nombre del archivo PHP sea el correcto
+            fetchSeguro('/Juego/api/obtener_objetosJ.php', 'Inventario Jugador'), 
+            fetchSeguro('/Juego/api/obtener_usuario.php', 'Sesión Usuario')
         ]);
 
-        // Asignación de datos globales
-        if (dialogosRes && !dialogosRes.error) setDialogosRecuperados(dialogosRes);
-        if (objetosRes && !objetosRes.error) setObjetos(objetosRes);
-        if (logrosRes && !logrosRes.error) setLogros(logrosRes);
-        if (objetosJRes && !objetosJRes.error) setObjetosUser(objetosJRes);
-        if (usuarioRes && !usuarioRes.error) setUser(usuarioRes);
+        console.log('================================================');
+        console.log('💾 ASIGNANDO DATOS AL ESTADO GLOBAL (STORE) 💾');
+        console.log('================================================');
 
-        console.log('Todos los datos cargados en paralelo. Iniciando juego...');
+        // 1. DIÁLOGOS
+        if (dialogosRes.success && dialogosRes.data) {
+            console.log("💬 Diálogos: Sobreescribiendo con datos personalizados del servidor.");
+            setDialogosRecuperados(dialogosRes.data);
+        } else {
+            console.log("💬 Diálogos: Usando valores por defecto del juego local.");
+        }
+
+        // 2. CATÁLOGO DE OBJETOS GLOBALES
+        if (objetosRes.success && objetosRes.data) {
+            console.log("📦 Catálogo Objetos: Cargados y guardados en memoria.");
+            setObjetos(objetosRes.data);
+        } else {
+            console.error("📦 Catálogo Objetos: Falló la carga. El juego no sabrá qué objetos existen.");
+        }
+
+        // 3. CATÁLOGO DE LOGROS GLOBALES
+        if (logrosRes.success && logrosRes.data) {
+            console.log("🏆 Catálogo Logros: Cargados y guardados en memoria.");
+            setLogros(logrosRes.data);
+        } else {
+            console.error("🏆 Catálogo Logros: Falló la carga.");
+        }
+
+        // 4. INVENTARIO DEL JUGADOR
+        if (objetosJRes.success && objetosJRes.data) {
+            console.log("🎒 Inventario Jugador: Sincronizado.");
+            setObjetosUser(objetosJRes.data);
+        } else {
+            console.log("🎒 Inventario Jugador: Vacío o en modo invitado.");
+        }
+
+        // 5. SESIÓN DEL USUARIO
+        if (usuarioRes.success) {
+            console.log(`👤 Sesión Usuario: Iniciada como ${usuarioRes.guest ? 'INVITADO' : 'JUGADOR REGISTRADO'}.`);
+            // Pasamos la respuesta completa porque contiene id, nombre, email, etc.
+            setUser(usuarioRes); 
+        } else {
+            console.error("👤 Sesión Usuario: No se pudo verificar la identidad.");
+        }
+
+        console.log('================================================');
+        console.log('✅ TODOS LOS DATOS CARGADOS. INICIANDO JUEGO ✅');
+        console.log('================================================');
 
     } catch (error) {
-        // Ahora sí capturamos errores críticos si falla el servidor
-        console.error('Error crítico al cargar datos desde el servidor:', error);
-        alert('Hubo un error al conectar con el servidor. El juego podría no funcionar correctamente.');
+        console.error('❌ ERROR MASIVO en inicializarJuego:', error);
+        alert('Hubo un error de red al conectar con el servidor. Revisa la consola (F12) para más detalles.');
     }
-
-    if (document.fonts) {
-        await document.fonts.load('38px Silkscreen');
-    }
-
-    // Instanciamos el juego solo cuando la red y las fuentes estén listas
-    new Phaser.Game(config);
 }
 
 inicializarJuego();
