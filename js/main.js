@@ -3,15 +3,16 @@
 // ==========================================
 
 // Utilidades y Responsividad
-import { isMobile, getPosEscala, reescalarGlobalFlexible, cargarPersonajeActual, createAndAdaptTextFlexible, extraerDatosObjetoPorId } from './uiHelpers.js';
+import { isMobile, getPosEscala, reescalarGlobalFlexible, createAndAdaptTextFlexible } from './uiHelpers.js';
 
-// Estado Global (Progresivamente migraremos esto al Registry de Phaser)
+// Únicamente importamos el lector de estado y los asignadores para el inicio
 import { 
-    personajeHumanoEnUso, personajeGatoEnUso, ApartadoMenu, 
-    setPersonajeHumanoEnUso, setPersonajeGatoEnUso, setApartadoMenu,
-    setLogros, setObjetosUser, getObjetosUser, objetos_jugador, logros, getLogros, setUser,
-    puntos, puntosTotales, actualizarPuntosTotales, setDialogosRecuperados, 
-    objetosDelPersonaje, datosObjetos, setObjetos, objetos 
+    getState, 
+    setUsuario, 
+    setObjetos, 
+    setObjetosUser, 
+    setDialogosRecuperados, 
+    setLogros 
 } from './globals.js';
 
 // Escenas (Orden lógico de flujo de juego)
@@ -201,19 +202,20 @@ class PreloadScene extends Phaser.Scene {
         uiAssets.forEach(ui => this.load.image(ui.key, `/Juego/assets/static/${ui.path}`));
 
         // 7. Cargas Dinámicas (API)
-        cargarPersonajeActual(this, personajeHumanoEnUso);
         
-        if (Array.isArray(objetos)) {
-            objetos.forEach(obj => {
-                if (obj.id) this.load.spritesheet(String(obj.id), `/Juego/assets/static/${obj.id}.png`, {frameWidth: 134, frameHeight: 184});
+        if (Array.isArray(getState().objetosGlobales)) {
+            getState().objetosGlobales.forEach(obj => {
+                if (obj.id) {
+                    this.load.spritesheet(String(obj.id), `/Juego/assets/static/${obj.id}.png`, {frameWidth: 134, frameHeight: 184});
+                }
             });
         }
 
-        const logrosData = getLogros();
+        const logrosData = getState().logrosGlobales;
         if (logrosData && Array.isArray(logrosData)) {
             logrosData.forEach(logro => {
                 if (logro.imagen) {
-                    const imgName = logro.imagen.replace(/\.png$/i, ''); // Limpiamos la extensión dinámicamente
+                    const imgName = logro.imagen.replace(/\.png$/i, '');
                     this.load.image(logro.imagen, `/Juego/assets/static/Logros/${imgName}.png`);
                 }
             });
@@ -228,7 +230,7 @@ class PreloadScene extends Phaser.Scene {
     }
 
     aplicarReescalado() {
-        reescalarGlobalFlexible(this.scale.gameSize, [
+        reescalarGlobalFlexible(this, [
             { obj: this.fondo, autoFill: true, originX: 0.5, originY: 0.5 },
             { obj: this.texto, posX: getPosEscala(0.51, 0), posY: getPosEscala(0.38, 0), escalaRelativa: getPosEscala(1.2, 0), originX: 0.5, originY: 0.5 }
         ]);

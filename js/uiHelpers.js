@@ -24,8 +24,9 @@ export function getPosEscala(pc, movil, scene) {
 export function reescalarGlobalFlexible(scene, elementos = []) {
     const isMovil = isMobile(scene);
     // Usamos las dimensiones base reales, no las escaladas por el navegador
-    const width = scene.scale.gameSize.width; 
-    const height = scene.scale.gameSize.height;
+    // Nos aseguramos de obtener la escala correctamente sin importar lo que mandes
+    const scaleManager = scene.scale || scene; 
+    const { width, height } = scaleManager.gameSize;
 
     elementos.forEach(({
         obj,
