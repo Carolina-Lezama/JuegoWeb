@@ -13,7 +13,7 @@ try {
 
     // 4. Consulta optimizada para traer las estadísticas y metadata de los objetos
     // Seleccionamos campos específicos en lugar de un SELECT * por buena práctica
-    $stmt = $pdo->prepare('SELECT id, nombre, descripcion, cantidad, rareza, sprite, tipo FROM objetos');
+    $stmt = $pdo->prepare('SELECT id, nombre_objeto, descripcion, cantidad_max_uso, rareza FROM objetos');
     $stmt->execute();
     
     // fetchAll() ya sabe de forma automática que debe devolver un array asociativo

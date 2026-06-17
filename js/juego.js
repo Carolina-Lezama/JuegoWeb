@@ -71,6 +71,9 @@ function manejarConfirmacionSi() {
 // ==========================================
 // SISTEMA DE LOGROS (API)
 // ==========================================
+// ==========================================
+// SISTEMA DE LOGROS (API)
+// ==========================================
 async function loadAchievements() {
     const contenedor = document.getElementById("logros-container");
     const countDisplay = document.getElementById('logros-count');
@@ -79,24 +82,30 @@ async function loadAchievements() {
     
     try {
         const res = await fetch('../api/obtener_logros.php');
-        const data = await res.json();
+        const response = await res.json();
 
         contenedor.innerHTML = ""; // Limpiar estado de carga
 
-        if (!data || data.error) {
+        // Validamos la nueva estructura estandarizada (success)
+        if (!response || !response.success) {
             contenedor.innerHTML = "<p>No se pudieron cargar los logros.</p>";
             return;
         }
 
-        if (data.length === 0) {
+        // Extraemos el arreglo real de logros
+        const listaLogros = response.data;
+
+        // Validamos que 'listaLogros' sea un arreglo válido
+        if (!Array.isArray(listaLogros) || listaLogros.length === 0) {
             contenedor.innerHTML = "<p>Aún no tienes logros desbloqueados.</p>";
             if (countDisplay) countDisplay.textContent = '0';
             return;
         }
 
         // Actualizar contador visual
-        if (countDisplay) countDisplay.textContent = data.length;
-        renderAchievements(data, contenedor);
+        if (countDisplay) countDisplay.textContent = listaLogros.length;
+        
+        renderAchievements(listaLogros, contenedor);
 
     } catch (err) {
         console.error("Error cargando logros:", err);
@@ -112,7 +121,11 @@ function renderAchievements(logros, contenedor) {
         const tipoClase = logro.tipo ? logro.tipo.toLowerCase() : 'default';
         card.classList.add("logro-card", tipoClase);
 
-        const imgSrc = logro.imagen.startsWith("http") ? logro.imagen : rutaBase + logro.imagen;
+        // 🔥 NUEVA LÓGICA ESTANDARIZADA: 
+        // Agregamos la extensión .png dinámicamente desde el frontend
+        const imgSrc = logro.imagen.startsWith("http") 
+            ? logro.imagen 
+            : rutaBase + logro.imagen + ".png";
 
         card.innerHTML = `
             <div class="logro-img">

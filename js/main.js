@@ -5,17 +5,17 @@
 // Utilidades y Responsividad
 import { isMobile, getPosEscala, reescalarGlobalFlexible, createAndAdaptTextFlexible } from './uiHelpers.js';
 
-// Únicamente importamos el lector de estado y los asignadores para el inicio
+// Estado Global
 import { 
     getState, 
-    setUsuario, 
+    setUser, 
     setObjetos, 
     setObjetosUser, 
     setDialogosRecuperados, 
     setLogros 
 } from './globals.js';
 
-// Escenas (Orden lógico de flujo de juego)
+// Escenas
 import { EscenaInicio } from './Scenes/EscenaInicio.js';
 import { EscenaMenu } from './Scenes/EscenaMenu.js';
 import { EscenaElegir } from './Scenes/EscenaElegir.js';
@@ -52,7 +52,6 @@ class PreloadScene extends Phaser.Scene {
     }
 
     preload() {
-        // Assets mínimos para mostrar la pantalla de carga
         this.load.image('fondoCarga', '/Juego/assets/static/FondoCarga.png');
         this.load.image('textoCarga', '/Juego/assets/static/textoCargando.png');
     }
@@ -61,7 +60,6 @@ class PreloadScene extends Phaser.Scene {
         this.fondo = this.add.image(0, 0, 'fondoCarga');
         this.texto = this.add.image(0, 0, 'textoCarga');
         
-        // UI de la barra de carga
         const barraFondo = this.add.graphics();
         const barraProgreso = this.add.graphics(); 
         barraFondo.fillStyle(0x444444, 1);
@@ -73,7 +71,6 @@ class PreloadScene extends Phaser.Scene {
         this.aplicarReescalado();
         this.scale.on('resize', () => this.aplicarReescalado());
 
-        // Eventos de carga
         this.load.on('progress', (value) => {
             barraProgreso.clear();
             barraProgreso.fillStyle(0xffffff, 1);
@@ -84,9 +81,7 @@ class PreloadScene extends Phaser.Scene {
             this.scene.start('EscenaInicio');
         });
 
-        // --- INICIO DE CARGA MASIVA DE ASSETS ---
-        
-        // 1. Personajes y Enemigos (Spritesheets)
+        // --- CARGA MASIVA DE ASSETS ESTATICOS ---
         this.load.spritesheet('gato', '/Juego/assets/static/gato.png', { frameWidth: 262, frameHeight: 282});
         this.load.spritesheet('mago', '/Juego/assets/static/Sprites/mago2.png', { frameWidth: 250, frameHeight: 450 });
         this.load.spritesheet('niñoCaminando', '/Juego/assets/static/Sprites/caminataFinal.png', {frameWidth: 92,frameHeight: 155});
@@ -105,16 +100,13 @@ class PreloadScene extends Phaser.Scene {
             this.load.image(g, `/Juego/assets/static/Sprites/${g}.png`);
         });
 
-        // 2. Objetos Animados
         this.load.spritesheet('objetoEspejo', '/Juego/assets/static/Sprites/animacionEspejo.png', { frameWidth: 447, frameHeight: 447});
         this.load.spritesheet('objetoEspada', '/Juego/assets/static/Sprites/animacionEspada.png', { frameWidth: 447, frameHeight: 447});
         this.load.spritesheet('objetoMapa', '/Juego/assets/static/Sprites/animacionMapa.png', { frameWidth: 447, frameHeight: 447});
 
-        // 3. Mapas Tiled (JSON)
         const mapas = ['EscenaPeleaSlimeJson', 'CementerioJSON', 'CastilloIfernalJSON', 'CasaAbandonadaJSON', 'mapaTutorial', 'BosqueFuente'];
         mapas.forEach(mapa => this.load.tilemapTiledJSON(mapa, `/Juego/assets/static/Lugares/${mapa}.json`));
 
-        // 4. Fondos (Generales y Tiled)
         const fondos = [
             { key: 'EscenaPeleaSlime', path: 'Lugares/EscenaPeleaSlime.png' },
             { key: 'FondoCasaU', path: 'Lugares/FondoCasaU.png' },
@@ -142,14 +134,12 @@ class PreloadScene extends Phaser.Scene {
         ];
         fondos.forEach(f => this.load.image(f.key, `/Juego/assets/static/${f.path}`));
 
-        // 5. Fondos Animados
         this.load.spritesheet('fondoAnimado', '/Juego/assets/static/Animaciones/FondoAnimado.png', { frameWidth: 1536, frameHeight: 960 });
         this.load.spritesheet('fondoAnimadoBosque', '/Juego/assets/static/Animaciones/animacionBosque2.png', { frameWidth: 1536, frameHeight: 1024 });
         this.load.spritesheet('AnimacionFinalParteUno', '/Juego/assets/static/Animaciones/AnimacionFinalParteUno.png', { frameWidth: 1536, frameHeight: 960 });
         this.load.spritesheet('AnimacionFinalParteDos', '/Juego/assets/static/Animaciones/AnimacionFinalParteDos.png', { frameWidth: 1536, frameHeight: 960 });
         this.load.spritesheet('AnimacionFinalParteTres', '/Juego/assets/static/Animaciones/AnimacionFinalParteTres.png', { frameWidth: 1536, frameHeight: 960 });
 
-        // 6. Interfaz de Usuario (UI) y Botones
         const uiAssets = [
             { key: 'tituloLogros', path: 'tituloLogros.png' },
             { key: 'recuadroM', path: 'recuadroMago.png' },
@@ -201,7 +191,7 @@ class PreloadScene extends Phaser.Scene {
         ];
         uiAssets.forEach(ui => this.load.image(ui.key, `/Juego/assets/static/${ui.path}`));
 
-        // 7. Cargas Dinámicas (API)
+        // --- CARGA DINÁMICA DE ASSETS DE LA BASE DE DATOS ---
         
         if (Array.isArray(getState().objetosGlobales)) {
             getState().objetosGlobales.forEach(obj => {
@@ -215,17 +205,15 @@ class PreloadScene extends Phaser.Scene {
         if (logrosData && Array.isArray(logrosData)) {
             logrosData.forEach(logro => {
                 if (logro.imagen) {
-                    const imgName = logro.imagen.replace(/\.png$/i, '');
-                    this.load.image(logro.imagen, `/Juego/assets/static/Logros/${imgName}.png`);
+                    // 🔥 LÓGICA ESTANDARIZADA: Ya no borramos nada, usamos el ID directo de la BD y concatenamos .png
+                    this.load.image(logro.imagen, `/Juego/assets/static/Logros/${logro.imagen}.png`);
                 }
             });
         }
 
-        // 8. Audios
         this.load.audio('musicaFinal', '/Juego/assets/static/Audios/musicaFinal.mp3');
         this.load.audio('musicaFondo', '/Juego/assets/static/Audios/musicaFondo.mp3');
 
-        // Ejecutamos la cola de descargas
         this.load.start();
     }
 
@@ -283,98 +271,58 @@ const config = {
     ]
 };
 
-// Función ayudante para depuración extrema
+// ==========================================
+// 4. API Y ARRANQUE SEGURO
+// ==========================================
+
+// Petición silenciosa: solo avisa a la consola si algo falla
 async function fetchSeguro(url, nombreEtiqueta) {
-    console.log(`[Fetch - ${nombreEtiqueta}] ⏳ Iniciando petición a: ${url}`);
     try {
         const respuesta = await fetch(url);
-        
-        console.log(`[Fetch - ${nombreEtiqueta}] 📡 Status HTTP: ${respuesta.status}`);
-        
         if (!respuesta.ok) {
-            console.warn(`[Fetch - ${nombreEtiqueta}] ⚠️ Advertencia: El servidor respondió con un error HTTP.`);
+            console.warn(`[API] ⚠️ Advertencia en ${nombreEtiqueta}: Status HTTP ${respuesta.status}`);
         }
-
-        const json = await respuesta.json();
-        console.log(`[Fetch - ${nombreEtiqueta}] ✅ JSON Recibido:`, json);
-        
-        return json;
+        return await respuesta.json();
     } catch (error) {
-        console.error(`[Fetch - ${nombreEtiqueta}] ❌ ERROR CRÍTICO de red o parseo JSON:`, error);
-        // Devolvemos un objeto estructurado simulando un fallo para que Promise.all no explote
+        console.error(`[API] ❌ ERROR en ${nombreEtiqueta}:`, error.message);
         return { success: false, error: error.message, data: null };
     }
 }
 
 async function inicializarJuego() {
-    console.log('================================================');
-    console.log('🚀 INICIANDO CARGA DE DATOS EN PARALELO 🚀');
-    console.log('================================================');
+    console.log('🚀 Sincronizando datos con el servidor...');
 
     try {
-        // Ejecución de promesas con trazabilidad total
         const [dialogosRes, objetosRes, logrosRes, objetosJRes, usuarioRes] = await Promise.all([
             fetchSeguro('/Juego/api/obtener_dialogos.php', 'Diálogos'),
             fetchSeguro('/Juego/api/obtener_objetos.php', 'Catálogo Objetos'),
             fetchSeguro('/Juego/api/obtener_logros.php', 'Catálogo Logros'),
-            // NOTA: Asegúrate de que el nombre del archivo PHP sea el correcto
             fetchSeguro('/Juego/api/obtener_objetosJ.php', 'Inventario Jugador'), 
             fetchSeguro('/Juego/api/obtener_usuario.php', 'Sesión Usuario')
         ]);
 
-        console.log('================================================');
-        console.log('💾 ASIGNANDO DATOS AL ESTADO GLOBAL (STORE) 💾');
-        console.log('================================================');
+        // Asignación rápida y silenciosa
+        if (dialogosRes.success && dialogosRes.data) setDialogosRecuperados(dialogosRes.data);
+        if (objetosRes.success && objetosRes.data) setObjetos(objetosRes.data);
+        if (logrosRes.success && logrosRes.data) setLogros(logrosRes.data);
+        if (objetosJRes.success && objetosJRes.data) setObjetosUser(objetosJRes.data);
 
-        // 1. DIÁLOGOS
-        if (dialogosRes.success && dialogosRes.data) {
-            console.log("💬 Diálogos: Sobreescribiendo con datos personalizados del servidor.");
-            setDialogosRecuperados(dialogosRes.data);
-        } else {
-            console.log("💬 Diálogos: Usando valores por defecto del juego local.");
-        }
-
-        // 2. CATÁLOGO DE OBJETOS GLOBALES
-        if (objetosRes.success && objetosRes.data) {
-            console.log("📦 Catálogo Objetos: Cargados y guardados en memoria.");
-            setObjetos(objetosRes.data);
-        } else {
-            console.error("📦 Catálogo Objetos: Falló la carga. El juego no sabrá qué objetos existen.");
-        }
-
-        // 3. CATÁLOGO DE LOGROS GLOBALES
-        if (logrosRes.success && logrosRes.data) {
-            console.log("🏆 Catálogo Logros: Cargados y guardados en memoria.");
-            setLogros(logrosRes.data);
-        } else {
-            console.error("🏆 Catálogo Logros: Falló la carga.");
-        }
-
-        // 4. INVENTARIO DEL JUGADOR
-        if (objetosJRes.success && objetosJRes.data) {
-            console.log("🎒 Inventario Jugador: Sincronizado.");
-            setObjetosUser(objetosJRes.data);
-        } else {
-            console.log("🎒 Inventario Jugador: Vacío o en modo invitado.");
-        }
-
-        // 5. SESIÓN DEL USUARIO
         if (usuarioRes.success) {
-            console.log(`👤 Sesión Usuario: Iniciada como ${usuarioRes.guest ? 'INVITADO' : 'JUGADOR REGISTRADO'}.`);
-            // Pasamos la respuesta completa porque contiene id, nombre, email, etc.
             setUser(usuarioRes); 
-        } else {
-            console.error("👤 Sesión Usuario: No se pudo verificar la identidad.");
+            console.log(`👤 Identidad confirmada: ${usuarioRes.guest ? 'INVITADO (Progreso Local)' : 'JUGADOR REGISTRADO'}`);
         }
 
-        console.log('================================================');
-        console.log('✅ TODOS LOS DATOS CARGADOS. INICIANDO JUEGO ✅');
-        console.log('================================================');
+        console.log('✅ Datos listos. Arrancando motor gráfico de Phaser...');
+        
+        // 🔥 ARQUITECTURA CLAVE: Arrancamos el juego HASTA QUE la memoria (Store) tiene los datos.
+        // Esto evita que PreloadScene intente cargar imágenes de logros que aún no existen en el estado.
+        window.game = new Phaser.Game(config);
 
     } catch (error) {
-        console.error('❌ ERROR MASIVO en inicializarJuego:', error);
-        alert('Hubo un error de red al conectar con el servidor. Revisa la consola (F12) para más detalles.');
+        console.error('❌ Error crítico al arrancar el juego:', error);
+        alert('Hubo un error de conexión con el servidor. El juego podría no funcionar correctamente.');
     }
 }
 
+// ¡Que comience la aventura!
 inicializarJuego();

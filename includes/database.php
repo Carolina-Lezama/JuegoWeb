@@ -14,18 +14,11 @@ class Database {
     public function connect() {
         if ($this->conn === null) {
             try {
-                // Configuraciones optimizadas para producción/desarrollo
-                $opciones = [
-                    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, // Evita tener que mapear en cada query
-                    PDO:: some_option_placeholder_if_needed => true
-                ];
-
-                // Removemos el placeholder y dejamos el array limpio
+                // Opciones limpias y reales, sin textos de ejemplo
                 $opciones = [
                     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                    PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4" // Asegura el encoding a nivel driver
+                    PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4"
                 ];
 
                 $this->conn = new PDO(
@@ -36,21 +29,11 @@ class Database {
                 );
 
             } catch (PDOException $e) {
-                // Registra el error real internamente en el servidor de forma privada
                 error_log("Database connection failed: " . $e->getMessage());
-                
-                // Lanza una excepción genérica para no mostrar rutas ni datos sensibles al cliente
-                throw new Exception("Error de conexión a la base de datos. Por favor, intente más tarde.");
+                throw new Exception("Error de conexión a la base de datos.");
             }
         }
         return $this->conn;
-    }
-
-    /**
-     * Cierra la conexión activa con el servidor.
-     */
-    public function disconnect() {
-        $this->conn = null;
     }
 }
 ?>

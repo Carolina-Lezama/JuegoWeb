@@ -32,7 +32,7 @@ const state = {
 // 2. GETTERS Y SETTERS BÁSICOS
 export const getState = () => state;
 
-export const setUsuario = (val) => { state.jugador = val; };
+export const setUser = (val) => { state.jugador = val; };
 export const setObjetos = (val) => { state.objetosGlobales = val; };
 export const setObjetosUser = (val) => { state.objetosJugador = val; };
 export const setDialogosRecuperados = (val) => { state.dialogos = val; };

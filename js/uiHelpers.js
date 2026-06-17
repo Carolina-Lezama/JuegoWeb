@@ -23,37 +23,43 @@ export function getPosEscala(pc, movil, scene) {
  */
 export function reescalarGlobalFlexible(scene, elementos = []) {
     const isMovil = isMobile(scene);
-    // Usamos las dimensiones base reales, no las escaladas por el navegador
-    // Nos aseguramos de obtener la escala correctamente sin importar lo que mandes
     const scaleManager = scene.scale || scene; 
-    const { width, height } = scaleManager.gameSize;
+    const { width, height } = scaleManager.gameSize; // Base 1650x900
 
     elementos.forEach(({
         obj,
-        posX = 0.5, posY = 0.5,
+        posX, posY, // Ya no forzamos el 0.5 por defecto aquí
         posXMovil = null, posYMovil = null,
-        escalaRelativa = 1, escalaRelativaMovil = null,
+        escalaRelativa, escalaRelativaMovil = null,
         originX = 0.5, originY = 0.5
     }) => {
         if (!obj) return;
 
-        const finalPosX = (isMovil && posXMovil !== null) ? posXMovil : posX;
-        const finalPosY = (isMovil && posYMovil !== null) ? posYMovil : posY;
-        const finalEscala = (isMovil && escalaRelativaMovil !== null) ? escalaRelativaMovil : escalaRelativa;
-
+        // 1. ORIGEN: Siempre lo centramos para que el escalado no desplace la imagen
         if (typeof obj.setOrigin === 'function') {
             obj.setOrigin(originX, originY);
         }
 
-        // Posicionamiento absoluto basado en la resolución base (1650x900)
-        obj.setPosition(width * finalPosX, height * finalPosY);
+        // 2. POSICIONAMIENTO INTELIGENTE (Píxeles vs Porcentajes)
+        if (posX !== undefined && posY !== undefined) {
+            const finalPosX = (isMovil && posXMovil !== null) ? posXMovil : posX;
+            const finalPosY = (isMovil && posYMovil !== null) ? posYMovil : posY;
 
-        if (obj.setScale) {
+            // Truco: Si el valor es menor o igual a 1.2 (ej: 0.5), es un porcentaje.
+            // Si es mayor (ej: 450), asumimos que son los píxeles directos de tu código viejo.
+            const xCalculado = (Math.abs(finalPosX) <= 1.2) ? width * finalPosX : finalPosX;
+            const yCalculado = (Math.abs(finalPosY) <= 1.2) ? height * finalPosY : finalPosY;
+
+            obj.setPosition(xCalculado, yCalculado);
+        }
+
+        // 3. ESCALADO SEGURO
+        if (obj.setScale && escalaRelativa !== undefined) {
+            const finalEscala = (isMovil && escalaRelativaMovil !== null) ? escalaRelativaMovil : escalaRelativa;
             obj.setScale(finalEscala);
         }
     });
 }
-
 /**
  * Crea texto con ajuste automático optimizado.
  */
