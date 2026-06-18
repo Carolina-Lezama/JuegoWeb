@@ -141,6 +141,44 @@ class PreloadScene extends Phaser.Scene {
         this.load.spritesheet('AnimacionFinalParteTres', '/Juego/assets/static/Animaciones/AnimacionFinalParteTres.png', { frameWidth: 1536, frameHeight: 960 });
 
         const uiAssets = [
+            // Botones rectangulares
+            { key: 'botonEquipar', path: 'Botones/Rectangulares/botonEquipar.png' },
+            { key: 'botonFinalizar', path: 'Botones/Rectangulares/botonFinalizar.png' },
+            { key: 'botonInicio', path: 'Botones/Rectangulares/botonInicio.png' },
+            { key: 'botonInventario', path: 'Botones/Rectangulares/inventarioIcono.png' },
+            { key: 'botonRegresar', path: 'Botones/Rectangulares/botonRegresar.png' },
+            { key: 'botonSalir', path: 'Botones/Rectangulares/botonSalir.png' },
+            { key: 'botonSaltar', path: 'Botones/Rectangulares/botonSaltar.png' },
+            { key: 'botonSiguiente', path: 'Botones/Rectangulares/botonSiguiente.png' },
+            { key: 'siBoton', path: 'Botones/Rectangulares/si.png' },
+            { key: 'noBoton', path: 'Botones/Rectangulares/no.png' },
+
+            //Botones cuadrados
+
+
+
+
+
+            { key: 'botonPersonaje', path: 'Botones/botonPersonaje.png' },
+
+
+            
+            { key: 'tInventario', path: 'botonInventario.png' },
+            { key: 'botonDescripcion', path: 'botonDescripcion.png' },
+
+
+            { key: 'regreso', path: 'Botones/regreso.png' },
+            { key: 'icono_instrucciones', path: 'Botones/icono_instrucciones.png' },
+            { key: 'icono_lucha', path: 'Botones/icono_lucha.png' },
+            { key: 'icono_historia', path: 'Botones/icono_historia.png' },
+
+
+
+
+
+
+
+
             { key: 'tituloLogros', path: 'tituloLogros.png' },
             { key: 'recuadroM', path: 'recuadroMago.png' },
             { key: 'recuadroP', path: 'recuadroPersona.png' },
@@ -164,23 +202,7 @@ class PreloadScene extends Phaser.Scene {
             { key: 'todosLogros', path: 'todosLogros.png' },
             { key: 'avanzadoLogros', path: 'avanzadoLogros.png' },
             { key: 'maestroLogros', path: 'maestroLogros.png' },
-            { key: 'tInventario', path: 'botonInventario.png' },
-            { key: 'botonDescripcion', path: 'botonDescripcion.png' },
-            { key: 'botonSiguiente', path: 'Botones/botonSiguiente.png' },
-            { key: 'botonSalir', path: 'Botones/botonSalir.png' },
-            { key: 'botonInicio', path: 'Botones/botonInicio.png' },
-            { key: 'botonRegresar', path: 'Botones/botonRegresar.png' },
-            { key: 'botonSaltar', path: 'Botones/botonSaltar.png' },
-            { key: 'botonEquipar', path: 'Botones/botonEquipar.png' },
-            { key: 'botonPersonaje', path: 'Botones/botonPersonaje.png' },
-            { key: 'botonInventario', path: 'Botones/inventarioIcono.png' },
-            { key: 'botonFinalizar', path: 'Botones/botonFinalizar.png' },
-            { key: 'siBoton', path: 'Botones/si.png' },
-            { key: 'noBoton', path: 'Botones/no.png' },
-            { key: 'regreso', path: 'Botones/regreso.png' },
-            { key: 'icono_instrucciones', path: 'Botones/icono_instrucciones.png' },
-            { key: 'icono_lucha', path: 'Botones/icono_lucha.png' },
-            { key: 'icono_historia', path: 'Botones/icono_historia.png' },
+
             { key: 'FinalCompletado', path: 'Mensajes/FinalCompletado.png' },
             { key: 'IconoCaballero', path: 'Mensajes/IconoCaballero.png' },
             { key: 'IconoCalaca', path: 'Mensajes/IconoCalaca.png' },
