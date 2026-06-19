@@ -52,7 +52,7 @@ class PreloadScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('fondoCarga', '/Juego/assets/static/FondoCarga.png');
+        this.load.image('fondoCarga', '/Juego/assets/static/Fondos/FondoCarga.png');
         this.load.image('textoCarga', '/Juego/assets/static/textoCargando.png');
     }
 
@@ -108,29 +108,33 @@ class PreloadScene extends Phaser.Scene {
         mapas.forEach(mapa => this.load.tilemapTiledJSON(mapa, `/Juego/assets/static/Lugares/${mapa}.json`));
 
         const fondos = [
+            // Escenas de movimiento
             { key: 'EscenaPeleaSlime', path: 'Lugares/EscenaPeleaSlime.png' },
             { key: 'FondoCasaU', path: 'Lugares/FondoCasaU.png' },
             { key: 'fondoBosqueFuente', path: 'Lugares/fondoBosqueFuente.png' },
             { key: 'CasaAbandonada', path: 'Lugares/CasaAbandonada.png' },
             { key: 'CastilloIfernal', path: 'Lugares/CastilloIfernal.png' },
             { key: 'Cementerio', path: 'Lugares/Cementerio.png' },
-            { key: 'EscenaMapa', path: 'EscenaMapa.png' },
-            { key: 'FondoTelevision', path: 'FondoTelevision.png' },
-            { key: 'fondoInicio', path: 'inicioEstatico2.png' },
-            { key: 'FondoCabanaAdentro', path: 'FondoCasa.png' },
-            { key: 'FondoCabana', path: 'fondoCabana.png' },
-            { key: 'fondoBosque', path: 'EscenaBosque2.png' },
-            { key: 'instrucciones', path: 'instrucciones.png' },
-            { key: 'eleccion', path: 'eleccion.png' },
-            { key: 'fondoIntroduccionUno', path: 'EscenaIntroduccionUno2.png' },
-            { key: 'FondoMenu', path: 'FondoMenu.png' },
-            { key: 'fondoMenuNegro', path: 'fondoMenuNegro.png' },
-            { key: 'fondoLogros', path: 'fondoLogros.png' },
-            { key: 'fondoVestuario', path: 'vesturarioEstatico.png' },
-            { key: 'fondoPersonajes', path: 'fondoPersonajes2.png' },
-            { key: 'fondoInventario', path: 'fondoInventario.png' },
-            { key: 'FondoObjeto', path: 'fondoObjeto2.png' },
-            { key: 'FondoObjetoAmarillo', path: 'fondoObjeto3.png' }
+
+            // Fondos
+            { key: 'EscenaMapa', path: 'Fondos/EscenaMapa.png' },
+            { key: 'FondoTelevision', path: 'Fondos/FondoTelevision.png' },
+            { key: 'fondoInicio', path: 'Fondos/inicioEstatico2.png' },
+            { key: 'FondoCabanaAdentro', path: 'Fondos/FondoCasa.png' },
+            { key: 'FondoCabana', path: 'Fondos/fondoCabana.png' },
+            { key: 'fondoBosque', path: 'Fondos/EscenaBosque2.png' },
+            { key: 'instrucciones', path: 'Fondos/instrucciones.png' },
+            { key: 'eleccion', path: 'Fondos/eleccion.png' },
+            { key: 'fondoIntroduccionUno', path: 'Fondos/EscenaIntroduccionUno2.png' },
+            { key: 'fondoMenuNegro', path: 'Fondos/fondoMenuNegro.png' },
+            { key: 'fondoLogros', path: 'Fondos/fondoLogros.png' },
+            { key: 'fondoVestuario', path: 'Fondos/vesturarioEstatico.png' },
+            { key: 'fondoInventario', path: 'Fondos/fondoInventario.png' },
+            { key: 'FondoMenu', path: 'Fondos/FondoMenu.png' },
+            { key: 'FondoObjeto', path: 'Fondos/fondoObjeto2.png' },
+            { key: 'FondoObjetoAmarillo', path: 'Fondos/fondoObjeto3.png' },
+
+
         ];
         fondos.forEach(f => this.load.image(f.key, `/Juego/assets/static/${f.path}`));
 
@@ -145,7 +149,7 @@ class PreloadScene extends Phaser.Scene {
             { key: 'botonEquipar', path: 'Botones/Rectangulares/botonEquipar.png' },
             { key: 'botonFinalizar', path: 'Botones/Rectangulares/botonFinalizar.png' },
             { key: 'botonInicio', path: 'Botones/Rectangulares/botonInicio.png' },
-            { key: 'botonInventario', path: 'Botones/Rectangulares/inventarioIcono.png' },
+            { key: 'tInventario', path: 'Botones/Rectangulares/botonInventario.png' },
             { key: 'botonRegresar', path: 'Botones/Rectangulares/botonRegresar.png' },
             { key: 'botonSalir', path: 'Botones/Rectangulares/botonSalir.png' },
             { key: 'botonSaltar', path: 'Botones/Rectangulares/botonSaltar.png' },
@@ -154,23 +158,35 @@ class PreloadScene extends Phaser.Scene {
             { key: 'noBoton', path: 'Botones/Rectangulares/no.png' },
 
             //Botones cuadrados
+            { key: 'avanzadoLogros', path: 'Botones/Cuadrados/avanzadoLogros.png' },
+            { key: 'botonPersonaje', path: 'Botones/Cuadrados/botonPersonaje.png' },
+            { key: 'icono_historia', path: 'Botones/Cuadrados/icono_historia.png' },
+            { key: 'icono_instrucciones', path: 'Botones/Cuadrados/icono_instrucciones.png' },
+            { key: 'icono_lucha', path: 'Botones/Cuadrados/icono_lucha.png' },
+            { key: 'iFlecha', path: 'Botones/Cuadrados/iconoFlecha.png' },
+            { key: 'iconoGato', path: 'Botones/Cuadrados/iconoGato.png' },
+            { key: 'iconomenu', path: 'Botones/Cuadrados/iconomenu.png' },
+            { key: 'iconologros', path: 'Botones/Cuadrados/iconologros.png' },
+            { key: 'iconoPersona', path: 'Botones/Cuadrados/iconoPersona.png' },
+            { key: 'botonInventario', path: 'Botones/Cuadrados/Rectangulares/inventarioIcono.png' },
+            { key: 'novatoLogros', path: 'Botones/Cuadrados/novatoLogros.png' },
+            { key: 'todosLogros', path: 'Botones/Cuadrados/todosLogros.png' },
+            { key: 'maestroLogros', path: 'Botones/Cuadrados/maestroLogros.png' },
+            { key: 'regreso', path: 'Botones/Cuadrados/regreso.png' },
 
 
 
 
 
-            { key: 'botonPersonaje', path: 'Botones/botonPersonaje.png' },
 
 
             
-            { key: 'tInventario', path: 'botonInventario.png' },
+
             { key: 'botonDescripcion', path: 'botonDescripcion.png' },
 
+            { key: 'fondoPersonajes', path: 'fondoPersonajes2.png' },
 
-            { key: 'regreso', path: 'Botones/regreso.png' },
-            { key: 'icono_instrucciones', path: 'Botones/icono_instrucciones.png' },
-            { key: 'icono_lucha', path: 'Botones/icono_lucha.png' },
-            { key: 'icono_historia', path: 'Botones/icono_historia.png' },
+
 
 
 
@@ -184,8 +200,7 @@ class PreloadScene extends Phaser.Scene {
             { key: 'recuadroP', path: 'recuadroPersona.png' },
             { key: 'recuadro', path: 'recuadro2.png' },
             { key: 'barraobjetos', path: 'barraobjetos.png' },
-            { key: 'iconoPersona', path: 'iconoPersona.png' },
-            { key: 'iconoGato', path: 'iconoGato.png' },
+
             { key: 'inventariopanel', path: 'inventariopanel.png' },
             { key: 'opcionesLetra', path: 'opcionesLetra.png' },
             { key: 'MusicaLetra', path: 'MusicaLetra.png' },
@@ -193,15 +208,11 @@ class PreloadScene extends Phaser.Scene {
             { key: 'decision', path: 'decision.png' },
             { key: 'si', path: 'si.png' },
             { key: 'no', path: 'no.png' },
-            { key: 'iconomenu', path: 'iconomenu.png' },
-            { key: 'iconologros', path: 'iconologros.png' },
+
             { key: 'recuadroLogroMaestro', path: 'recuadroLogroMaestro.png' },
             { key: 'recuadroLogroNovato', path: 'recuadroLogroNovato.png' },
             { key: 'recuadroLogroMitico', path: 'recuadroLogroMitico.png' },
-            { key: 'novatoLogros', path: 'novatoLogros.png' },
-            { key: 'todosLogros', path: 'todosLogros.png' },
-            { key: 'avanzadoLogros', path: 'avanzadoLogros.png' },
-            { key: 'maestroLogros', path: 'maestroLogros.png' },
+
 
             { key: 'FinalCompletado', path: 'Mensajes/FinalCompletado.png' },
             { key: 'IconoCaballero', path: 'Mensajes/IconoCaballero.png' },
