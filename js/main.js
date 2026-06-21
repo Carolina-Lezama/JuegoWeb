@@ -53,13 +53,15 @@ class PreloadScene extends Phaser.Scene {
 
     preload() {
         this.load.image('fondoCarga', '/Juego/assets/static/Fondos/FondoCarga.png');
-        this.load.image('textoCarga', '/Juego/assets/static/textoCargando.png');
+        this.load.image('textoCarga', '/Juego/assets/static/Textos/textoCargando.png');
     }
 
     create() {
-        this.fondo = this.add.image(0, 0, 'fondoCarga');
-        this.texto = this.add.image(0, 0, 'textoCarga');
+        // 1. Centramos el fondo en las coordenadas (825, 450)
+        this.fondo = this.add.image(825, 450, 'fondoCarga');
         
+        // 2. Colocamos el texto "Cargando..." un poco más arriba de la mitad (ej. Y: 380)
+        this.texto = this.add.image(825, 380, 'textoCarga');
         const barraFondo = this.add.graphics();
         const barraProgreso = this.add.graphics(); 
         barraFondo.fillStyle(0x444444, 1);
@@ -82,16 +84,20 @@ class PreloadScene extends Phaser.Scene {
         });
 
         // --- CARGA MASIVA DE ASSETS ESTATICOS ---
+        this.load.spritesheet('slimeVerde', '/Juego/assets/static/Enemigos/slimeVerde.png', {frameWidth: 200,frameHeight: 200});
+        this.load.spritesheet('slimeRojo', '/Juego/assets/static/Enemigos/slimeRojo.png', {frameWidth: 200,frameHeight: 200});
+        this.load.spritesheet('Caballero', '/Juego/assets/static/Enemigos/Caballero.png', {frameWidth: 300,frameHeight: 400});
+        this.load.spritesheet('Calavera', '/Juego/assets/static/Enemigos/Calavera.png', {frameWidth: 300,frameHeight: 400});
+        this.load.spritesheet('Duende', '/Juego/assets/static/Enemigos/Duende.png', {frameWidth: 300,frameHeight: 300});
+
+
+
+        
         this.load.spritesheet('gato', '/Juego/assets/static/gato.png', { frameWidth: 262, frameHeight: 282});
         this.load.spritesheet('mago', '/Juego/assets/static/Sprites/mago2.png', { frameWidth: 250, frameHeight: 450 });
         this.load.spritesheet('niñoCaminando', '/Juego/assets/static/Sprites/caminataFinal.png', {frameWidth: 92,frameHeight: 155});
         this.load.spritesheet('gatoCaminando', '/Juego/assets/static/Sprites/caminataFinalGato.png', {frameWidth: 194,frameHeight: 143});
         
-        this.load.spritesheet('slimeVerde', '/Juego/assets/static/Enemigos/slimeVerde.png', {frameWidth: 250,frameHeight: 250});
-        this.load.spritesheet('slimeRojo', '/Juego/assets/static/Enemigos/slimeRojo.png', {frameWidth: 250,frameHeight: 250});
-        this.load.spritesheet('Caballero', '/Juego/assets/static/Enemigos/Caballero.png', {frameWidth: 358,frameHeight: 400});
-        this.load.spritesheet('Calavera', '/Juego/assets/static/Enemigos/Calavera.png', {frameWidth: 300,frameHeight: 400});
-        this.load.spritesheet('Duende', '/Juego/assets/static/Enemigos/Duende.png', {frameWidth: 326,frameHeight: 340});
 
         ['personaje1', 'personaje2', 'personaje3', 'personaje4'].forEach(p => {
             this.load.image(p, `/Juego/assets/static/Sprites/${p}.png`);
@@ -133,8 +139,6 @@ class PreloadScene extends Phaser.Scene {
             { key: 'FondoMenu', path: 'Fondos/FondoMenu.png' },
             { key: 'FondoObjeto', path: 'Fondos/fondoObjeto2.png' },
             { key: 'FondoObjetoAmarillo', path: 'Fondos/fondoObjeto3.png' },
-
-
         ];
         fondos.forEach(f => this.load.image(f.key, `/Juego/assets/static/${f.path}`));
 
@@ -168,7 +172,7 @@ class PreloadScene extends Phaser.Scene {
             { key: 'iconomenu', path: 'Botones/Cuadrados/iconomenu.png' },
             { key: 'iconologros', path: 'Botones/Cuadrados/iconologros.png' },
             { key: 'iconoPersona', path: 'Botones/Cuadrados/iconoPersona.png' },
-            { key: 'botonInventario', path: 'Botones/Cuadrados/Rectangulares/inventarioIcono.png' },
+            { key: 'botonInventario', path: 'Botones/Cuadrados/inventarioIcono.png' },
             { key: 'novatoLogros', path: 'Botones/Cuadrados/novatoLogros.png' },
             { key: 'todosLogros', path: 'Botones/Cuadrados/todosLogros.png' },
             { key: 'maestroLogros', path: 'Botones/Cuadrados/maestroLogros.png' },
