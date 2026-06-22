@@ -90,29 +90,6 @@ class PreloadScene extends Phaser.Scene {
         this.load.spritesheet('Calavera', '/Juego/assets/static/Enemigos/Calavera.png', {frameWidth: 300,frameHeight: 400});
         this.load.spritesheet('Duende', '/Juego/assets/static/Enemigos/Duende.png', {frameWidth: 300,frameHeight: 300});
 
-
-
-        
-        this.load.spritesheet('gato', '/Juego/assets/static/gato.png', { frameWidth: 262, frameHeight: 282});
-        this.load.spritesheet('mago', '/Juego/assets/static/Sprites/mago2.png', { frameWidth: 250, frameHeight: 450 });
-        this.load.spritesheet('niñoCaminando', '/Juego/assets/static/Sprites/caminataFinal.png', {frameWidth: 92,frameHeight: 155});
-        this.load.spritesheet('gatoCaminando', '/Juego/assets/static/Sprites/caminataFinalGato.png', {frameWidth: 194,frameHeight: 143});
-        
-
-        ['personaje1', 'personaje2', 'personaje3', 'personaje4'].forEach(p => {
-            this.load.image(p, `/Juego/assets/static/Sprites/${p}.png`);
-        });
-        ['gato1', 'gato2', 'gato3', 'gato4'].forEach(g => {
-            this.load.image(g, `/Juego/assets/static/Sprites/${g}.png`);
-        });
-
-        this.load.spritesheet('objetoEspejo', '/Juego/assets/static/Sprites/animacionEspejo.png', { frameWidth: 447, frameHeight: 447});
-        this.load.spritesheet('objetoEspada', '/Juego/assets/static/Sprites/animacionEspada.png', { frameWidth: 447, frameHeight: 447});
-        this.load.spritesheet('objetoMapa', '/Juego/assets/static/Sprites/animacionMapa.png', { frameWidth: 447, frameHeight: 447});
-
-        const mapas = ['EscenaPeleaSlimeJson', 'CementerioJSON', 'CastilloIfernalJSON', 'CasaAbandonadaJSON', 'mapaTutorial', 'BosqueFuente'];
-        mapas.forEach(mapa => this.load.tilemapTiledJSON(mapa, `/Juego/assets/static/Lugares/${mapa}.json`));
-
         const fondos = [
             // Escenas de movimiento
             { key: 'EscenaPeleaSlime', path: 'Lugares/EscenaPeleaSlime.png' },
@@ -141,6 +118,32 @@ class PreloadScene extends Phaser.Scene {
             { key: 'FondoObjetoAmarillo', path: 'Fondos/fondoObjeto3.png' },
         ];
         fondos.forEach(f => this.load.image(f.key, `/Juego/assets/static/${f.path}`));
+
+
+
+
+
+        this.load.spritesheet('mago', '/Juego/assets/static/Personajes/mago.png', { frameWidth: 207, frameHeight: 400 });
+        // Faltan por corregir tamaños
+        this.load.spritesheet('gato', '/Juego/assets/static/Personajes.png', { frameWidth: 262, frameHeight: 282});
+        this.load.spritesheet('niñoCaminando', '/Juego/assets/static/Personajes/caminataFinal.png', {frameWidth: 92,frameHeight: 155});
+        this.load.spritesheet('gatoCaminando', '/Juego/assets/static/Personajes/caminataFinalGato.png', {frameWidth: 194,frameHeight: 143});
+        
+
+        ['personaje1', 'personaje2', 'personaje3', 'personaje4'].forEach(p => {
+            this.load.image(p, `/Juego/assets/static/Personajes/${p}.png`);
+        });
+        ['gato1', 'gato2', 'gato3', 'gato4'].forEach(g => {
+            this.load.image(g, `/Juego/assets/static/Personajes/${g}.png`);
+        });
+
+        this.load.spritesheet('objetoEspejo', '/Juego/assets/static/Sprites/animacionEspejo.png', { frameWidth: 447, frameHeight: 447});
+        this.load.spritesheet('objetoEspada', '/Juego/assets/static/Sprites/animacionEspada.png', { frameWidth: 447, frameHeight: 447});
+        this.load.spritesheet('objetoMapa', '/Juego/assets/static/Sprites/animacionMapa.png', { frameWidth: 447, frameHeight: 447});
+
+        const mapas = ['EscenaPeleaSlimeJson', 'CementerioJSON', 'CastilloIfernalJSON', 'CasaAbandonadaJSON', 'mapaTutorial', 'BosqueFuente'];
+        mapas.forEach(mapa => this.load.tilemapTiledJSON(mapa, `/Juego/assets/static/Lugares/${mapa}.json`));
+
 
         this.load.spritesheet('fondoAnimado', '/Juego/assets/static/Animaciones/FondoAnimado.png', { frameWidth: 1536, frameHeight: 960 });
         this.load.spritesheet('fondoAnimadoBosque', '/Juego/assets/static/Animaciones/animacionBosque2.png', { frameWidth: 1536, frameHeight: 1024 });
@@ -178,9 +181,9 @@ class PreloadScene extends Phaser.Scene {
             { key: 'maestroLogros', path: 'Botones/Cuadrados/maestroLogros.png' },
             { key: 'regreso', path: 'Botones/Cuadrados/regreso.png' },
 
-
-
-
+            // Textos
+            { key: 'MusicaLetra', path: '/Juego/assets/static/Textos/MusicaLetra.png' },
+            { key: 'opcionesLetra', path: '/Juego/assets/static/Textos/opcionesLetra.png' },
 
 
 
@@ -192,7 +195,8 @@ class PreloadScene extends Phaser.Scene {
 
 
 
-
+            { key: 'si', path: 'si.png' },
+            { key: 'no', path: 'no.png' },
 
 
 
@@ -206,12 +210,11 @@ class PreloadScene extends Phaser.Scene {
             { key: 'barraobjetos', path: 'barraobjetos.png' },
 
             { key: 'inventariopanel', path: 'inventariopanel.png' },
-            { key: 'opcionesLetra', path: 'opcionesLetra.png' },
-            { key: 'MusicaLetra', path: 'MusicaLetra.png' },
+
+
             { key: 'checkpoint', path: 'checkpoint.png' },
             { key: 'decision', path: 'decision.png' },
-            { key: 'si', path: 'si.png' },
-            { key: 'no', path: 'no.png' },
+
 
             { key: 'recuadroLogroMaestro', path: 'recuadroLogroMaestro.png' },
             { key: 'recuadroLogroNovato', path: 'recuadroLogroNovato.png' },
@@ -238,11 +241,15 @@ class PreloadScene extends Phaser.Scene {
             });
         }
 
+
+
+
+        
         const logrosData = getState().logrosGlobales;
         if (logrosData && Array.isArray(logrosData)) {
             logrosData.forEach(logro => {
                 if (logro.imagen) {
-                    // 🔥 LÓGICA ESTANDARIZADA: Ya no borramos nada, usamos el ID directo de la BD y concatenamos .png
+                    // LÓGICA ESTANDARIZADA: Ya no borramos nada, usamos el ID directo de la BD y concatenamos .png
                     this.load.image(logro.imagen, `/Juego/assets/static/Logros/${logro.imagen}.png`);
                 }
             });
