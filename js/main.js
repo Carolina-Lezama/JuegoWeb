@@ -3,7 +3,7 @@
 // ==========================================
 
 // Utilidades y Responsividad
-import { isMobile, getPosEscala, reescalarGlobalFlexible, createAndAdaptTextFlexible } from './uiHelpers.js';
+import { isMobile, getPosEscala, createAndAdaptTextFlexible } from './uiHelpers.js';
 
 // Estado Global
 import { 
@@ -61,17 +61,15 @@ class PreloadScene extends Phaser.Scene {
         this.fondo = this.add.image(825, 450, 'fondoCarga');
         
         // 2. Colocamos el texto "Cargando..." un poco más arriba de la mitad (ej. Y: 380)
-        this.texto = this.add.image(825, 380, 'textoCarga');
+        this.texto = this.add.image(850, 380, 'textoCarga').setScale(2.3);
         const barraFondo = this.add.graphics();
         const barraProgreso = this.add.graphics(); 
         barraFondo.fillStyle(0x444444, 1);
         
         const ancho = 640, alto = 60;
-        const x = 550, y = 500; 
+        const x = 500, y = 500; 
         barraFondo.fillRect(x, y, ancho, alto);
 
-        this.aplicarReescalado();
-        this.scale.on('resize', () => this.aplicarReescalado());
 
         this.load.on('progress', (value) => {
             barraProgreso.clear();
@@ -116,30 +114,11 @@ class PreloadScene extends Phaser.Scene {
             { key: 'FondoMenu', path: 'Fondos/FondoMenu.png' },
             { key: 'FondoObjeto', path: 'Fondos/fondoObjeto2.png' },
             { key: 'FondoObjetoAmarillo', path: 'Fondos/fondoObjeto3.png' },
+            { key: 'FinalCompletado', path: 'Fondos/FinalCompletado.png' },
+            { key: 'RegresarMenu', path: 'Fondos/RegresarMenu.png' },
+            { key: 'ImagenFinal', path: 'Fondos/ImagenFinal.png' }
         ];
         fondos.forEach(f => this.load.image(f.key, `/Juego/assets/static/${f.path}`));
-
-
-
-
-
-        this.load.spritesheet('mago', '/Juego/assets/static/Personajes/mago.png', { frameWidth: 207, frameHeight: 400 });
-        // Faltan por corregir tamaños
-        this.load.spritesheet('gato', '/Juego/assets/static/Personajes.png', { frameWidth: 262, frameHeight: 282});
-        this.load.spritesheet('niñoCaminando', '/Juego/assets/static/Personajes/caminataFinal.png', {frameWidth: 92,frameHeight: 155});
-        this.load.spritesheet('gatoCaminando', '/Juego/assets/static/Personajes/caminataFinalGato.png', {frameWidth: 194,frameHeight: 143});
-        
-
-        ['personaje1', 'personaje2', 'personaje3', 'personaje4'].forEach(p => {
-            this.load.image(p, `/Juego/assets/static/Personajes/${p}.png`);
-        });
-        ['gato1', 'gato2', 'gato3', 'gato4'].forEach(g => {
-            this.load.image(g, `/Juego/assets/static/Personajes/${g}.png`);
-        });
-
-        this.load.spritesheet('objetoEspejo', '/Juego/assets/static/Sprites/animacionEspejo.png', { frameWidth: 447, frameHeight: 447});
-        this.load.spritesheet('objetoEspada', '/Juego/assets/static/Sprites/animacionEspada.png', { frameWidth: 447, frameHeight: 447});
-        this.load.spritesheet('objetoMapa', '/Juego/assets/static/Sprites/animacionMapa.png', { frameWidth: 447, frameHeight: 447});
 
         const mapas = ['EscenaPeleaSlimeJson', 'CementerioJSON', 'CastilloIfernalJSON', 'CasaAbandonadaJSON', 'mapaTutorial', 'BosqueFuente'];
         mapas.forEach(mapa => this.load.tilemapTiledJSON(mapa, `/Juego/assets/static/Lugares/${mapa}.json`));
@@ -180,59 +159,36 @@ class PreloadScene extends Phaser.Scene {
             { key: 'todosLogros', path: 'Botones/Cuadrados/todosLogros.png' },
             { key: 'maestroLogros', path: 'Botones/Cuadrados/maestroLogros.png' },
             { key: 'regreso', path: 'Botones/Cuadrados/regreso.png' },
-
+            { key: 'IconoCaballero', path: 'Botones/Cuadrados/IconoCaballero.png' },
+            { key: 'IconoCalaca', path: 'Botones/Cuadrados/IconoCalaca.png' },
+            { key: 'IconoDuende', path: 'Botones/Cuadrados/IconoDuende.png' },
+            { key: 'IconoSlime', path: 'Botones/Cuadrados/IconoSlime.png' },
             // Textos
-            { key: 'MusicaLetra', path: '/Juego/assets/static/Textos/MusicaLetra.png' },
-            { key: 'opcionesLetra', path: '/Juego/assets/static/Textos/opcionesLetra.png' },
+            { key: 'MusicaLetra', path: 'Textos/MusicaLetra.png' },
+            { key: 'opcionesLetra', path: 'Textos/opcionesLetra.png' },
 
 
 
-            
+
+
 
             { key: 'botonDescripcion', path: 'botonDescripcion.png' },
-
             { key: 'fondoPersonajes', path: 'fondoPersonajes2.png' },
-
-
-
             { key: 'si', path: 'si.png' },
             { key: 'no', path: 'no.png' },
-
-
-
-
-
-
             { key: 'tituloLogros', path: 'tituloLogros.png' },
             { key: 'recuadroM', path: 'recuadroMago.png' },
             { key: 'recuadroP', path: 'recuadroPersona.png' },
             { key: 'recuadro', path: 'recuadro2.png' },
             { key: 'barraobjetos', path: 'barraobjetos.png' },
-
             { key: 'inventariopanel', path: 'inventariopanel.png' },
-
-
             { key: 'checkpoint', path: 'checkpoint.png' },
             { key: 'decision', path: 'decision.png' },
-
-
             { key: 'recuadroLogroMaestro', path: 'recuadroLogroMaestro.png' },
             { key: 'recuadroLogroNovato', path: 'recuadroLogroNovato.png' },
             { key: 'recuadroLogroMitico', path: 'recuadroLogroMitico.png' },
-
-
-            { key: 'FinalCompletado', path: 'Mensajes/FinalCompletado.png' },
-            { key: 'IconoCaballero', path: 'Mensajes/IconoCaballero.png' },
-            { key: 'IconoCalaca', path: 'Mensajes/IconoCalaca.png' },
-            { key: 'IconoDuende', path: 'Mensajes/IconoDuende.png' },
-            { key: 'IconoSlime', path: 'Mensajes/IconoSlime.png' },
-            { key: 'RegresarMenu', path: 'Mensajes/RegresarMenu.png' },
-            { key: 'ImagenFinal', path: 'Mensajes/ImagenFinal.png' }
         ];
         uiAssets.forEach(ui => this.load.image(ui.key, `/Juego/assets/static/${ui.path}`));
-
-        // --- CARGA DINÁMICA DE ASSETS DE LA BASE DE DATOS ---
-        
         if (Array.isArray(getState().objetosGlobales)) {
             getState().objetosGlobales.forEach(obj => {
                 if (obj.id) {
@@ -240,6 +196,27 @@ class PreloadScene extends Phaser.Scene {
                 }
             });
         }
+
+        this.load.spritesheet('mago', '/Juego/assets/static/Personajes/mago.png', { frameWidth: 207, frameHeight: 400 });
+        // Faltan por corregir tamaños
+        this.load.spritesheet('gato', '/Juego/assets/static/Personajes/gato.png', { frameWidth: 262, frameHeight: 282});
+        this.load.spritesheet('niñoCaminando', '/Juego/assets/static/Personajes/caminataFinal.png', {frameWidth: 92,frameHeight: 155});
+        this.load.spritesheet('gatoCaminando', '/Juego/assets/static/Personajes/caminataFinalGato.png', {frameWidth: 194,frameHeight: 143});
+        
+
+        ['personaje1', 'personaje2', 'personaje3', 'personaje4'].forEach(p => {
+            this.load.image(p, `/Juego/assets/static/Personajes/${p}.png`);
+        });
+        ['gato1', 'gato2', 'gato3', 'gato4'].forEach(g => {
+            this.load.image(g, `/Juego/assets/static/Personajes/${g}.png`);
+        });
+
+        this.load.spritesheet('objetoEspejo', '/Juego/assets/static/Sprites/animacionEspejo.png', { frameWidth: 447, frameHeight: 447});
+        this.load.spritesheet('objetoEspada', '/Juego/assets/static/Sprites/animacionEspada.png', { frameWidth: 447, frameHeight: 447});
+        this.load.spritesheet('objetoMapa', '/Juego/assets/static/Sprites/animacionMapa.png', { frameWidth: 447, frameHeight: 447});
+
+
+    
 
 
 
@@ -261,12 +238,6 @@ class PreloadScene extends Phaser.Scene {
         this.load.start();
     }
 
-    aplicarReescalado() {
-        reescalarGlobalFlexible(this, [
-            { obj: this.fondo, autoFill: true, originX: 0.5, originY: 0.5 },
-            { obj: this.texto, posX: getPosEscala(0.51, 0), posY: getPosEscala(0.38, 0), escalaRelativa: getPosEscala(1.2, 0), originX: 0.5, originY: 0.5 }
-        ]);
-    }
 }
 
 // ==========================================
@@ -290,8 +261,9 @@ const config = {
     },
     scene: [
         PreloadScene,
-        EscenaMenu,
         EscenaInicio, 
+
+        EscenaMenu,
         EscenaInstrucciones,
         EscenaLogros,
         EscenaElegir,
