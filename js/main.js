@@ -78,7 +78,7 @@ class PreloadScene extends Phaser.Scene {
         });
 
         this.load.on('complete', () => {
-            this.scene.start('EscenaInicio');
+            this.scene.start('EscenaInstrucciones'); //aqui EscenaInicio
         });
 
         // --- CARGA MASIVA DE ASSETS ESTATICOS ---
@@ -163,10 +163,14 @@ class PreloadScene extends Phaser.Scene {
             { key: 'IconoCalaca', path: 'Botones/Cuadrados/IconoCalaca.png' },
             { key: 'IconoDuende', path: 'Botones/Cuadrados/IconoDuende.png' },
             { key: 'IconoSlime', path: 'Botones/Cuadrados/IconoSlime.png' },
+            { key: 'checkpoint', path: 'Botones/Cuadrados/checkpoint.png' },
+            { key: 'decision', path: 'Botones/Cuadrados/decision.png' },
+
             // Textos
             { key: 'MusicaLetra', path: 'Textos/MusicaLetra.png' },
             { key: 'opcionesLetra', path: 'Textos/opcionesLetra.png' },
-
+            { key: 'si', path: 'Textos/si.png' },
+            { key: 'no', path: 'Textos/no.png' },
 
 
 
@@ -174,16 +178,14 @@ class PreloadScene extends Phaser.Scene {
 
             { key: 'botonDescripcion', path: 'botonDescripcion.png' },
             { key: 'fondoPersonajes', path: 'fondoPersonajes2.png' },
-            { key: 'si', path: 'si.png' },
-            { key: 'no', path: 'no.png' },
+
             { key: 'tituloLogros', path: 'tituloLogros.png' },
             { key: 'recuadroM', path: 'recuadroMago.png' },
             { key: 'recuadroP', path: 'recuadroPersona.png' },
             { key: 'recuadro', path: 'recuadro2.png' },
             { key: 'barraobjetos', path: 'barraobjetos.png' },
             { key: 'inventariopanel', path: 'inventariopanel.png' },
-            { key: 'checkpoint', path: 'checkpoint.png' },
-            { key: 'decision', path: 'decision.png' },
+
             { key: 'recuadroLogroMaestro', path: 'recuadroLogroMaestro.png' },
             { key: 'recuadroLogroNovato', path: 'recuadroLogroNovato.png' },
             { key: 'recuadroLogroMitico', path: 'recuadroLogroMitico.png' },
@@ -262,9 +264,10 @@ const config = {
     scene: [
         PreloadScene,
         EscenaInicio, 
-
         EscenaMenu,
         EscenaInstrucciones,
+
+        
         EscenaLogros,
         EscenaElegir,
         EscenaEleccion,
@@ -306,7 +309,7 @@ async function fetchSeguro(url, nombreEtiqueta) {
 }
 
 async function inicializarJuego() {
-    console.log('🚀 Sincronizando datos con el servidor...');
+    console.log(' Sincronizando datos con el servidor...');
 
     try {
         const [dialogosRes, objetosRes, logrosRes, objetosJRes, usuarioRes] = await Promise.all([
@@ -325,17 +328,17 @@ async function inicializarJuego() {
 
         if (usuarioRes.success) {
             setUser(usuarioRes); 
-            console.log(`👤 Identidad confirmada: ${usuarioRes.guest ? 'INVITADO (Progreso Local)' : 'JUGADOR REGISTRADO'}`);
+            console.log(` Identidad confirmada: ${usuarioRes.guest ? 'INVITADO (Progreso Local)' : 'JUGADOR REGISTRADO'}`);
         }
 
-        console.log('✅ Datos listos. Arrancando motor gráfico de Phaser...');
+        console.log(' Datos listos. Arrancando motor gráfico de Phaser...');
         
-        // 🔥 ARQUITECTURA CLAVE: Arrancamos el juego HASTA QUE la memoria (Store) tiene los datos.
+        //  ARQUITECTURA CLAVE: Arrancamos el juego HASTA QUE la memoria (Store) tiene los datos.
         // Esto evita que PreloadScene intente cargar imágenes de logros que aún no existen en el estado.
         window.game = new Phaser.Game(config);
 
     } catch (error) {
-        console.error('❌ Error crítico al arrancar el juego:', error);
+        console.error(' Error crítico al arrancar el juego:', error);
         alert('Hubo un error de conexión con el servidor. El juego podría no funcionar correctamente.');
     }
 }

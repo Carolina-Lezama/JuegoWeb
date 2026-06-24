@@ -52,7 +52,7 @@ export class EscenaInicio extends Phaser.Scene {
         // 4. INTERFAZ Y BOTONES
         this.botonInicio = this.add.image(850, 500, 'botonInicio').setInteractive().setScale(1.5); // <-- Modifica la escala aquí
         this.botonInicio.on('pointerdown', () => {
-            this.scene.start('EscenaEleccion'); // CAMBIAR LUEGO A EscenaIntroduccionUno
+            this.scene.start('EscenaEleccion'); 
         });
 
         this.botonPersonaje = this.add.image(300, 500, 'botonPersonaje').setInteractive().setScale(1.2); // <-- Modifica la escala aquí

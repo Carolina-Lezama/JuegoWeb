@@ -121,7 +121,7 @@ function renderAchievements(logros, contenedor) {
         const tipoClase = logro.tipo ? logro.tipo.toLowerCase() : 'default';
         card.classList.add("logro-card", tipoClase);
 
-        // 🔥 NUEVA LÓGICA ESTANDARIZADA: 
+        //  NUEVA LÓGICA ESTANDARIZADA: 
         // Agregamos la extensión .png dinámicamente desde el frontend
         const imgSrc = logro.imagen.startsWith("http") 
             ? logro.imagen 

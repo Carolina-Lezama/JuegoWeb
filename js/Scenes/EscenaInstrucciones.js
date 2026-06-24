@@ -1,5 +1,4 @@
-// Solo importamos la función de reescalado visual. No necesitamos globals aquí.
-import { reescalarGlobalFlexible } from '../uiHelpers.js';
+// La importación de uiHelpers.js ya no es necesaria, la eliminamos.
 
 export class EscenaInstrucciones extends Phaser.Scene {
     constructor() {
@@ -7,7 +6,9 @@ export class EscenaInstrucciones extends Phaser.Scene {
     }
 
     create() {
+        // ==============================================================
         // 1. GESTIÓN DE AUDIO
+        // ==============================================================
         if (!this.sound.get('musicaFondo')) {
             this.musica = this.sound.add('musicaFondo', { loop: true, volume: 0.5 });
             this.musica.play();
@@ -18,21 +19,28 @@ export class EscenaInstrucciones extends Phaser.Scene {
             }
         }
 
-        // 2. CREACIÓN DE INTERFAZ (UI)
-        this.fondo = this.add.image(0, 0, 'instrucciones');
+        // ==============================================================
+        // 2. CREACIÓN DE INTERFAZ (UI) Y POSICIONAMIENTO DIRECTO
+        // ==============================================================
+        
+        // Fondo centrado
+        this.fondo = this.add.image(825, 450, 'instrucciones').setScale(1); // <-- Modifica la escala aquí
 
         // Panel semitransparente con borde neón
-        this.panel = this.add.rectangle(0, 0, 900, 600, 0x0c1022, 0.8)
-            .setStrokeStyle(3, 0x00ffc3);
+        // Nota: Un rectángulo no necesita setScale usualmente, puedes cambiar su tamaño (900, 600) directamente aquí si lo necesitas.
+        this.panel = this.add.rectangle(825, 450, 900, 600, 0x0c1022, 0.8)
+            .setStrokeStyle(3, 0x00ffc3)
+            .setScale(1); // <-- Modifica la escala aquí
 
-        this.titulo = this.add.text(0, 0, 'INSTRUCCIONES', {
+        // Título principal centrado en la parte superior
+        this.titulo = this.add.text(825, 200, 'INSTRUCCIONES', {
             fontSize: '40px',
             color: '#00ffc3',
             fontStyle: 'bold',
-            fontFamily: 'Silkscreen' // Aseguramos que use tu fuente pixel-art
-        }).setOrigin(0.5);
+            fontFamily: 'Silkscreen'
+        }).setOrigin(0.5).setScale(1); // <-- Modifica la escala aquí
 
-        // Contenido
+        // Contenido de las instrucciones
         const textoInstrucciones = [
             'MOVIMIENTO',
             'Usa W A S D  para moverte',
@@ -57,17 +65,22 @@ export class EscenaInstrucciones extends Phaser.Scene {
             'cambiar de personaje'
         ];
 
-        this.texto = this.add.text(0, 0, textoInstrucciones, {
+        // Texto centrado horizontalmente, alineado hacia abajo desde la posición Y: 250
+        this.texto = this.add.text(825, 250, textoInstrucciones, {
             fontSize: '32px',
             color: '#ffffff',
             align: 'left',
             fontFamily: 'Silkscreen',
             lineSpacing: 6,
-            wordWrap: { width: 1000 }
-        }).setOrigin(0.5, 0);
+            wordWrap: { width: 800 } // Ajustado un poco para que quepa bien dentro del panel de 900
+        }).setOrigin(0.5, 0).setScale(1); // <-- Modifica la escala aquí
 
+        // ==============================================================
         // 3. BOTÓN Y EVENTOS
-        this.regreso = this.add.image(0, 0, 'regreso').setInteractive({ useHandCursor: true });
+        // ==============================================================
+        
+        // Botón de regreso (Esquina superior izquierda)
+        this.regreso = this.add.image(115, 135, 'regreso').setInteractive({ useHandCursor: true }).setScale(1); // <-- Modifica la escala aquí
 
         this.regreso.on('pointerdown', () => {
             if (window.ultimaEscenaActiva) {
@@ -75,6 +88,9 @@ export class EscenaInstrucciones extends Phaser.Scene {
             }
             this.scene.stop();
         });
+
+        // Guardamos dinámicamente la escala que le hayas puesto arriba para usarla en el Hover
+        this.escalaBaseBoton = this.regreso.scaleX;
 
         // Feedback visual al pasar el mouse (Hover effect)
         this.regreso.on('pointerover', () => {
@@ -85,22 +101,6 @@ export class EscenaInstrucciones extends Phaser.Scene {
             this.regreso.setScale(this.escalaBaseBoton); // Vuelve a su tamaño base
         });
 
-        // 4. RESPONSIVIDAD
-        this.aplicarReescalado();
-        this.scale.on('resize', () => this.aplicarReescalado());
-    }
-
-    aplicarReescalado() {
-        reescalarGlobalFlexible(this, [
-            { obj: this.fondo, posX: 0.5, posY: 0.5, escalaRelativa: 1, autoFill: true },
-            { obj: this.panel, posX: 0.5, posY: 0.45, escalaRelativa: 1.2 },
-            { obj: this.titulo, posX: 0.5, posY: 0.13, escalaRelativa: 0.8 },
-            { obj: this.texto, posX: 0.5, posY: 0.18, escalaRelativa: 0.77 },
-            { obj: this.regreso, posX: 0.07, posY: 0.15, escalaRelativa: 0.2 }
-        ]);
-
-        // Guardamos la escala real que 'reescalarGlobalFlexible' le asignó al botón
-        // para usarla en nuestro efecto de 'pointerover'/'pointerout'.
-        this.escalaBaseBoton = this.regreso.scale;
+        // ¡Adiós aplicarReescalado!
     }
 }
