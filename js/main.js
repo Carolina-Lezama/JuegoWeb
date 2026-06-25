@@ -78,7 +78,7 @@ class PreloadScene extends Phaser.Scene {
         });
 
         this.load.on('complete', () => {
-            this.scene.start('EscenaInstrucciones'); //aqui EscenaInicio
+            this.scene.start('EscenaLogros'); //aqui EscenaInicio
         });
 
         // --- CARGA MASIVA DE ASSETS ESTATICOS ---
@@ -171,24 +171,28 @@ class PreloadScene extends Phaser.Scene {
             { key: 'opcionesLetra', path: 'Textos/opcionesLetra.png' },
             { key: 'si', path: 'Textos/si.png' },
             { key: 'no', path: 'Textos/no.png' },
+            { key: 'tituloLogros', path: 'Textos/tituloLogros.png' },
+
+            // Recuadros
+            { key: 'recuadroLogroMaestro', path: 'Recuadros/recuadroLogroMaestro.png' },
+            { key: 'recuadroLogroNovato', path: 'Recuadros/recuadroLogroNovato.png' },
+            { key: 'recuadroLogroMitico', path: 'Recuadros/recuadroLogroMitico.png' },
 
 
 
 
+
+            
 
             { key: 'botonDescripcion', path: 'botonDescripcion.png' },
             { key: 'fondoPersonajes', path: 'fondoPersonajes2.png' },
-
-            { key: 'tituloLogros', path: 'tituloLogros.png' },
             { key: 'recuadroM', path: 'recuadroMago.png' },
             { key: 'recuadroP', path: 'recuadroPersona.png' },
             { key: 'recuadro', path: 'recuadro2.png' },
             { key: 'barraobjetos', path: 'barraobjetos.png' },
             { key: 'inventariopanel', path: 'inventariopanel.png' },
 
-            { key: 'recuadroLogroMaestro', path: 'recuadroLogroMaestro.png' },
-            { key: 'recuadroLogroNovato', path: 'recuadroLogroNovato.png' },
-            { key: 'recuadroLogroMitico', path: 'recuadroLogroMitico.png' },
+
         ];
         uiAssets.forEach(ui => this.load.image(ui.key, `/Juego/assets/static/${ui.path}`));
         if (Array.isArray(getState().objetosGlobales)) {
@@ -266,9 +270,9 @@ const config = {
         EscenaInicio, 
         EscenaMenu,
         EscenaInstrucciones,
-
-        
         EscenaLogros,
+        
+        
         EscenaElegir,
         EscenaEleccion,
         EscenaIntroduccionUno, 
