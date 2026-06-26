@@ -1,5 +1,4 @@
 import { getState, setPersonajesEnUso } from '../globals.js';
-import { reescalarGlobalFlexible } from '../uiHelpers.js';
 
 export class EscenaElegir extends Phaser.Scene {
     constructor() {
@@ -10,12 +9,18 @@ export class EscenaElegir extends Phaser.Scene {
     }
 
     create() {
+        // ==============================================================
         // 1. CREACIÓN DE FONDOS Y ELEMENTOS ESTÁTICOS
-        this.fondo = this.add.image(0, 0, 'fondoVestuario').setDepth(1);
-        this.fondoPersonajes = this.add.image(0, 0, 'fondoPersonajes').setDepth(2);
+        // ==============================================================
         
-        // Título estilizado
-        this.tituloElegir = this.add.text(0, 0, 'Elige tu personaje', {
+        // Fondos centrados (825, 450)
+        this.fondo = this.add.image(825, 450, 'fondoVestuario').setDepth(1).setScale(1); // <-- Modifica la escala aquí
+        
+        // Panel izquierdo donde van los personajes (X: 528 = 32% de 1650 aprox)
+        this.fondoPersonajes = this.add.image(528, 657, 'fondoPersonajes').setDepth(2).setScale(1); // <-- Modifica la escala aquí
+        
+        // Título estilizado (Arriba, alineado con el panel izquierdo)
+        this.tituloElegir = this.add.text(528, 54, 'Elige tu personaje', {
             fontFamily: 'Silkscreen',
             fontSize: '40px',
             color: '#000000',
@@ -23,14 +28,32 @@ export class EscenaElegir extends Phaser.Scene {
             padding: { left: 22, right: 30, top: 5, bottom: 10 },
             align: 'center',
             fixedWidth: 600
-        }).setDepth(3);
+        }).setDepth(3).setOrigin(0.5).setScale(1); // <-- Modifica la escala aquí
 
-        // 2. BOTONES DE INTERFAZ
-        this.botonRegresar = this.add.image(0, 0, 'botonRegresar').setDepth(3).setInteractive({ useHandCursor: true });
-        this.iconoPersona = this.add.image(0, 0, 'iconoPersona').setDepth(3).setInteractive({ useHandCursor: true });
-        this.iconoGato = this.add.image(0, 0, 'iconoGato').setDepth(3).setInteractive({ useHandCursor: true });
+        // ==============================================================
+        // 2. BOTONES DE INTERFAZ (Panel derecho)
+        // ==============================================================
+        
+        // Botón Regresar (Arriba a la derecha. X: 1270 = 77% de 1650)
+        this.botonRegresar = this.add.image(1270, 90, 'botonRegresar')
+            .setDepth(3)
+            .setInteractive({ useHandCursor: true })
+            .setScale(1); // <-- Modifica la escala aquí
 
+        // Pestañas / Iconos de selección (Alineados a la derecha)
+        this.iconoPersona = this.add.image(1270, 315, 'iconoPersona')
+            .setDepth(3)
+            .setInteractive({ useHandCursor: true })
+            .setScale(1); // <-- Modifica la escala aquí
+            
+        this.iconoGato = this.add.image(1270, 585, 'iconoGato')
+            .setDepth(3)
+            .setInteractive({ useHandCursor: true })
+            .setScale(1); // <-- Modifica la escala aquí
+
+        // ==============================================================
         // 3. EVENTOS DE INTERFAZ
+        // ==============================================================
         this.botonRegresar.on('pointerdown', () => this.scene.start('EscenaInicio'));
 
         this.iconoPersona.on('pointerdown', () => {
@@ -43,23 +66,8 @@ export class EscenaElegir extends Phaser.Scene {
             this.renderPersonajes();
         });
 
-        // 4. RESPONSIVIDAD Y RENDERIZADO INICIAL
-        this.aplicarReescalado();
-        this.scale.on('resize', () => this.aplicarReescalado());
-        
+        // 4. RENDERIZADO INICIAL DE LA CUADRÍCULA
         this.renderPersonajes();
-    }
-
-    aplicarReescalado() {
-        // Modo FIT: Posicionamiento limpio y directo
-        reescalarGlobalFlexible(this, [
-            { obj: this.fondo, posX: 0.5, posY: 0.5, escalaRelativa: 1, autoFill: true },
-            { obj: this.fondoPersonajes, posX: 0.32, posY: 0.73, escalaRelativa: 1.15 },
-            { obj: this.tituloElegir, posX: 0.32, posY: 0.06, escalaRelativa: 0.8 },
-            { obj: this.botonRegresar, posX: 0.77, posY: 0.1, escalaRelativa: 0.57 },
-            { obj: this.iconoPersona, posX: 0.77, posY: 0.35, escalaRelativa: 0.27 },
-            { obj: this.iconoGato, posX: 0.77, posY: 0.65, escalaRelativa: 0.27 }
-        ]);
     }
 
     renderPersonajes() {
@@ -69,18 +77,18 @@ export class EscenaElegir extends Phaser.Scene {
         }
         this.iconosPersonajes = [];
 
-        // Definimos la lista a renderizar (Humanos o Gatos)
-        // Ya no verificamos isMobile() para forzar (0,0), el FIT resuelve la posición automáticamente.
+        // Definimos la lista a renderizar con COORDENADAS FIJAS (Pixeles reales)
+        // Basadas en los porcentajes originales: X (331, 709), Y (324, 666)
         const lista = this.mostrandoHumanos ? [
-            { key: 'personaje1', x: 0.201, y: 0.36 },
-            { key: 'personaje2', x: 0.43, y: 0.36 },
-            { key: 'personaje3', x: 0.201, y: 0.74 },
-            { key: 'personaje4', x: 0.43, y: 0.74 }
+            { key: 'personaje1', x: 331, y: 324 },
+            { key: 'personaje2', x: 709, y: 324 },
+            { key: 'personaje3', x: 331, y: 666 },
+            { key: 'personaje4', x: 709, y: 666 }
         ] : [
-            { key: 'gato1', x: 0.201, y: 0.36 },
-            { key: 'gato2', x: 0.43, y: 0.36 },
-            { key: 'gato3', x: 0.201, y: 0.74 },
-            { key: 'gato4', x: 0.43, y: 0.74 }
+            { key: 'gato1', x: 331, y: 324 },
+            { key: 'gato2', x: 709, y: 324 },
+            { key: 'gato3', x: 331, y: 666 },
+            { key: 'gato4', x: 709, y: 666 }
         ];
 
         lista.forEach(item => {
@@ -89,34 +97,29 @@ export class EscenaElegir extends Phaser.Scene {
     }
 
     crearIconoPersonaje(item, esHumano) {
-        const icono = this.add.image(0, 0, item.key)
+        // Creamos el icono directamente en su posición de cuadrícula
+        const icono = this.add.image(item.x, item.y, item.key)
             .setInteractive({ useHandCursor: true })
-            .setDepth(4);
+            .setDepth(4)
+            .setScale(1); // <-- Modifica la escala general de los retratos aquí
 
+        // Evento de selección
         icono.on('pointerdown', () => {
-            // Guardamos la selección en el estado global unificado
             if (esHumano) {
                 setPersonajesEnUso(item.key, null); 
             } else {
                 setPersonajesEnUso(null, item.key); 
             }
-            
-            // Re-renderizamos para que se aplique el "Tinte" visual al seleccionado
-            this.renderPersonajes();
+            this.renderPersonajes(); // Re-renderizamos para aplicar el tinte
         });
 
-        // Escala y posicionamiento para los iconos generados dinámicamente
-        reescalarGlobalFlexible(this, [
-            { obj: icono, posX: item.x, posY: item.y, escalaRelativa: 0.37 }
-        ]);
-
-        // Leemos el estado global actual para saber si este ícono debe brillar/estar seleccionado
+        // Tinte de selección visual (Morado claro)
         const seleccionado = esHumano
             ? getState().personajeHumanoEnUso === item.key
             : getState().personajeGatoEnUso === item.key;
 
         if (seleccionado) {
-            icono.setTint(0xc6b7ff); // Color morado claro
+            icono.setTint(0xc6b7ff); 
         } else {
             icono.clearTint();
         }

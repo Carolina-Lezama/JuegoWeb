@@ -141,25 +141,25 @@ export class EscenaLogros extends Phaser.Scene {
             
             // Reemplacé .setDisplaySize() por .setScale() para seguir el estándar. 
             // Te sugiero exportar las cajas a su tamaño ideal de 650x280 px.
-            const recuadro = this.add.image(625, y, recuadroKey).setDepth(2).setScale(1.5, 1.25); // <-- Modifica la escala aquí
+            const recuadro = this.add.image(625, y, recuadroKey).setDepth(2).setScale(1.4, 1.25); // <-- Modifica la escala aquí
 
             // 2. Imagen del Logro
             let img = null;
             if (logro.imagen) {
                 const imgClean = logro.imagen.replace(/\.png$/i, '');
                 // De igual forma, asume escala 1. Ideal exportar los iconos a 140x140 px.
-                img = this.add.image(590, y, imgClean).setDepth(3).setScale(1); // <-- Modifica la escala aquí
+                img = this.add.image(800, y, imgClean).setDepth(3).setScale(1.3); // <-- Modifica la escala aquí
             }
 
             // 3. Textos Nativos (Coordenadas calculadas y fijas)
-            const nombre = this.add.text(710, y - 45, logro.nombre, {
-                fontSize: '24px',
+            const nombre = this.add.text(335, y - 35, logro.nombre, {
+                fontSize: '30px',
                 color: '#000000',
                 wordWrap: { width: 330 }
             }).setOrigin(0, 0.5).setDepth(4).setScale(1); // <-- Modifica la escala aquí
 
-            const desc = this.add.text(710, y + 19, logro.descripcion, {
-                fontSize: '15px',
+            const desc = this.add.text(335, y + 29, logro.descripcion, {
+                fontSize: '21px',
                 color: '#000000',
                 wordWrap: { width: 320 }
             }).setOrigin(0, 0.5).setDepth(4).setScale(1); // <-- Modifica la escala aquí

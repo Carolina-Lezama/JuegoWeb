@@ -78,7 +78,7 @@ class PreloadScene extends Phaser.Scene {
         });
 
         this.load.on('complete', () => {
-            this.scene.start('EscenaLogros'); //aqui EscenaInicio
+            this.scene.start('EscenaInicio'); //aqui EscenaInicio
         });
 
         // --- CARGA MASIVA DE ASSETS ESTATICOS ---
@@ -176,8 +176,8 @@ class PreloadScene extends Phaser.Scene {
             // Recuadros
             { key: 'recuadroLogroMaestro', path: 'Recuadros/recuadroLogroMaestro.png' },
             { key: 'recuadroLogroNovato', path: 'Recuadros/recuadroLogroNovato.png' },
-            { key: 'recuadroLogroMitico', path: 'Recuadros/recuadroLogroMitico.png' },
-
+            { key: 'recuadroLogroMitico', path: 'recuadroLogroMitico.png' },
+            { key: 'fondoPersonajes', path: 'Recuadros/fondoPersonajes2.png' },
 
 
 
@@ -185,11 +185,11 @@ class PreloadScene extends Phaser.Scene {
             
 
             { key: 'botonDescripcion', path: 'botonDescripcion.png' },
-            { key: 'fondoPersonajes', path: 'fondoPersonajes2.png' },
+            
             { key: 'recuadroM', path: 'recuadroMago.png' },
             { key: 'recuadroP', path: 'recuadroPersona.png' },
             { key: 'recuadro', path: 'recuadro2.png' },
-            { key: 'barraobjetos', path: 'barraobjetos.png' },
+            { key: 'baraobjetos', path: 'barraobjetos.png' },
             { key: 'inventariopanel', path: 'inventariopanel.png' },
 
 
@@ -271,9 +271,9 @@ const config = {
         EscenaMenu,
         EscenaInstrucciones,
         EscenaLogros,
-        
-        
         EscenaElegir,
+        
+        
         EscenaEleccion,
         EscenaIntroduccionUno, 
         EscenaBosque,
