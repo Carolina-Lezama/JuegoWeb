@@ -78,7 +78,7 @@ class PreloadScene extends Phaser.Scene {
         });
 
         this.load.on('complete', () => {
-            this.scene.start('EscenaInicio'); //aqui EscenaInicio
+            this.scene.start('EscenaIntroduccionUno'); //aqui EscenaInicio
         });
 
         // --- CARGA MASIVA DE ASSETS ESTATICOS ---
@@ -123,6 +123,12 @@ class PreloadScene extends Phaser.Scene {
         const mapas = ['EscenaPeleaSlimeJson', 'CementerioJSON', 'CastilloIfernalJSON', 'CasaAbandonadaJSON', 'mapaTutorial', 'BosqueFuente'];
         mapas.forEach(mapa => this.load.tilemapTiledJSON(mapa, `/Juego/assets/static/Lugares/${mapa}.json`));
 
+        ['personaje1', 'personaje2', 'personaje3', 'personaje4'].forEach(p => {
+            this.load.image(p, `/Juego/assets/static/Personajes/${p}.png`);
+        });
+        ['gato1', 'gato2', 'gato3', 'gato4'].forEach(g => {
+            this.load.image(g, `/Juego/assets/static/Personajes/${g}.png`);
+        });
 
         this.load.spritesheet('fondoAnimado', '/Juego/assets/static/Animaciones/FondoAnimado.png', { frameWidth: 1536, frameHeight: 960 });
         this.load.spritesheet('fondoAnimadoBosque', '/Juego/assets/static/Animaciones/animacionBosque2.png', { frameWidth: 1536, frameHeight: 1024 });
@@ -182,7 +188,8 @@ class PreloadScene extends Phaser.Scene {
 
 
 
-            
+
+
 
             { key: 'botonDescripcion', path: 'botonDescripcion.png' },
             
@@ -203,18 +210,15 @@ class PreloadScene extends Phaser.Scene {
             });
         }
 
-        this.load.spritesheet('mago', '/Juego/assets/static/Personajes/mago.png', { frameWidth: 207, frameHeight: 400 });
-        // Faltan por corregir tamaños
-        this.load.spritesheet('gato', '/Juego/assets/static/Personajes/gato.png', { frameWidth: 262, frameHeight: 282});
-        this.load.spritesheet('niñoCaminando', '/Juego/assets/static/Personajes/caminataFinal.png', {frameWidth: 92,frameHeight: 155});
-        this.load.spritesheet('gatoCaminando', '/Juego/assets/static/Personajes/caminataFinalGato.png', {frameWidth: 194,frameHeight: 143});
+        this.load.spritesheet('mago', '/Juego/assets/static/Personajes/sprites/mago.png', { frameWidth: 207, frameHeight: 400 });
+        this.load.spritesheet('gato', '/Juego/assets/static/Personajes/sprites/gato.png', { frameWidth: 262, frameHeight: 282});
+        this.load.spritesheet('niñoCaminando', '/Juego/assets/static/Personajes/sprites/caminataFinal.png', {frameWidth: 92,frameHeight: 155});
+        this.load.spritesheet('gatoCaminando', '/Juego/assets/static/Personajes/sprites/caminataFinalGato.png', {frameWidth: 194,frameHeight: 143});
         
-
-        ['personaje1', 'personaje2', 'personaje3', 'personaje4'].forEach(p => {
-            this.load.image(p, `/Juego/assets/static/Personajes/${p}.png`);
-        });
-        ['gato1', 'gato2', 'gato3', 'gato4'].forEach(g => {
-            this.load.image(g, `/Juego/assets/static/Personajes/${g}.png`);
+        // CARGAR LOS GATOS TAMBIRN, ASI COMO HACER LA FUNCION GLOBAL PARA NO REPETIR QUE PERSONAJE ES
+        // MOMENTO DE ARREGLAR LOS TAMAÑOS Y LOS GATOS
+         ['SpritePersonaje1', 'SpritePersonaje2', 'SpritePersonaje3', 'SpritePersonaje4'].forEach(g => {
+            this.load.spritesheet(g, `/Juego/assets/static/Personajes/sprites/${g}.png`, { frameWidth: 447, frameHeight: 447});
         });
 
         this.load.spritesheet('objetoEspejo', '/Juego/assets/static/Sprites/animacionEspejo.png', { frameWidth: 447, frameHeight: 447});
@@ -222,12 +226,12 @@ class PreloadScene extends Phaser.Scene {
         this.load.spritesheet('objetoMapa', '/Juego/assets/static/Sprites/animacionMapa.png', { frameWidth: 447, frameHeight: 447});
 
 
-    
 
 
 
 
-        
+
+
         const logrosData = getState().logrosGlobales;
         if (logrosData && Array.isArray(logrosData)) {
             logrosData.forEach(logro => {
@@ -272,10 +276,10 @@ const config = {
         EscenaInstrucciones,
         EscenaLogros,
         EscenaElegir,
-        
-        
         EscenaEleccion,
-        EscenaIntroduccionUno, 
+        EscenaIntroduccionUno,
+        
+         
         EscenaBosque,
         EscenaBosque2, 
         EscenaCabanaAfuera, 

@@ -17,12 +17,12 @@ export class EscenaElegir extends Phaser.Scene {
         this.fondo = this.add.image(825, 450, 'fondoVestuario').setDepth(1).setScale(1); // <-- Modifica la escala aquí
         
         // Panel izquierdo donde van los personajes (X: 528 = 32% de 1650 aprox)
-        this.fondoPersonajes = this.add.image(528, 657, 'fondoPersonajes').setDepth(2).setScale(1); // <-- Modifica la escala aquí
+        this.fondoPersonajes = this.add.image(528, 500, 'fondoPersonajes').setDepth(2).setScale(1.5); // <-- Modifica la escala aquí
         
         // Título estilizado (Arriba, alineado con el panel izquierdo)
-        this.tituloElegir = this.add.text(528, 54, 'Elige tu personaje', {
+        this.tituloElegir = this.add.text(528, 80, 'Elige tu personaje', {
             fontFamily: 'Silkscreen',
-            fontSize: '40px',
+            fontSize: '45px',
             color: '#000000',
             backgroundColor: '#f5f0dc',
             padding: { left: 22, right: 30, top: 5, bottom: 10 },
@@ -35,21 +35,21 @@ export class EscenaElegir extends Phaser.Scene {
         // ==============================================================
         
         // Botón Regresar (Arriba a la derecha. X: 1270 = 77% de 1650)
-        this.botonRegresar = this.add.image(1270, 90, 'botonRegresar')
+        this.botonRegresar = this.add.image(1300, 75, 'botonRegresar')
             .setDepth(3)
             .setInteractive({ useHandCursor: true })
-            .setScale(1); // <-- Modifica la escala aquí
+            .setScale(0.9); // <-- Modifica la escala aquí
 
         // Pestañas / Iconos de selección (Alineados a la derecha)
         this.iconoPersona = this.add.image(1270, 315, 'iconoPersona')
             .setDepth(3)
             .setInteractive({ useHandCursor: true })
-            .setScale(1); // <-- Modifica la escala aquí
+            .setScale(1.7); // <-- Modifica la escala aquí
             
         this.iconoGato = this.add.image(1270, 585, 'iconoGato')
             .setDepth(3)
             .setInteractive({ useHandCursor: true })
-            .setScale(1); // <-- Modifica la escala aquí
+            .setScale(1.7); // <-- Modifica la escala aquí
 
         // ==============================================================
         // 3. EVENTOS DE INTERFAZ
@@ -101,7 +101,7 @@ export class EscenaElegir extends Phaser.Scene {
         const icono = this.add.image(item.x, item.y, item.key)
             .setInteractive({ useHandCursor: true })
             .setDepth(4)
-            .setScale(1); // <-- Modifica la escala general de los retratos aquí
+            .setScale(1.4); // <-- Modifica la escala general de los retratos aquí
 
         // Evento de selección
         icono.on('pointerdown', () => {

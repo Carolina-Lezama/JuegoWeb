@@ -1,5 +1,4 @@
 import { getState } from '../globals.js';
-import { reescalarGlobalFlexible, createAndAdaptTextFlexible } from '../uiHelpers.js';
 
 export class EscenaIntroduccionUno extends Phaser.Scene {
     constructor() {
@@ -7,24 +6,60 @@ export class EscenaIntroduccionUno extends Phaser.Scene {
     }
 
     create() {
-        // 1. ELEMENTOS VISUALES ESTÁTICOS
-        this.fondo = this.add.image(0, 0, 'fondoIntroduccionUno').setDepth(1);
-        this.recuadro = this.add.image(0, 0, 'recuadro').setDepth(2);
+        // ==============================================================
+        // 1. DETERMINAR QUÉ PERSONAJE USAR (Mapeo de Claves)
+        // ==============================================================
+        const estado = getState();
         
-        // Botones interactivos
-        this.regreso = this.add.image(0, 0, 'regreso').setDepth(10).setInteractive({ useHandCursor: true });
-        this.boton = this.add.image(0, 0, 'botonSiguiente').setDepth(5).setInteractive({ useHandCursor: true });
-        this.botonS = this.add.image(0, 0, 'botonSaltar').setDepth(5).setInteractive({ useHandCursor: true });
+        // 1.1 Leemos la elección de la interfaz (ej. 'personaje1' o 'gato2')
+        const seleccionInterfaz = estado.personajeHumanoEnUso || estado.personajeGatoEnUso || 'personaje1';
 
-        // 2. PERSONAJE Y ANIMACIONES
-        this.personaje = this.add.sprite(0, 0, 'personajeUsar').setDepth(3);
-        this.animacionFondo = this.add.sprite(0, 0, 'fondoAnimado').setVisible(false).setDepth(10);
+        // 1.2 Diccionario para traducir el icono del menú al SpriteSheet real.
+        // Si tienes los spritesheet de los gatos cargados en el Preload, asegúrate de añadirlos aquí.
+        const mapaSprites = {
+            'personaje1': 'SpritePersonaje1',
+            'personaje2': 'SpritePersonaje2',
+            'personaje3': 'SpritePersonaje3',
+            'personaje4': 'SpritePersonaje4',
+            
+            // Ejemplo de mapeo para gatos (ajusta los nombres a los que uses en tu PreloadScene)
+            'gato1': 'SpriteGato1', 
+            'gato2': 'SpriteGato2',
+            'gato3': 'SpriteGato3',
+            'gato4': 'SpriteGato4'
+        };
 
-        // Protegemos la creación de animaciones por si la escena se reinicia
-        if (!this.anims.exists('personaje-movimiento')) {
+        // 1.3 Asignamos el Spritesheet animado. Si la selección no está en el mapa, hacemos fallback a 'SpritePersonaje1'
+        this.claveAnimada = mapaSprites[seleccionInterfaz] || 'SpritePersonaje1';
+
+
+        // ==============================================================
+        // 2. ELEMENTOS VISUALES ESTÁTICOS
+        // ==============================================================
+        this.fondo = this.add.image(825, 900, 'fondoIntroduccionUno').setOrigin(0.5, 1).setDepth(1).setScale(1); 
+        this.animacionFondo = this.add.sprite(825, 900, 'fondoAnimado').setOrigin(0.5, 1).setVisible(false).setDepth(10).setScale(1); 
+        
+        this.recuadro = this.add.image(1370, 225, 'recuadro').setDepth(2).setScale(1); 
+        
+        this.regreso = this.add.image(83, 90, 'regreso').setDepth(10).setInteractive({ useHandCursor: true }).setScale(1); 
+        this.boton = this.add.image(1450, 432, 'botonSiguiente').setDepth(5).setInteractive({ useHandCursor: true }).setScale(1); 
+        this.botonS = this.add.image(825, 414, 'botonSaltar').setDepth(5).setInteractive({ useHandCursor: true }).setScale(1); 
+
+        // ==============================================================
+        // 3. PERSONAJE Y ANIMACIONES (Usando la clave MAPEADA)
+        // ==============================================================
+        
+        // Ahora usamos this.claveAnimada (ej. 'SpritePersonaje1')
+        this.personaje = this.add.sprite(280, 612, this.claveAnimada).setDepth(3).setScale(1); 
+
+        // Nombramos la animación para que sea única por personaje
+        const nombreAnimacion = `caminata-${this.claveAnimada}`;
+
+        if (!this.anims.exists(nombreAnimacion)) {
             this.anims.create({
-                key: 'personaje-movimiento',
-                frames: this.anims.generateFrameNumbers('personajeUsar', { start: 0, end: 4 }),
+                key: nombreAnimacion,
+                // Generamos los 5 frames que mencionaste (0 al 4)
+                frames: this.anims.generateFrameNumbers(this.claveAnimada, { start: 0, end: 4 }),
                 frameRate: 5,
                 repeat: -1
             });
@@ -39,10 +74,12 @@ export class EscenaIntroduccionUno extends Phaser.Scene {
             });
         }
 
-        this.personaje.play('personaje-movimiento');
+        // Reproducimos la animación correcta
+        this.personaje.play(nombreAnimacion);
 
-        // 3. SISTEMA DE DIÁLOGOS
-        // Obtenemos los diálogos de la base de datos a través de nuestro Gestor de Estado
+        // ==============================================================
+        // 4. SISTEMA DE DIÁLOGOS
+        // ==============================================================
         const dialogosAPI = getState().dialogos || {};
         
         this.dialogos = [
@@ -52,19 +89,17 @@ export class EscenaIntroduccionUno extends Phaser.Scene {
         ];
         this.dialogoActual = 0;
 
-        // Texto dinámico inicial
-        this.texto = createAndAdaptTextFlexible(this, {
-            text: this.dialogos[this.dialogoActual],
-            posX: 0.71,
-            posY: 0.22,
-            maxWidth: 970,
-            fontSizeInicial: 41,
-            originX: 0.5,
-            originY: 0.5,
-            color: '#000000'
-        }).setDepth(4); // Debe ir por encima del recuadro
+        this.texto = this.add.text(1170, 198, this.dialogos[this.dialogoActual], {
+            fontSize: '41px',
+            color: '#000000',
+            fontFamily: 'Arial',
+            align: 'center',
+            wordWrap: { width: 970 } 
+        }).setOrigin(0.5).setDepth(4).setScale(1); 
 
-        // 4. LÓGICA DE EVENTOS (Flujo de la escena)
+        // ==============================================================
+        // 5. LÓGICA DE EVENTOS (Flujo de la escena)
+        // ==============================================================
         const animarFondo = () => {
             this.texto.setVisible(false);
             this.boton.setVisible(false);
@@ -93,38 +128,17 @@ export class EscenaIntroduccionUno extends Phaser.Scene {
             }
         });
 
-        // 5. EVENTOS HOVER (Feedback visual para botones)
+        // ==============================================================
+        // 6. EVENTOS HOVER (Feedback visual)
+        // ==============================================================
         this.agregarEfectoHover(this.boton, 1.1);
         this.agregarEfectoHover(this.botonS, 1.1);
         this.agregarEfectoHover(this.regreso, 1.1);
-
-        // 6. RESPONSIVIDAD
-        this.aplicarReescalado();
-        this.scale.on('resize', () => this.aplicarReescalado());
     }
 
     agregarEfectoHover(boton, multiplicador) {
-        // Guarda la escala original inmediatamente después del reescalado
+        boton.escalaBase = boton.scaleX;
         boton.on('pointerover', () => boton.setScale(boton.escalaBase * multiplicador));
         boton.on('pointerout', () => boton.setScale(boton.escalaBase));
-    }
-
-    aplicarReescalado() {
-        reescalarGlobalFlexible(this, [
-            // Los fondos están anclados a la parte inferior (originY: 1, posY: 1)
-            { obj: this.fondo, posX: 0.5, posY: 1, originX: 0.5, originY: 1, escalaRelativa: 1, autoFill: true },
-            { obj: this.animacionFondo, posX: 0.5, posY: 1, originX: 0.5, originY: 1, escalaRelativa: 1, autoFill: true },
-            
-            { obj: this.recuadro, posX: 0.83, posY: 0.25, escalaRelativa: 1.7 },
-            { obj: this.boton, posX: 0.88, posY: 0.48, escalaRelativa: 0.38 },
-            { obj: this.botonS, posX: 0.5, posY: 0.46, escalaRelativa: 0.38 },
-            { obj: this.personaje, posX: 0.17, posY: 0.68, escalaRelativa: 0.35 },
-            { obj: this.regreso, posX: 0.05, posY: 0.1, escalaRelativa: 0.16 }
-        ]);
-
-        // Guardamos las escalas calculadas para el efecto hover
-        this.boton.escalaBase = this.boton.scale;
-        this.botonS.escalaBase = this.botonS.scale;
-        this.regreso.escalaBase = this.regreso.scale;
     }
 }
