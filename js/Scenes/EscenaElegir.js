@@ -14,10 +14,10 @@ export class EscenaElegir extends Phaser.Scene {
         // ==============================================================
         
         // Fondos centrados (825, 450)
-        this.fondo = this.add.image(825, 450, 'fondoVestuario').setDepth(1).setScale(1); // <-- Modifica la escala aquí
+        this.fondo = this.add.image(825, 450, 'fondoVestuario').setDepth(1).setScale(1); 
         
-        // Panel izquierdo donde van los personajes (X: 528 = 32% de 1650 aprox)
-        this.fondoPersonajes = this.add.image(528, 500, 'fondoPersonajes').setDepth(2).setScale(1.5); // <-- Modifica la escala aquí
+        // Panel izquierdo donde van los personajes
+        this.fondoPersonajes = this.add.image(528, 500, 'fondoPersonajes').setDepth(2).setScale(1.5); 
         
         // Título estilizado (Arriba, alineado con el panel izquierdo)
         this.tituloElegir = this.add.text(528, 80, 'Elige tu personaje', {
@@ -28,28 +28,28 @@ export class EscenaElegir extends Phaser.Scene {
             padding: { left: 22, right: 30, top: 5, bottom: 10 },
             align: 'center',
             fixedWidth: 600
-        }).setDepth(3).setOrigin(0.5).setScale(1); // <-- Modifica la escala aquí
+        }).setDepth(3).setOrigin(0.5).setScale(1); 
 
         // ==============================================================
         // 2. BOTONES DE INTERFAZ (Panel derecho)
         // ==============================================================
         
-        // Botón Regresar (Arriba a la derecha. X: 1270 = 77% de 1650)
+        // Botón Regresar
         this.botonRegresar = this.add.image(1300, 75, 'botonRegresar')
             .setDepth(3)
             .setInteractive({ useHandCursor: true })
-            .setScale(0.9); // <-- Modifica la escala aquí
+            .setScale(0.9); 
 
-        // Pestañas / Iconos de selección (Alineados a la derecha)
+        // Pestañas / Iconos de selección
         this.iconoPersona = this.add.image(1270, 315, 'iconoPersona')
             .setDepth(3)
             .setInteractive({ useHandCursor: true })
-            .setScale(1.7); // <-- Modifica la escala aquí
+            .setScale(1.7); 
             
         this.iconoGato = this.add.image(1270, 585, 'iconoGato')
             .setDepth(3)
             .setInteractive({ useHandCursor: true })
-            .setScale(1.7); // <-- Modifica la escala aquí
+            .setScale(1.7); 
 
         // ==============================================================
         // 3. EVENTOS DE INTERFAZ
@@ -78,7 +78,6 @@ export class EscenaElegir extends Phaser.Scene {
         this.iconosPersonajes = [];
 
         // Definimos la lista a renderizar con COORDENADAS FIJAS (Pixeles reales)
-        // Basadas en los porcentajes originales: X (331, 709), Y (324, 666)
         const lista = this.mostrandoHumanos ? [
             { key: 'personaje1', x: 331, y: 324 },
             { key: 'personaje2', x: 709, y: 324 },
@@ -101,13 +100,15 @@ export class EscenaElegir extends Phaser.Scene {
         const icono = this.add.image(item.x, item.y, item.key)
             .setInteractive({ useHandCursor: true })
             .setDepth(4)
-            .setScale(1.4); // <-- Modifica la escala general de los retratos aquí
+            .setScale(1.4); 
 
         // Evento de selección
         icono.on('pointerdown', () => {
             if (esHumano) {
+                // Guarda el humano en global y deja el gato intacto
                 setPersonajesEnUso(item.key, null); 
             } else {
+                // Guarda el gato en global y deja el humano intacto
                 setPersonajesEnUso(null, item.key); 
             }
             this.renderPersonajes(); // Re-renderizamos para aplicar el tinte

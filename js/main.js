@@ -211,14 +211,17 @@ class PreloadScene extends Phaser.Scene {
         }
 
         this.load.spritesheet('mago', '/Juego/assets/static/Personajes/sprites/mago.png', { frameWidth: 207, frameHeight: 400 });
-        this.load.spritesheet('gato', '/Juego/assets/static/Personajes/sprites/gato.png', { frameWidth: 262, frameHeight: 282});
         this.load.spritesheet('niñoCaminando', '/Juego/assets/static/Personajes/sprites/caminataFinal.png', {frameWidth: 92,frameHeight: 155});
         this.load.spritesheet('gatoCaminando', '/Juego/assets/static/Personajes/sprites/caminataFinalGato.png', {frameWidth: 194,frameHeight: 143});
         
         // CARGAR LOS GATOS TAMBIRN, ASI COMO HACER LA FUNCION GLOBAL PARA NO REPETIR QUE PERSONAJE ES
         // MOMENTO DE ARREGLAR LOS TAMAÑOS Y LOS GATOS
          ['SpritePersonaje1', 'SpritePersonaje2', 'SpritePersonaje3', 'SpritePersonaje4'].forEach(g => {
-            this.load.spritesheet(g, `/Juego/assets/static/Personajes/sprites/${g}.png`, { frameWidth: 447, frameHeight: 447});
+            this.load.spritesheet(g, `/Juego/assets/static/Personajes/sprites/${g}.png`, { frameWidth: 200, frameHeight: 350});
+        });
+
+         ['SpriteGato1', 'SpriteGato2', 'SpriteGato3', 'SpriteGato4'].forEach(g => {
+            this.load.spritesheet(g, `/Juego/assets/static/Personajes/sprites/${g}.png`, { frameWidth: 262, frameHeight: 282});
         });
 
         this.load.spritesheet('objetoEspejo', '/Juego/assets/static/Sprites/animacionEspejo.png', { frameWidth: 447, frameHeight: 447});

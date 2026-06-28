@@ -1,4 +1,4 @@
-import { getState } from '../globals.js';
+import { getState, getPersonajeActivo, getGatoActivo } from '../globals.js';
 
 export class EscenaIntroduccionUno extends Phaser.Scene {
     constructor() {
@@ -7,31 +7,11 @@ export class EscenaIntroduccionUno extends Phaser.Scene {
 
     create() {
         // ==============================================================
-        // 1. DETERMINAR QUÉ PERSONAJE USAR (Mapeo de Claves)
+        // 1. DETERMINAR QUÉ PERSONAJES USAR (Fuente Única de Verdad)
         // ==============================================================
-        const estado = getState();
-        
-        // 1.1 Leemos la elección de la interfaz (ej. 'personaje1' o 'gato2')
-        const seleccionInterfaz = estado.personajeHumanoEnUso || estado.personajeGatoEnUso || 'personaje1';
-
-        // 1.2 Diccionario para traducir el icono del menú al SpriteSheet real.
-        // Si tienes los spritesheet de los gatos cargados en el Preload, asegúrate de añadirlos aquí.
-        const mapaSprites = {
-            'personaje1': 'SpritePersonaje1',
-            'personaje2': 'SpritePersonaje2',
-            'personaje3': 'SpritePersonaje3',
-            'personaje4': 'SpritePersonaje4',
-            
-            // Ejemplo de mapeo para gatos (ajusta los nombres a los que uses en tu PreloadScene)
-            'gato1': 'SpriteGato1', 
-            'gato2': 'SpriteGato2',
-            'gato3': 'SpriteGato3',
-            'gato4': 'SpriteGato4'
-        };
-
-        // 1.3 Asignamos el Spritesheet animado. Si la selección no está en el mapa, hacemos fallback a 'SpritePersonaje1'
-        this.claveAnimada = mapaSprites[seleccionInterfaz] || 'SpritePersonaje1';
-
+        // Usamos las funciones del globals.js que ya resuelven el predeterminado
+        const claveHumano = getPersonajeActivo(); 
+        const claveGato = getGatoActivo(); 
 
         // ==============================================================
         // 2. ELEMENTOS VISUALES ESTÁTICOS
@@ -46,25 +26,26 @@ export class EscenaIntroduccionUno extends Phaser.Scene {
         this.botonS = this.add.image(825, 414, 'botonSaltar').setDepth(5).setInteractive({ useHandCursor: true }).setScale(1); 
 
         // ==============================================================
-        // 3. PERSONAJE Y ANIMACIONES (Usando la clave MAPEADA)
+        // 3. PERSONAJES Y ANIMACIONES
         // ==============================================================
         
-        // Ahora usamos this.claveAnimada (ej. 'SpritePersonaje1')
-        this.personaje = this.add.sprite(280, 612, this.claveAnimada).setDepth(3).setScale(1); 
+        // 3.1 Renderizamos al Humano
+        this.personaje = this.add.sprite(280, 612, claveHumano).setDepth(3).setScale(1); 
+        const animHumano = `caminata-${claveHumano}`;
 
-        // Nombramos la animación para que sea única por personaje
-        const nombreAnimacion = `caminata-${this.claveAnimada}`;
-
-        if (!this.anims.exists(nombreAnimacion)) {
+        if (!this.anims.exists(animHumano)) {
             this.anims.create({
-                key: nombreAnimacion,
-                // Generamos los 5 frames que mencionaste (0 al 4)
-                frames: this.anims.generateFrameNumbers(this.claveAnimada, { start: 0, end: 4 }),
+                key: animHumano,
+                frames: this.anims.generateFrameNumbers(claveHumano, { start: 0, end: 4 }),
                 frameRate: 5,
                 repeat: -1
             });
         }
+        this.personaje.play(animHumano);
 
+
+
+        // Animación del fondo final
         if (!this.anims.exists('fondoAnimadoFinal')) {
             this.anims.create({
                 key: 'fondoAnimadoFinal',
@@ -73,9 +54,6 @@ export class EscenaIntroduccionUno extends Phaser.Scene {
                 repeat: 0
             });
         }
-
-        // Reproducimos la animación correcta
-        this.personaje.play(nombreAnimacion);
 
         // ==============================================================
         // 4. SISTEMA DE DIÁLOGOS
@@ -105,7 +83,10 @@ export class EscenaIntroduccionUno extends Phaser.Scene {
             this.boton.setVisible(false);
             this.botonS.setVisible(false);
             this.recuadro.setVisible(false);
+            
+            // Ocultamos ambos personajes
             this.personaje.setVisible(false);
+            this.gato.setVisible(false);
             
             this.animacionFondo.setVisible(true);
             this.animacionFondo.play('fondoAnimadoFinal');
