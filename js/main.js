@@ -78,7 +78,7 @@ class PreloadScene extends Phaser.Scene {
         });
 
         this.load.on('complete', () => {
-            this.scene.start('EscenaInicio');
+            this.scene.start('EscenaIntroduccionUno'); //aqui EscenaInicio
         });
 
         // --- CARGA MASIVA DE ASSETS ESTATICOS ---
@@ -123,6 +123,15 @@ class PreloadScene extends Phaser.Scene {
         const mapas = ['EscenaPeleaSlimeJson', 'CementerioJSON', 'CastilloIfernalJSON', 'CasaAbandonadaJSON', 'mapaTutorial', 'BosqueFuente'];
         mapas.forEach(mapa => this.load.tilemapTiledJSON(mapa, `/Juego/assets/static/Lugares/${mapa}.json`));
 
+        ['personaje1', 'personaje2', 'personaje3', 'personaje4'].forEach(p => {
+            this.load.image(p, `/Juego/assets/static/Personajes/${p}.png`);
+        });
+        ['gato1', 'gato2', 'gato3', 'gato4'].forEach(g => {
+            this.load.image(g, `/Juego/assets/static/Personajes/${g}.png`);
+        });
+    ['SpritePersonaje1', 'SpritePersonaje2', 'SpritePersonaje3', 'SpritePersonaje4'].forEach(g => {
+            this.load.spritesheet(g, `/Juego/assets/static/Personajes/sprites/${g}.png`, { frameWidth: 185, frameHeight: 350});
+        });
 
         this.load.spritesheet('fondoAnimado', '/Juego/assets/static/Animaciones/FondoAnimado.png', { frameWidth: 1536, frameHeight: 960 });
         this.load.spritesheet('fondoAnimadoBosque', '/Juego/assets/static/Animaciones/animacionBosque2.png', { frameWidth: 1536, frameHeight: 1024 });
@@ -163,9 +172,22 @@ class PreloadScene extends Phaser.Scene {
             { key: 'IconoCalaca', path: 'Botones/Cuadrados/IconoCalaca.png' },
             { key: 'IconoDuende', path: 'Botones/Cuadrados/IconoDuende.png' },
             { key: 'IconoSlime', path: 'Botones/Cuadrados/IconoSlime.png' },
+            { key: 'checkpoint', path: 'Botones/Cuadrados/checkpoint.png' },
+            { key: 'decision', path: 'Botones/Cuadrados/decision.png' },
+
             // Textos
             { key: 'MusicaLetra', path: 'Textos/MusicaLetra.png' },
             { key: 'opcionesLetra', path: 'Textos/opcionesLetra.png' },
+            { key: 'si', path: 'Textos/si.png' },
+            { key: 'no', path: 'Textos/no.png' },
+            { key: 'tituloLogros', path: 'Textos/tituloLogros.png' },
+
+            // Recuadros
+            { key: 'recuadroLogroMaestro', path: 'Recuadros/recuadroLogroMaestro.png' },
+            { key: 'recuadroLogroNovato', path: 'Recuadros/recuadroLogroNovato.png' },
+            { key: 'recuadroLogroMitico', path: 'Recuadros/recuadroLogroMitico.png' },
+            { key: 'fondoPersonajes', path: 'Recuadros/fondoPersonajes2.png' },
+
 
 
 
@@ -173,20 +195,14 @@ class PreloadScene extends Phaser.Scene {
 
 
             { key: 'botonDescripcion', path: 'botonDescripcion.png' },
-            { key: 'fondoPersonajes', path: 'fondoPersonajes2.png' },
-            { key: 'si', path: 'si.png' },
-            { key: 'no', path: 'no.png' },
-            { key: 'tituloLogros', path: 'tituloLogros.png' },
+            
             { key: 'recuadroM', path: 'recuadroMago.png' },
             { key: 'recuadroP', path: 'recuadroPersona.png' },
             { key: 'recuadro', path: 'recuadro2.png' },
-            { key: 'barraobjetos', path: 'barraobjetos.png' },
+            { key: 'baraobjetos', path: 'barraobjetos.png' },
             { key: 'inventariopanel', path: 'inventariopanel.png' },
-            { key: 'checkpoint', path: 'checkpoint.png' },
-            { key: 'decision', path: 'decision.png' },
-            { key: 'recuadroLogroMaestro', path: 'recuadroLogroMaestro.png' },
-            { key: 'recuadroLogroNovato', path: 'recuadroLogroNovato.png' },
-            { key: 'recuadroLogroMitico', path: 'recuadroLogroMitico.png' },
+
+
         ];
         uiAssets.forEach(ui => this.load.image(ui.key, `/Juego/assets/static/${ui.path}`));
         if (Array.isArray(getState().objetosGlobales)) {
@@ -197,18 +213,16 @@ class PreloadScene extends Phaser.Scene {
             });
         }
 
-        this.load.spritesheet('mago', '/Juego/assets/static/Personajes/mago.png', { frameWidth: 207, frameHeight: 400 });
-        // Faltan por corregir tamaños
-        this.load.spritesheet('gato', '/Juego/assets/static/Personajes/gato.png', { frameWidth: 262, frameHeight: 282});
-        this.load.spritesheet('niñoCaminando', '/Juego/assets/static/Personajes/caminataFinal.png', {frameWidth: 92,frameHeight: 155});
-        this.load.spritesheet('gatoCaminando', '/Juego/assets/static/Personajes/caminataFinalGato.png', {frameWidth: 194,frameHeight: 143});
+        this.load.spritesheet('mago', '/Juego/assets/static/Personajes/sprites/mago.png', { frameWidth: 207, frameHeight: 400 });
+        this.load.spritesheet('niñoCaminando', '/Juego/assets/static/Personajes/sprites/caminataFinal.png', {frameWidth: 92,frameHeight: 155});
+        this.load.spritesheet('gatoCaminando', '/Juego/assets/static/Personajes/sprites/caminataFinalGato.png', {frameWidth: 194,frameHeight: 143});
         
+        // CARGAR LOS GATOS TAMBIRN, ASI COMO HACER LA FUNCION GLOBAL PARA NO REPETIR QUE PERSONAJE ES
+        // MOMENTO DE ARREGLAR LOS TAMAÑOS Y LOS GATOS
 
-        ['personaje1', 'personaje2', 'personaje3', 'personaje4'].forEach(p => {
-            this.load.image(p, `/Juego/assets/static/Personajes/${p}.png`);
-        });
-        ['gato1', 'gato2', 'gato3', 'gato4'].forEach(g => {
-            this.load.image(g, `/Juego/assets/static/Personajes/${g}.png`);
+
+         ['SpriteGato1', 'SpriteGato2', 'SpriteGato3', 'SpriteGato4'].forEach(g => {
+            this.load.spritesheet(g, `/Juego/assets/static/Personajes/sprites/${g}.png`, { frameWidth: 262, frameHeight: 282});
         });
 
         this.load.spritesheet('objetoEspejo', '/Juego/assets/static/Sprites/animacionEspejo.png', { frameWidth: 447, frameHeight: 447});
@@ -216,12 +230,12 @@ class PreloadScene extends Phaser.Scene {
         this.load.spritesheet('objetoMapa', '/Juego/assets/static/Sprites/animacionMapa.png', { frameWidth: 447, frameHeight: 447});
 
 
-    
+// quitar variables de rescalado, usar las globales de personajes y gato, dejar los comentarios para el reescalado de recursos, agregar el .setscale()
 
 
 
 
-        
+
         const logrosData = getState().logrosGlobales;
         if (logrosData && Array.isArray(logrosData)) {
             logrosData.forEach(logro => {
@@ -262,13 +276,14 @@ const config = {
     scene: [
         PreloadScene,
         EscenaInicio, 
-
         EscenaMenu,
         EscenaInstrucciones,
         EscenaLogros,
         EscenaElegir,
         EscenaEleccion,
-        EscenaIntroduccionUno, 
+        EscenaIntroduccionUno,
+        
+         
         EscenaBosque,
         EscenaBosque2, 
         EscenaCabanaAfuera, 
@@ -306,7 +321,7 @@ async function fetchSeguro(url, nombreEtiqueta) {
 }
 
 async function inicializarJuego() {
-    console.log('🚀 Sincronizando datos con el servidor...');
+    console.log(' Sincronizando datos con el servidor...');
 
     try {
         const [dialogosRes, objetosRes, logrosRes, objetosJRes, usuarioRes] = await Promise.all([
@@ -325,17 +340,17 @@ async function inicializarJuego() {
 
         if (usuarioRes.success) {
             setUser(usuarioRes); 
-            console.log(`👤 Identidad confirmada: ${usuarioRes.guest ? 'INVITADO (Progreso Local)' : 'JUGADOR REGISTRADO'}`);
+            console.log(` Identidad confirmada: ${usuarioRes.guest ? 'INVITADO (Progreso Local)' : 'JUGADOR REGISTRADO'}`);
         }
 
-        console.log('✅ Datos listos. Arrancando motor gráfico de Phaser...');
+        console.log(' Datos listos. Arrancando motor gráfico de Phaser...');
         
-        // 🔥 ARQUITECTURA CLAVE: Arrancamos el juego HASTA QUE la memoria (Store) tiene los datos.
+        //  ARQUITECTURA CLAVE: Arrancamos el juego HASTA QUE la memoria (Store) tiene los datos.
         // Esto evita que PreloadScene intente cargar imágenes de logros que aún no existen en el estado.
         window.game = new Phaser.Game(config);
 
     } catch (error) {
-        console.error('❌ Error crítico al arrancar el juego:', error);
+        console.error(' Error crítico al arrancar el juego:', error);
         alert('Hubo un error de conexión con el servidor. El juego podría no funcionar correctamente.');
     }
 }

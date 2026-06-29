@@ -1,29 +1,20 @@
-// Importación limpia: solo necesitamos la función de reescalado
-import { reescalarGlobalFlexible } from '../uiHelpers.js';
-
 export class EscenaEleccion extends Phaser.Scene {
     constructor() {
         super({ key: 'EscenaEleccion' });
     }
 
     create() {
-        // 1. FONDO
-        this.fondo = this.add.image(0, 0, 'eleccion').setDepth(0);
+        // ==============================================================
+        // 1. FONDO (Centrado en 1650x900)
+        // ==============================================================
+        this.fondo = this.add.image(825, 450, 'eleccion').setDepth(0).setScale(1); // <-- Modifica la escala aquí
 
+        // ==============================================================
         // 2. TEXTOS (Títulos)
-        this.lucha = this.add.text(0, 0, 'LUCHA', {
-            fontSize: '52px',
-            fontFamily: 'Silkscreen',
-            color: '#ffd700',
-            fontStyle: 'bold',
-            stroke: '#ff6b00',
-            strokeThickness: 4,
-            shadow: { offsetX: 4, offsetY: 4, color: '#000000', blur: 8, fill: true },
-            align: 'center'
-        }).setOrigin(0.5);
-
-        this.historia = this.add.text(0, 0, 'HISTORIA', {
-            fontSize: '52px',
+        // ==============================================================
+        // Columna Izquierda (X: 412, Y: 72)
+        this.historia = this.add.text(412, 100, 'HISTORIA', {
+            fontSize: '100px', // Nota: El tamaño base se controla mejor cambiando este fontSize
             fontFamily: 'Silkscreen',
             color: '#00d4ff',
             fontStyle: 'bold',
@@ -31,24 +22,26 @@ export class EscenaEleccion extends Phaser.Scene {
             strokeThickness: 4,
             shadow: { offsetX: 4, offsetY: 4, color: '#000000', blur: 8, fill: true },
             align: 'center'
-        }).setOrigin(0.5);
+        }).setOrigin(0.5).setScale(1); // <-- Modifica la escala aquí
 
-        // 3. TEXTOS (Descripciones)
-        this.luchaDes = this.add.text(0, 0, 'Ir directo\na la batalla', {
-            fontSize: '28px',
+        // Columna Derecha (X: 1155, Y: 72)
+        this.lucha = this.add.text(1240, 100, 'LUCHA', {
+            fontSize: '100px', 
             fontFamily: 'Silkscreen',
             color: '#ffd700',
             fontStyle: 'bold',
             stroke: '#ff6b00',
-            strokeThickness: 2,
-            shadow: { offsetX: 3, offsetY: 3, color: '#000000', blur: 6, fill: true },
-            align: 'center',
-            lineSpacing: 6,
-            wordWrap: { width: 200 }
-        }).setOrigin(0.5);
+            strokeThickness: 4,
+            shadow: { offsetX: 4, offsetY: 4, color: '#000000', blur: 8, fill: true },
+            align: 'center'
+        }).setOrigin(0.5).setScale(1); // <-- Modifica la escala aquí
 
-        this.historiaDes = this.add.text(0, 0, 'Descubre\nla aventura', {
-            fontSize: '28px',
+        // ==============================================================
+        // 3. TEXTOS (Descripciones)
+        // ==============================================================
+        // Columna Izquierda (X: 412, Y: 270)
+        this.historiaDes = this.add.text(412, 350, 'Descubre\nla aventura', {
+            fontSize: '50px',
             fontFamily: 'Silkscreen',
             color: '#00ffd5',
             fontStyle: 'bold',
@@ -57,48 +50,58 @@ export class EscenaEleccion extends Phaser.Scene {
             shadow: { offsetX: 3, offsetY: 3, color: '#000000', blur: 6, fill: true },
             align: 'center',
             lineSpacing: 6,
-            wordWrap: { width: 200 }
-        }).setOrigin(0.5);
+            wordWrap: { width: 300 }
+        }).setOrigin(0.5).setScale(1); // <-- Modifica la escala aquí
 
+        // Columna Derecha (X: 1155, Y: 270)
+        this.luchaDes = this.add.text(1240, 350, 'Ir directo\na la batalla', {
+            fontSize: '50px',
+            fontFamily: 'Silkscreen',
+            color: '#ffd700',
+            fontStyle: 'bold',
+            stroke: '#ff6b00',
+            strokeThickness: 2,
+            shadow: { offsetX: 3, offsetY: 3, color: '#000000', blur: 6, fill: true },
+            align: 'center',
+            lineSpacing: 6,
+            wordWrap: { width: 300 }
+        }).setOrigin(0.5).setScale(1); // <-- Modifica la escala aquí
+
+        // ==============================================================
         // 4. BOTONES / ICONOS INTERACTIVOS
-        this.icono_lucha = this.add.image(0, 0, 'icono_lucha').setInteractive({ useHandCursor: true }).setDepth(1);
-        this.icono_historia = this.add.image(0, 0, 'icono_historia').setInteractive({ useHandCursor: true }).setDepth(1);
+        // ==============================================================
+        // Columna Izquierda (X: 412, Y: 585)
+        this.icono_historia = this.add.image(412, 585, 'icono_historia')
+            .setInteractive({ useHandCursor: true })
+            .setDepth(1)
+            .setScale(1.6); // <-- Modifica la escala aquí
+
+        // Columna Derecha (X: 1155, Y: 585)
+        this.icono_lucha = this.add.image(1240, 585, 'icono_lucha')
+            .setInteractive({ useHandCursor: true })
+            .setDepth(1)
+            .setScale(1.6); // <-- Modifica la escala aquí
 
         // --- Eventos de Clic ---
-        this.icono_lucha.on('pointerdown', () => {
-            this.scene.start('EscenaMapa');
-        });
-
         this.icono_historia.on('pointerdown', () => {
             this.scene.start('EscenaIntroduccionUno'); 
         });
 
+        this.icono_lucha.on('pointerdown', () => {
+            this.scene.start('EscenaMapa');
+        });
+
         // --- Eventos Hover (Feedback Visual) ---
-        this.icono_lucha.on('pointerover', () => this.icono_lucha.setScale(this.escalaLuchaBase * 1.05));
-        this.icono_lucha.on('pointerout', () => this.icono_lucha.setScale(this.escalaLuchaBase));
+        // Guardamos las escalas que hayas asignado arriba para que el Hover sea relativo
+        this.escalaHistoriaBase = this.icono_historia.scaleX;
+        this.escalaLuchaBase = this.icono_lucha.scaleX;
 
         this.icono_historia.on('pointerover', () => this.icono_historia.setScale(this.escalaHistoriaBase * 1.05));
         this.icono_historia.on('pointerout', () => this.icono_historia.setScale(this.escalaHistoriaBase));
 
-        // 5. RESPONSIVIDAD
-        this.aplicarReescalado();
-        this.scale.on('resize', () => this.aplicarReescalado());
-    }
-
-    aplicarReescalado() {
-        // Uso de escala limpia basada en modo FIT
-        reescalarGlobalFlexible(this, [
-            { obj: this.fondo, posX: 0.5, posY: 0.5, escalaRelativa: 1, autoFill: true },
-            { obj: this.icono_historia, posX: 0.25, posY: 0.65, escalaRelativa: 0.36 },
-            { obj: this.icono_lucha, posX: 0.7, posY: 0.65, escalaRelativa: 0.36 },
-            { obj: this.historia, posX: 0.25, posY: 0.08, escalaRelativa: 0.8 },
-            { obj: this.lucha, posX: 0.71, posY: 0.08, escalaRelativa: 0.65 },
-            { obj: this.historiaDes, posX: 0.25, posY: 0.3, escalaRelativa: 0.3 },
-            { obj: this.luchaDes, posX: 0.7, posY: 0.3, escalaRelativa: 0.3 }
-        ]);
-
-        // Guardamos las escalas base para el efecto Hover
-        this.escalaHistoriaBase = this.icono_historia.scale;
-        this.escalaLuchaBase = this.icono_lucha.scale;
+        this.icono_lucha.on('pointerover', () => this.icono_lucha.setScale(this.escalaLuchaBase * 1.05));
+        this.icono_lucha.on('pointerout', () => this.icono_lucha.setScale(this.escalaLuchaBase));
+        
+        // ¡Adiós aplicarReescalado!
     }
 }

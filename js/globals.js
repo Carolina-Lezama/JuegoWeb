@@ -19,7 +19,7 @@ const state = {
     objetosDelPersonaje: {},
     objetosActivos: [],
     
-    // Personajes
+    // Personajes (Guardamos la elección cruda de la UI)
     personajeHumanoEnUso: 'personaje1',
     personajeGatoEnUso: 'gato1',
     
@@ -28,6 +28,25 @@ const state = {
     apartadoMenu: true,
     todosEnemigosVencidos: false
 };
+
+// ============================================================================
+// DICCIONARIOS DE TRADUCCIÓN (Privados)
+// Mapean la elección de la interfaz gráfica a la llave real del Spritesheet
+// ============================================================================
+const mapaHumanos = {
+    'personaje1': 'SpritePersonaje1',
+    'personaje2': 'SpritePersonaje2',
+    'personaje3': 'SpritePersonaje3',
+    'personaje4': 'SpritePersonaje4'
+};
+
+const mapaGatos = {
+    'gato1': 'SpriteGato1',
+    'gato2': 'SpriteGato2',
+    'gato3': 'SpriteGato3',
+    'gato4': 'SpriteGato4'
+};
+
 
 // 2. GETTERS Y SETTERS BÁSICOS
 export const getState = () => state;
@@ -42,6 +61,20 @@ export const setPersonajesEnUso = (humano, gato) => {
     if (humano) state.personajeHumanoEnUso = humano;
     if (gato) state.personajeGatoEnUso = gato;
 };
+
+// ============================================================================
+// GETTERS AVANZADOS DE PERSONAJES (Fuente Única de Verdad)
+// ============================================================================
+export const getPersonajeActivo = () => {
+    // Busca la llave real; si por algún error viene vacía, devuelve el predeterminado
+    return mapaHumanos[state.personajeHumanoEnUso] || 'SpritePersonaje1';
+};
+
+export const getGatoActivo = () => {
+    // Busca la llave real; si por algún error viene vacía, devuelve el predeterminado
+    return mapaGatos[state.personajeGatoEnUso] || 'SpriteGato1';
+};
+
 
 // 3. ACTUALIZACIÓN DE INTERFAZ (UI)
 function actualizarPuntosDOM(nuevoTotal) {
@@ -110,9 +143,6 @@ export async function otorgarLogro(logroId) {
 
     const puntosAGanar = parseInt(datosLogro.puntos || '0', 10);
     
-    // Aquí podrías agregar la lógica de guardar el logro en BD/Local
-    // similar a los puntos.
-    
     if (puntosAGanar > 0) {
         await sumarPuntos(puntosAGanar);
     }
@@ -143,16 +173,13 @@ export async function agregarObjetoInventario(objetoId) {
     }
 }
 
-// Añadir en globals.js (cerca de la sección 5. LÓGICA DE INVENTARIO)
-
 export function obtenerInventarioUnificado() {
     const inventario = {};
     const estado = getState();
 
-    // Función helper para normalizar IDs (asegura que las claves sean las mismas)
     const getId = (obj) => obj.objetos_id || obj.id;
 
-    // 1. Datos del Personaje Actual (Memoria local temporal)
+    // 1. Datos del Personaje Actual
     Object.values(estado.objetosDelPersonaje || {}).forEach(obj => {
         const id = getId(obj);
         if (id) inventario[id] = obj;
@@ -180,17 +207,15 @@ export function obtenerInventarioUnificado() {
     return inventario;
 }
 
-// Para la funcionalidad de "Equipar"
 export function alternarObjetoActivo(id) {
     const index = state.objetosActivos.indexOf(id);
     if (index === -1) {
-        if (state.objetosActivos.length < 6) { // Límite de 6 objetos equipados
+        if (state.objetosActivos.length < 6) { 
             state.objetosActivos.push(id);
-            return true; // Se equipó con éxito
+            return true;
         }
-        return false; // Inventario lleno
+        return false; 
     } else {
-        // Si ya está activo, lo desequipamos
         state.objetosActivos.splice(index, 1);
         return false; 
     }
