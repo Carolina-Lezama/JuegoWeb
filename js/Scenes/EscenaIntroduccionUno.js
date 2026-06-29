@@ -1,4 +1,4 @@
-import { getState, getPersonajeActivo, getGatoActivo } from '../globals.js';
+import { getState, getPersonajeActivo } from '../globals.js';
 
 export class EscenaIntroduccionUno extends Phaser.Scene {
     constructor() {
@@ -11,7 +11,7 @@ export class EscenaIntroduccionUno extends Phaser.Scene {
         // ==============================================================
         // Usamos las funciones del globals.js que ya resuelven el predeterminado
         const claveHumano = getPersonajeActivo(); 
-        const claveGato = getGatoActivo(); 
+
 
         // ==============================================================
         // 2. ELEMENTOS VISUALES ESTÁTICOS
@@ -84,9 +84,7 @@ export class EscenaIntroduccionUno extends Phaser.Scene {
             this.botonS.setVisible(false);
             this.recuadro.setVisible(false);
             
-            // Ocultamos ambos personajes
             this.personaje.setVisible(false);
-            this.gato.setVisible(false);
             
             this.animacionFondo.setVisible(true);
             this.animacionFondo.play('fondoAnimadoFinal');

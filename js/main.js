@@ -129,6 +129,9 @@ class PreloadScene extends Phaser.Scene {
         ['gato1', 'gato2', 'gato3', 'gato4'].forEach(g => {
             this.load.image(g, `/Juego/assets/static/Personajes/${g}.png`);
         });
+    ['SpritePersonaje1', 'SpritePersonaje2', 'SpritePersonaje3', 'SpritePersonaje4'].forEach(g => {
+            this.load.spritesheet(g, `/Juego/assets/static/Personajes/sprites/${g}.png`, { frameWidth: 185, frameHeight: 350});
+        });
 
         this.load.spritesheet('fondoAnimado', '/Juego/assets/static/Animaciones/FondoAnimado.png', { frameWidth: 1536, frameHeight: 960 });
         this.load.spritesheet('fondoAnimadoBosque', '/Juego/assets/static/Animaciones/animacionBosque2.png', { frameWidth: 1536, frameHeight: 1024 });
@@ -182,7 +185,7 @@ class PreloadScene extends Phaser.Scene {
             // Recuadros
             { key: 'recuadroLogroMaestro', path: 'Recuadros/recuadroLogroMaestro.png' },
             { key: 'recuadroLogroNovato', path: 'Recuadros/recuadroLogroNovato.png' },
-            { key: 'recuadroLogroMitico', path: 'recuadroLogroMitico.png' },
+            { key: 'recuadroLogroMitico', path: 'Recuadros/recuadroLogroMitico.png' },
             { key: 'fondoPersonajes', path: 'Recuadros/fondoPersonajes2.png' },
 
 
@@ -216,9 +219,7 @@ class PreloadScene extends Phaser.Scene {
         
         // CARGAR LOS GATOS TAMBIRN, ASI COMO HACER LA FUNCION GLOBAL PARA NO REPETIR QUE PERSONAJE ES
         // MOMENTO DE ARREGLAR LOS TAMAÑOS Y LOS GATOS
-         ['SpritePersonaje1', 'SpritePersonaje2', 'SpritePersonaje3', 'SpritePersonaje4'].forEach(g => {
-            this.load.spritesheet(g, `/Juego/assets/static/Personajes/sprites/${g}.png`, { frameWidth: 200, frameHeight: 350});
-        });
+
 
          ['SpriteGato1', 'SpriteGato2', 'SpriteGato3', 'SpriteGato4'].forEach(g => {
             this.load.spritesheet(g, `/Juego/assets/static/Personajes/sprites/${g}.png`, { frameWidth: 262, frameHeight: 282});
@@ -229,7 +230,7 @@ class PreloadScene extends Phaser.Scene {
         this.load.spritesheet('objetoMapa', '/Juego/assets/static/Sprites/animacionMapa.png', { frameWidth: 447, frameHeight: 447});
 
 
-
+// quitar variables de rescalado, usar las globales de personajes y gato, dejar los comentarios para el reescalado de recursos, agregar el .setscale()
 
 
 
