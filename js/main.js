@@ -129,8 +129,11 @@ class PreloadScene extends Phaser.Scene {
         ['gato1', 'gato2', 'gato3', 'gato4'].forEach(g => {
             this.load.image(g, `/Juego/assets/static/Personajes/${g}.png`);
         });
-    ['SpritePersonaje1', 'SpritePersonaje2', 'SpritePersonaje3', 'SpritePersonaje4'].forEach(g => {
+        ['SpritePersonaje1', 'SpritePersonaje2', 'SpritePersonaje3', 'SpritePersonaje4'].forEach(g => {
             this.load.spritesheet(g, `/Juego/assets/static/Personajes/sprites/${g}.png`, { frameWidth: 185, frameHeight: 350});
+        });
+        ['SpriteGato1', 'SpriteGato2', 'SpriteGato3', 'SpriteGato4'].forEach(g => {
+            this.load.spritesheet(g, `/Juego/assets/static/Personajes/sprites/${g}.png`, { frameWidth: 200, frameHeight: 230});
         });
 
         this.load.spritesheet('fondoAnimado', '/Juego/assets/static/Animaciones/FondoAnimado.png', { frameWidth: 1536, frameHeight: 960 });
@@ -187,7 +190,9 @@ class PreloadScene extends Phaser.Scene {
             { key: 'recuadroLogroNovato', path: 'Recuadros/recuadroLogroNovato.png' },
             { key: 'recuadroLogroMitico', path: 'Recuadros/recuadroLogroMitico.png' },
             { key: 'fondoPersonajes', path: 'Recuadros/fondoPersonajes2.png' },
-
+            { key: 'recuadroM', path: 'recuadroMago.png' },
+            { key: 'recuadroP', path: 'recuadroPersona.png' },
+            { key: 'recuadro', path: 'recuadro2.png' },
 
 
 
@@ -195,10 +200,6 @@ class PreloadScene extends Phaser.Scene {
 
 
             { key: 'botonDescripcion', path: 'botonDescripcion.png' },
-            
-            { key: 'recuadroM', path: 'recuadroMago.png' },
-            { key: 'recuadroP', path: 'recuadroPersona.png' },
-            { key: 'recuadro', path: 'recuadro2.png' },
             { key: 'baraobjetos', path: 'barraobjetos.png' },
             { key: 'inventariopanel', path: 'inventariopanel.png' },
 
@@ -221,9 +222,7 @@ class PreloadScene extends Phaser.Scene {
         // MOMENTO DE ARREGLAR LOS TAMAÑOS Y LOS GATOS
 
 
-         ['SpriteGato1', 'SpriteGato2', 'SpriteGato3', 'SpriteGato4'].forEach(g => {
-            this.load.spritesheet(g, `/Juego/assets/static/Personajes/sprites/${g}.png`, { frameWidth: 262, frameHeight: 282});
-        });
+
 
         this.load.spritesheet('objetoEspejo', '/Juego/assets/static/Sprites/animacionEspejo.png', { frameWidth: 447, frameHeight: 447});
         this.load.spritesheet('objetoEspada', '/Juego/assets/static/Sprites/animacionEspada.png', { frameWidth: 447, frameHeight: 447});
