@@ -6,9 +6,6 @@ header('Content-Type: application/json');
 require_once __DIR__ . '/../includes/config.php';
 require_once __DIR__ . '/../model/jugadoresM.php';
 
-// 3. 🔥 CRÍTICO: Validamos la sesión de forma automatizada.
-// Si el usuario no está logueado, esta función cortará la ejecución aquí mismo
-// y le devolverá un error 401 en formato JSON limpio a Phaser.
 require_login();
 
 try {

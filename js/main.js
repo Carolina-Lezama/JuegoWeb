@@ -78,7 +78,7 @@ class PreloadScene extends Phaser.Scene {
         });
 
         this.load.on('complete', () => {
-            this.scene.start('EscenaIntroduccionUno'); //aqui EscenaInicio
+            this.scene.start('EscenaBosque2'); //aqui EscenaInicio
         });
 
         // --- CARGA MASIVA DE ASSETS ESTATICOS ---
@@ -190,50 +190,48 @@ class PreloadScene extends Phaser.Scene {
             { key: 'recuadroLogroNovato', path: 'Recuadros/recuadroLogroNovato.png' },
             { key: 'recuadroLogroMitico', path: 'Recuadros/recuadroLogroMitico.png' },
             { key: 'fondoPersonajes', path: 'Recuadros/fondoPersonajes2.png' },
-            { key: 'recuadroM', path: 'recuadroMago.png' },
-            { key: 'recuadroP', path: 'recuadroPersona.png' },
-            { key: 'recuadro', path: 'recuadro2.png' },
+            { key: 'recuadroM', path: 'Recuadros/recuadroMago.png' },
+            { key: 'recuadroP', path: 'Recuadros/recuadroPersona.png' },
+            { key: 'recuadro', path: 'Recuadros/recuadro2.png' },
 
 
 
 
 
 
+
+            
             { key: 'botonDescripcion', path: 'botonDescripcion.png' },
             { key: 'baraobjetos', path: 'barraobjetos.png' },
             { key: 'inventariopanel', path: 'inventariopanel.png' },
-
-
-        ];
-        uiAssets.forEach(ui => this.load.image(ui.key, `/Juego/assets/static/${ui.path}`));
-        if (Array.isArray(getState().objetosGlobales)) {
-            getState().objetosGlobales.forEach(obj => {
-                if (obj.id) {
-                    this.load.spritesheet(String(obj.id), `/Juego/assets/static/${obj.id}.png`, {frameWidth: 134, frameHeight: 184});
-                }
-            });
-        }
-
-        this.load.spritesheet('mago', '/Juego/assets/static/Personajes/sprites/mago.png', { frameWidth: 207, frameHeight: 400 });
+];
         this.load.spritesheet('niñoCaminando', '/Juego/assets/static/Personajes/sprites/caminataFinal.png', {frameWidth: 92,frameHeight: 155});
         this.load.spritesheet('gatoCaminando', '/Juego/assets/static/Personajes/sprites/caminataFinalGato.png', {frameWidth: 194,frameHeight: 143});
         
         // CARGAR LOS GATOS TAMBIRN, ASI COMO HACER LA FUNCION GLOBAL PARA NO REPETIR QUE PERSONAJE ES
         // MOMENTO DE ARREGLAR LOS TAMAÑOS Y LOS GATOS
+// quiero que quites variables de rescalado, usar las globales de personajes y gato, dejar los comentarios para el reescalado de recursos, agregar el .setscale()
 
 
 
 
-        this.load.spritesheet('objetoEspejo', '/Juego/assets/static/Sprites/animacionEspejo.png', { frameWidth: 447, frameHeight: 447});
-        this.load.spritesheet('objetoEspada', '/Juego/assets/static/Sprites/animacionEspada.png', { frameWidth: 447, frameHeight: 447});
-        this.load.spritesheet('objetoMapa', '/Juego/assets/static/Sprites/animacionMapa.png', { frameWidth: 447, frameHeight: 447});
-
-
-// quitar variables de rescalado, usar las globales de personajes y gato, dejar los comentarios para el reescalado de recursos, agregar el .setscale()
 
 
 
+        this.load.spritesheet('mago', '/Juego/assets/static/Personajes/sprites/mago.png', { frameWidth: 207, frameHeight: 400 });
 
+        uiAssets.forEach(ui => this.load.image(ui.key, `/Juego/assets/static/Animaciones/${ui.path}`));
+        if (Array.isArray(getState().objetosGlobales)) {
+            getState().objetosGlobales.forEach(obj => {
+                if (obj.id) {
+                    this.load.spritesheet(String(obj.id), `/Juego/assets/static/Animaciones/${obj.id}.png`, {frameWidth: 134, frameHeight: 184});
+                }
+            });
+        }
+
+        this.load.spritesheet('objetoEspejo', '/Juego/assets/static/Animaciones/animacionEspejo.png', { frameWidth: 447, frameHeight: 447});
+        this.load.spritesheet('objetoEspada', '/Juego/assets/static/Animaciones/animacionEspada.png', { frameWidth: 447, frameHeight: 447});
+        this.load.spritesheet('objetoMapa', '/Juego/assets/static/Animaciones/animacionMapa.png', { frameWidth: 447, frameHeight: 447});
 
         const logrosData = getState().logrosGlobales;
         if (logrosData && Array.isArray(logrosData)) {
@@ -281,10 +279,10 @@ const config = {
         EscenaElegir,
         EscenaEleccion,
         EscenaIntroduccionUno,
-        
-         
         EscenaBosque,
         EscenaBosque2, 
+        
+        
         EscenaCabanaAfuera, 
         EscenaCabanaAdentro, 
         EscenaInventario,

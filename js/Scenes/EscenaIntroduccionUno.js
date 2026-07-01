@@ -17,9 +17,9 @@ export class EscenaIntroduccionUno extends Phaser.Scene {
         // 2. ELEMENTOS VISUALES ESTÁTICOS
         // ==============================================================
         this.fondo = this.add.image(825, 900, 'fondoIntroduccionUno').setOrigin(0.5, 1).setDepth(1).setScale(1); 
-        this.animacionFondo = this.add.sprite(825, 900, 'fondoAnimado').setOrigin(0.5, 1).setVisible(false).setDepth(10).setScale(1); 
+        this.animacionFondo = this.add.sprite(825, 900, 'fondoAnimado').setOrigin(0.5, 1).setVisible(false).setDepth(10).setScale(1.1,1); 
         
-        this.recuadro = this.add.image(1370, 225, 'recuadro').setDepth(2).setScale(1); 
+        this.recuadro = this.add.image(1160, 205, 'recuadro').setDepth(2).setScale(1.6); 
         
         this.regreso = this.add.image(83, 90, 'regreso').setDepth(10).setInteractive({ useHandCursor: true }).setScale(1.3); 
         this.boton = this.add.image(1450, 432, 'botonSiguiente').setDepth(5).setInteractive({ useHandCursor: true }).setScale(0.75); 
