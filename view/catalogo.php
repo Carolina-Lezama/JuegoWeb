@@ -52,6 +52,52 @@ $juegos = [
         'categorias' => 'plataformas retro'
     ]
 ];
+
+// ==============================================================
+// 2. CONSUMO DE API EXTERNA (FreeToGame)
+// ==============================================================
+$juegos_externos = [];
+$api_url = "https://www.freetogame.com/api/games?sort-by=popularity";
+
+// Usamos cURL que es más seguro y profesional en PHP para consumir APIs
+if (function_exists('curl_init')) {
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $api_url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Evita problemas de certificados en localhost
+    $respuesta_api = curl_exec($ch);
+    curl_close($ch);
+} else {
+    // Respaldo por si cURL no está activo en tu servidor
+    $respuesta_api = @file_get_contents($api_url);
+}
+
+// Si la API respondió correctamente, procesamos los datos
+if ($respuesta_api) {
+    $datos_api = json_decode($respuesta_api, true);
+    
+    // Validamos que sea un arreglo válido
+    if (is_array($datos_api)) {
+        // Tomamos solo los primeros 6 juegos para no saturar tu página
+        $top_juegos_api = array_slice($datos_api, 0, 6);
+        
+        foreach ($top_juegos_api as $juego_api) {
+            // Transformamos los datos de la API para que encajen con tu formato
+            $juegos_externos[] = [
+                'url' => $juego_api['game_url'], // URL oficial del juego
+                'img' => $juego_api['thumbnail'], // Imagen de portada
+                'titulo' => $juego_api['title'],
+                'genero' => $juego_api['genre'],
+                // Convertimos el género a minúsculas y agregamos 'externo' para tus filtros JS
+                'categorias' => strtolower($juego_api['genre']) . ' externo'
+            ];
+        }
+    }
+}
+
+// 3. Unimos los juegos de tu BD con los juegos traídos de la API
+$catalogo_completo = array_merge($juegos, $juegos_externos);
+
 ?>
 
 <!DOCTYPE html>
@@ -98,8 +144,8 @@ $juegos = [
 </section>
 
 <section class="games">
-    <?php foreach ($juegos as $juego): ?>
-        <a href="<?php echo htmlspecialchars($juego['url']); ?>" class="game-link">
+    <?php foreach ($catalogo_completo as $juego): ?>
+        <a href="<?php echo htmlspecialchars($juego['url']); ?>" class="game-link" <?php echo (strpos($juego['url'], 'http') === 0) ? 'target="_blank"' : ''; ?>>
             <div class="game-card" data-category="<?php echo htmlspecialchars($juego['categorias']); ?>">
                 <img src="<?php echo htmlspecialchars($juego['img']); ?>" alt="<?php echo htmlspecialchars($juego['titulo']); ?>">
                 <h3><?php echo htmlspecialchars($juego['titulo']); ?></h3>
