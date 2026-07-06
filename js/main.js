@@ -57,6 +57,17 @@ class PreloadScene extends Phaser.Scene {
     }
 
     create() {
+        this.textoMotivacional = this.add.text(800, 650, 'Buscando inspiración en el cosmos...', {
+            fontSize: '30px',
+            color: '#ffffff',
+            fontFamily: 'Arial',
+            fontStyle: 'italic',
+            align: 'center',
+            wordWrap: { width: 700 }
+        }).setOrigin(0.5).setDepth(5);
+
+        this.consumirApiMotivacional();
+        
         // 1. Centramos el fondo en las coordenadas (825, 450)
         this.fondo = this.add.image(825, 450, 'fondoCarga');
         
@@ -78,7 +89,7 @@ class PreloadScene extends Phaser.Scene {
         });
 
         this.load.on('complete', () => {
-            this.scene.start('EscenaBosque2'); //aqui EscenaInicio
+            this.scene.start('EscenaCabanaAdentro'); //aqui EscenaInicio
         });
 
         // --- CARGA MASIVA DE ASSETS ESTATICOS ---
@@ -220,7 +231,8 @@ class PreloadScene extends Phaser.Scene {
 
         this.load.spritesheet('mago', '/Juego/assets/static/Personajes/sprites/mago.png', { frameWidth: 207, frameHeight: 400 });
 
-        uiAssets.forEach(ui => this.load.image(ui.key, `/Juego/assets/static/Animaciones/${ui.path}`));
+        uiAssets.forEach(ui => this.load.image(ui.key, `/Juego/assets/static/${ui.path}`));
+
         if (Array.isArray(getState().objetosGlobales)) {
             getState().objetosGlobales.forEach(obj => {
                 if (obj.id) {
@@ -248,6 +260,30 @@ class PreloadScene extends Phaser.Scene {
 
         this.load.start();
     }
+
+    async consumirApiMotivacional() {
+        try {
+            // Hacemos la petición a la API
+            const respuesta = await fetch('https://api.adviceslip.com/advice');
+            
+            // Verificamos que la respuesta sea correcta
+            if (!respuesta.ok) throw new Error('Error en la red');
+            
+            // Convertimos la respuesta a JSON
+            const datos = await respuesta.json();
+            
+            // Extraemos el consejo del JSON y actualizamos el texto en Phaser
+            const consejo = datos.slip.advice;
+            this.textoMotivacional.setText(`" ${consejo} "`);
+
+        } catch (error) {
+            // Plan B: Si no hay internet o la API falla, mostramos un mensaje por defecto
+            console.warn("No se pudo cargar la API:", error);
+            this.textoMotivacional.setText('" El verdadero tesoro es el código que depuramos en el camino. "');
+        }
+    }
+
+
 
 }
 
@@ -281,10 +317,10 @@ const config = {
         EscenaIntroduccionUno,
         EscenaBosque,
         EscenaBosque2, 
-        
-        
         EscenaCabanaAfuera, 
         EscenaCabanaAdentro, 
+        
+        
         EscenaInventario,
         EscenaTutorialUno, 
         EscenaSalida,

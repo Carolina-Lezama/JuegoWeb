@@ -17,20 +17,20 @@ export class EscenaBosque2 extends Phaser.Scene {
         this.fondo = this.add.image(825, 450, 'fondoBosque').setDepth(1).setScale(1); // <-- Modifica la escala aquí
         
         // Recuadros de diálogo
-        this.recuadro = this.add.image(709, 198, 'recuadro').setDepth(2).setScale(1); // <-- Modifica la escala aquí
-        this.recuadroMa = this.add.image(495, 180, 'recuadroM').setDepth(2).setVisible(false).setScale(1); // <-- Modifica la escala aquí
-        this.recuadroPe = this.add.image(495, 180, 'recuadroP').setDepth(2).setVisible(false).setScale(1); // <-- Modifica la escala aquí
-
+        this.recuadro = this.add.image(500, 170, 'recuadro').setDepth(2).setScale(1.85, 1.35); // <-- Modifica la escala aquí
+        this.recuadroMa = this.add.image(500, 170, 'recuadroM').setDepth(2).setVisible(false).setScale(1.85, 1.35); // <-- Modifica la escala aquí
+        this.recuadroPe = this.add.image(500, 170, 'recuadroP').setDepth(2).setVisible(false).setScale(1.85, 1.35); // <-- Modifica la escala aquí
+        
         // Botones interactivos
-        this.boton = this.add.image(495, 396, 'botonSiguiente').setDepth(4).setInteractive({ useHandCursor: true }).setScale(1); // <-- Modifica la escala aquí
-        this.botonS = this.add.image(165, 387, 'botonSaltar').setDepth(4).setInteractive({ useHandCursor: true }).setScale(1); // <-- Modifica la escala aquí
+        this.boton = this.add.image(545, 396, 'botonSiguiente').setDepth(4).setInteractive({ useHandCursor: true }).setScale(0.8); // <-- Modifica la escala aquí
+        this.botonS = this.add.image(185, 396, 'botonSaltar').setDepth(4).setInteractive({ useHandCursor: true }).setScale(0.8); // <-- Modifica la escala aquí
 
         // ==============================================================
         // 3. PERSONAJES Y ANIMACIONES
         // ==============================================================
         
         // 3.1 Renderizamos al Gato (X: 0.51, Y: 0.81 -> X: 841, Y: 729)
-        this.gato = this.add.sprite(841, 729, claveGato).setDepth(3).setScale(1); // <-- Modifica la escala aquí
+        this.gato = this.add.sprite(770, 695, claveGato).setDepth(3).setScale(1); // <-- Modifica la escala aquí
         const animGato = `caminata-${claveGato}`;
         
         if (!this.anims.exists(animGato)) {
@@ -44,12 +44,12 @@ export class EscenaBosque2 extends Phaser.Scene {
         }
         
         // 3.2 Mago (Misma posición que en la escena anterior: X: 1188, Y: 558)
-        this.mago = this.add.sprite(1188, 558, 'mago').setDepth(3).setScale(1); // <-- Modifica la escala aquí
+        this.mago = this.add.sprite(1008, 575, 'mago').setDepth(3).setScale(1.2); // <-- Modifica la escala aquí
         if (!this.anims.exists('mago-movimiento')) {
             this.anims.create({
                 key: 'mago-movimiento',
                 frames: this.anims.generateFrameNumbers('mago', { start: 0, end: 4 }),
-                frameRate: 5,
+                frameRate: 4,
                 repeat: -1
             });
         }
@@ -81,7 +81,7 @@ export class EscenaBosque2 extends Phaser.Scene {
             color: '#000000',
             fontFamily: 'Arial',
             align: 'center',
-            wordWrap: { width: 970 }
+            wordWrap: { width: 700 }
         }).setOrigin(0.5).setDepth(5).setScale(1); // <-- Modifica la escala aquí
 
         // ==============================================================
