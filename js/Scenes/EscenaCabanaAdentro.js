@@ -25,7 +25,7 @@ export class EscenaCabanaAdentro extends Phaser.Scene {
         // Botones e Interfaz
         // Coordenadas calculadas desde tus porcentajes relativos
         this.botonD = this.add.image(500, 180, 'botonDescripcion').setDepth(4).setVisible(false).setScale(0.55); // <-- Modifica la escala aquí
-        this.botonI = this.add.image(85, 90, 'botonInventario').setDepth(10).setInteractive({ useHandCursor: true }).setVisible(false).setScale(0.15); // <-- Modifica la escala aquí
+        this.botonI = this.add.image(85, 90, 'botonInventario').setDepth(10).setInteractive({ useHandCursor: true }).setVisible(false).setScale(0.85); // <-- Modifica la escala aquí
         this.botonSa = this.add.image(500, 720, 'botonSalir').setDepth(4).setInteractive({ useHandCursor: true }).setVisible(false).setScale(0.7); // <-- Modifica la escala aquí
         this.boton = this.add.image(545, 396, 'botonSiguiente').setDepth(4).setInteractive({ useHandCursor: true }).setScale(0.8); // <-- Modifica la escala aquí
         this.botonS = this.add.image(185, 396, 'botonSaltar').setDepth(4).setInteractive({ useHandCursor: true }).setScale(0.8); // <-- Modifica la escala aquí

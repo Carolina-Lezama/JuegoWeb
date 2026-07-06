@@ -1,5 +1,4 @@
 import { getState, obtenerInventarioUnificado, alternarObjetoActivo } from '../globals.js';
-import { reescalarGlobalFlexible, createAndAdaptTextFlexible, agregarEfectoHover } from '../uiHelpers.js';
 
 export class EscenaInventario extends Phaser.Scene {
     constructor() {
@@ -9,18 +8,20 @@ export class EscenaInventario extends Phaser.Scene {
     }
 
     create() {
+        // ==============================================================
         // 1. FONDOS E INTERFAZ
-        this.fondo = this.add.image(0, 0, 'fondoInventario').setDepth(0);
-        this.inventariopanel = this.add.image(0, 0, 'inventariopanel').setDepth(1);
+        // ==============================================================
+        // Ajustamos el origen del fondo a (0.5, 1) para que ancle abajo al medio, como lo tenías antes
+        this.fondo = this.add.image(825, 900, 'fondoInventario').setOrigin(0.5, 1).setDepth(0).setScale(1); // <-- Modifica la escala aquí
+        this.inventariopanel = this.add.image(825, 558, 'inventariopanel').setDepth(1).setScale(3); // <-- Modifica la escala aquí
         
         // Botones interactivos
-        this.botonI = this.add.image(0, 0, 'botonInventario').setDepth(2).setInteractive({ useHandCursor: true });
-        this.botonE = this.add.image(0, 0, 'botonEquipar').setDepth(2).setInteractive({ useHandCursor: true });
+        this.botonI = this.add.image(110, 120, 'botonInventario').setDepth(2).setInteractive({ useHandCursor: true }).setScale(1.2); // <-- Modifica la escala aquí
+        this.botonE = this.add.image(1353, 120, 'botonEquipar').setDepth(2).setInteractive({ useHandCursor: true }).setScale(1); // <-- Modifica la escala aquí
 
+        // ==============================================================
         // 2. LÓGICA DE CIERRE UNIVERSAL (Enrutamiento)
-        // Ya no necesitamos hardcodear los nombres de las escenas.
-        // Verificamos si esta escena fue "Lanzada" (Launch, que no pausa el update)
-        // o si fue iniciada normalmente (Start).
+        // ==============================================================
         const cerrarInventario = () => {
             if (window.ultimaEscenaActiva) {
                 this.scene.stop();
@@ -37,16 +38,17 @@ export class EscenaInventario extends Phaser.Scene {
         this.botonI.on('pointerdown', cerrarInventario);
         this.input.keyboard.on('keydown-R', cerrarInventario);
 
-        // 3. CARGA DE DATOS UNIFICADOS
+        // ==============================================================
+        // 3. CARGA DE DATOS UNIFICADOS Y RENDERIZADO DEL GRID
+        // ==============================================================
         this.objetosImgs = {};
         const inventarioUnificado = obtenerInventarioUnificado();
-        
-        // 4. RENDERIZADO DEL GRID DE OBJETOS
-        let indiceObjeto = 0;
         const baseGlobal = getState().objetosGlobales || [];
+        
+        let indiceObjeto = 0;
 
         Object.keys(inventarioUnificado).forEach(id => {
-            // Buscamos los datos completos del objeto en la base de datos de objetos
+            // Buscamos los datos completos del objeto en la base de datos
             const dataObj = baseGlobal.find(o => o.id == id) || inventarioUnificado[id];
             
             if (!dataObj) {
@@ -54,10 +56,22 @@ export class EscenaInventario extends Phaser.Scene {
                 return;
             }
 
+            // ==========================================================
+            // MATEMÁTICA DEL GRID ESTÁTICO (5 objetos por fila)
+            // ==========================================================
+            const columna = indiceObjeto % 5;
+            const fila = Math.floor(indiceObjeto / 5);
+            
+            // X Base: 437px + (165px de espacio por columna)
+            // Y Base: 382px + (117px de espacio por fila)
+            const posX = 400 + (165 * columna);
+            const posY = 382 + (117 * fila);
+
             const spriteKey = dataObj.sprite || dataObj.imagen || String(id);
-            const sprite = this.add.sprite(0, 0, spriteKey)
+            const sprite = this.add.sprite(posX, posY, spriteKey)
                 .setDepth(3)
-                .setInteractive({ useHandCursor: true });
+                .setInteractive({ useHandCursor: true })
+                .setScale(0.8); // <-- Modifica la escala de los ítems en el inventario aquí
             
             this.objetosImgs[id] = sprite;
 
@@ -89,28 +103,32 @@ export class EscenaInventario extends Phaser.Scene {
                     this.marcadorSeleccion.destroy();
                 }
 
-                // Dibujar nuevo marcador encima del sprite
+                // Dibujar nuevo marcador dinámico encima del sprite basado en su tamaño actual
                 this.marcadorSeleccion = this.add.rectangle(
                     sprite.x, sprite.y, 
-                    sprite.displayWidth + 10, sprite.displayHeight + 10, // Un poco más grande que el sprite
-                    0x00ff00, 0.3 // Verde semitransparente
-                ).setDepth(2).setOrigin(0.5); // El origin debe coincidir con el sprite
+                    sprite.displayWidth + 10, sprite.displayHeight + 10, 
+                    0x00ff00, 0.3 
+                ).setDepth(2).setOrigin(0.5); 
             });
 
             indiceObjeto++;
         });
 
-        // 5. SISTEMA DE NOTIFICACIONES (Botón Equipar)
-        this.textoNotificacion = createAndAdaptTextFlexible(this, {
-            text: 'Agregado correctamente a tu barra de herramientas',
-            posX: 0.48, posY: 0.14, maxWidth: 850, fontSizeInicial: 38,
-            originX: 0.5, originY: 0.5, color: '#ffffff'
-        }).setDepth(5).setVisible(false);
+        // ==============================================================
+        // 4. SISTEMA DE NOTIFICACIONES (Botón Equipar)
+        // ==============================================================
+        this.textoNotificacion = this.add.text(792, 126, 'Agregado correctamente a tu barra de herramientas', {
+            fontSize: '38px',
+            color: '#ffffff',
+            fontFamily: 'Arial',
+            align: 'center',
+            wordWrap: { width: 850 }
+        }).setOrigin(0.5).setDepth(5).setVisible(false).setScale(1); // <-- Modifica la escala aquí
 
         this.botonE.on('pointerdown', () => {
             if (!this.objetoSeleccionado) return;
 
-            // Usamos nuestra nueva función global para equipar/desequipar
+            // Usamos la función global para equipar/desequipar
             const fueEquipado = alternarObjetoActivo(this.objetoSeleccionado);
 
             if (fueEquipado) {
@@ -129,49 +147,17 @@ export class EscenaInventario extends Phaser.Scene {
             });
         });
 
-        // 6. RESPONSIVIDAD Y EFECTOS
-        this.aplicarReescalado();
-        this.scale.on('resize', () => this.aplicarReescalado());
-
-        agregarEfectoHover(this.botonI, 1.15);
-        agregarEfectoHover(this.botonE);
+        // ==============================================================
+        // 5. EVENTOS HOVER (Feedback Visual)
+        // ==============================================================
+        this.agregarEfectoHover(this.botonI, 1.15); // El icono de inventario crece un poco más
+        this.agregarEfectoHover(this.botonE, 1.1);
     }
 
-    aplicarReescalado() {
-        const elementosAReescalar = [
-            { obj: this.fondo, posX: 0.5, posY: 1, originX: 0.5, originY: 1, escalaRelativa: 1, autoFill: true },
-            { obj: this.inventariopanel, posX: 0.5, posY: 0.62, escalaRelativa: 1.25 },
-            { obj: this.botonI, posX: 0.05, posY: 0.1, escalaRelativa: 0.15 },
-            { obj: this.botonE, posX: 0.82, posY: 0.15, escalaRelativa: 0.3 }
-        ];
-
-        // Añadimos los sprites del inventario a la lista de reescalado
-        // Usamos la misma matemática de grid, pero limpia y legible
-        const IDs = Object.keys(this.objetosImgs);
-        IDs.forEach((id, index) => {
-            const columna = index % 5;
-            const fila = Math.floor(index / 5);
-            
-            elementosAReescalar.push({
-                obj: this.objetosImgs[id],
-                // Ajustes de cuadrícula basados en el modo FIT (1650x900)
-                posX: 0.265 + (0.1 * columna),
-                posY: 0.425 + (0.13 * fila),
-                escalaRelativa: 0.10
-            });
-        });
-
-        reescalarGlobalFlexible(this, elementosAReescalar);
-
-        // Si hay un marcador activo durante el redimensionado, ajustamos su posición
-        if (this.marcadorSeleccion && this.objetoSeleccionado) {
-            const spriteActivo = this.objetosImgs[this.objetoSeleccionado];
-            if (spriteActivo) {
-                this.marcadorSeleccion.setPosition(spriteActivo.x, spriteActivo.y);
-            }
-        }
-
-        this.botonI.escalaBase = this.botonI.scale;
-        this.botonE.escalaBase = this.botonE.scale;
+    // Función interna nativa para reemplazar la global
+    agregarEfectoHover(boton, multiplicador) {
+        boton.escalaBase = boton.scaleX;
+        boton.on('pointerover', () => boton.setScale(boton.escalaBase * multiplicador));
+        boton.on('pointerout', () => boton.setScale(boton.escalaBase));
     }
 }

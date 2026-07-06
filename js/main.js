@@ -89,7 +89,7 @@ class PreloadScene extends Phaser.Scene {
         });
 
         this.load.on('complete', () => {
-            this.scene.start('EscenaCabanaAdentro'); //aqui EscenaInicio
+            this.scene.start('EscenaTutorialUno'); //aqui EscenaInicio
         });
 
         // --- CARGA MASIVA DE ASSETS ESTATICOS ---
@@ -195,6 +195,7 @@ class PreloadScene extends Phaser.Scene {
             { key: 'si', path: 'Textos/si.png' },
             { key: 'no', path: 'Textos/no.png' },
             { key: 'tituloLogros', path: 'Textos/tituloLogros.png' },
+            { key: 'botonDescripcion', path: 'Textos/botonDescripcion.png' },
 
             // Recuadros
             { key: 'recuadroLogroMaestro', path: 'Recuadros/recuadroLogroMaestro.png' },
@@ -204,7 +205,8 @@ class PreloadScene extends Phaser.Scene {
             { key: 'recuadroM', path: 'Recuadros/recuadroMago.png' },
             { key: 'recuadroP', path: 'Recuadros/recuadroPersona.png' },
             { key: 'recuadro', path: 'Recuadros/recuadro2.png' },
-
+            { key: 'barraobjetos', path: 'Recuadros/barraobjetos.png' },
+            { key: 'inventariopanel', path: 'Recuadros/inventariopanel.png' },
 
 
 
@@ -212,15 +214,13 @@ class PreloadScene extends Phaser.Scene {
 
 
             
-            { key: 'botonDescripcion', path: 'botonDescripcion.png' },
-            { key: 'baraobjetos', path: 'barraobjetos.png' },
-            { key: 'inventariopanel', path: 'inventariopanel.png' },
+
+
 ];
         this.load.spritesheet('niñoCaminando', '/Juego/assets/static/Personajes/sprites/caminataFinal.png', {frameWidth: 92,frameHeight: 155});
         this.load.spritesheet('gatoCaminando', '/Juego/assets/static/Personajes/sprites/caminataFinalGato.png', {frameWidth: 194,frameHeight: 143});
         
-        // CARGAR LOS GATOS TAMBIRN, ASI COMO HACER LA FUNCION GLOBAL PARA NO REPETIR QUE PERSONAJE ES
-        // MOMENTO DE ARREGLAR LOS TAMAÑOS Y LOS GATOS
+
 // quiero que quites variables de rescalado, usar las globales de personajes y gato, dejar los comentarios para el reescalado de recursos, agregar el .setscale()
 
 
@@ -319,10 +319,10 @@ const config = {
         EscenaBosque2, 
         EscenaCabanaAfuera, 
         EscenaCabanaAdentro, 
-        
-        
         EscenaInventario,
         EscenaTutorialUno, 
+        
+        
         EscenaSalida,
         EscenaParteUno,
         EscenaMapa,
