@@ -84,7 +84,10 @@ export class EscenaTutorialUno extends Phaser.Scene {
         this.agregarEfectoHover(this.botonI, 1.15);
 
         const abrirInventario = () => {
-            window.ultimaEscenaActiva = this.scene.key;
+            // Guardamos qué escena llamó al inventario
+            window.ultimaEscenaActiva = this.scene.key; 
+            
+            // Switch pone esta escena a dormir y despierta (o inicia) el inventario
             this.scene.switch('EscenaInventario');
         };
 

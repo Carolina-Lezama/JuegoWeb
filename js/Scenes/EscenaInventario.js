@@ -22,21 +22,16 @@ export class EscenaInventario extends Phaser.Scene {
         // ==============================================================
         // 2. LÓGICA DE CIERRE UNIVERSAL (Enrutamiento)
         // ==============================================================
-        const cerrarInventario = () => {
-            if (window.ultimaEscenaActiva) {
-                this.scene.stop();
-                // Si la escena anterior sigue existiendo, la reanudamos
-                if (this.scene.manager.getScene(window.ultimaEscenaActiva)) {
-                     this.scene.resume(window.ultimaEscenaActiva);
-                } else {
-                    // Fallback de seguridad
-                     this.scene.start(window.ultimaEscenaActiva);
-                }
-            }
-        };
+const cerrarInventario = () => {
+    if (window.ultimaEscenaActiva) {
+        // Switch pone a dormir el inventario (guardando su estado) 
+        // y despierta la escena anterior justo donde se quedó.
+        this.scene.switch(window.ultimaEscenaActiva);
+    }
+};
 
-        this.botonI.on('pointerdown', cerrarInventario);
-        this.input.keyboard.on('keydown-R', cerrarInventario);
+this.botonI.on('pointerdown', cerrarInventario);
+this.input.keyboard.on('keydown-R', cerrarInventario);
 
         // ==============================================================
         // 3. CARGA DE DATOS UNIFICADOS Y RENDERIZADO DEL GRID
