@@ -1,5 +1,5 @@
 import { getState, sumarPuntos } from '../globals.js';
-import { reescalarGlobalFlexible, agregarEfectoHover } from '../uiHelpers.js';
+import { agregarEfectoHover } from '../uiHelpers.js'; // <-- Solo importamos el hover local/helper
 
 export class EscenaCombateBase extends Phaser.Scene {
     // Recibe la configuración desde la escena Hija
@@ -20,22 +20,27 @@ export class EscenaCombateBase extends Phaser.Scene {
     }
 
     create() {
-        // 1. CARGA DE MAPA Y LÍMITES (Basado en la configuración hija)
+        // ==============================================================
+        // 1. CARGA DE MAPA Y LÍMITES (Fijado a Resolución Base 1650x900)
+        // ==============================================================
         const map = this.make.tilemap({ key: this.configNivel.mapaJson });
         const tileset = map.addTilesetImage(this.configNivel.tilesetImg, this.configNivel.tilesetImg);
         const fondoLayer = map.createLayer('Fondo', tileset, 0, 0);
 
-        const escalaX = this.scale.width / (map.width * map.tileWidth);
-        const escalaY = this.scale.height / (map.height * map.tileHeight);
+        // Forzamos el cálculo de escala para que llene el lienzo de 1650x900
+        const escalaX = 1650 / (map.width * map.tileWidth);
+        const escalaY = 900 / (map.height * map.tileHeight);
         fondoLayer.setScale(escalaX, escalaY);
 
-        const mapWidth = map.width * map.tileWidth * escalaX;
-        const mapHeight = map.height * map.tileHeight * escalaY;
+        const mapWidth = map.width * map.tileWidth * escalaX;   // Dará exactamente 1650
+        const mapHeight = map.height * map.tileHeight * escalaY; // Dará exactamente 900
 
         this.physics.world.setBounds(0, 0, mapWidth, mapHeight);
         this.cameras.main.setBounds(0, 0, mapWidth, mapHeight);
 
+        // ==============================================================
         // 2. CREACIÓN DE PAREDES
+        // ==============================================================
         this.paredes = this.physics.add.staticGroup();
         const colisionesLayer = map.getObjectLayer('Colisiones');
         if (colisionesLayer) {
@@ -48,7 +53,9 @@ export class EscenaCombateBase extends Phaser.Scene {
             });
         }
 
+        // ==============================================================
         // 3. JUGADORES Y ENEMIGOS
+        // ==============================================================
         this.crearPersonajes(mapWidth, mapHeight);
         
         // El método crearEnemigos debe ser provisto/sobreescrito por la escena Hija
@@ -65,11 +72,15 @@ export class EscenaCombateBase extends Phaser.Scene {
             this.physics.add.overlap(this.animal, this.grupoEnemigos, this.recibirDaño, null, this);
         }
 
+        // ==============================================================
         // 4. INTERFAZ DE USUARIO Y MENÚS
+        // ==============================================================
         this.crearInterfazUsuario();
         this.crearMenuPausaYVictoria();
 
+        // ==============================================================
         // 5. CONTROLES Y EVENTOS
+        // ==============================================================
         this.teclasMovimiento = this.input.keyboard.addKeys({
             arriba: Phaser.Input.Keyboard.KeyCodes.W,
             abajo: Phaser.Input.Keyboard.KeyCodes.S,
@@ -82,18 +93,14 @@ export class EscenaCombateBase extends Phaser.Scene {
                 this.atacar();
             }
         });
-
-        // 6. RESPONSIVIDAD
-        this.aplicarReescaladoUI();
-        this.scale.on('resize', () => this.aplicarReescaladoUI());
     }
 
-    // ==========================================
-    // MÉTODOS DE CREACIÓN (Heredados)
-    // ==========================================
+    // ==============================================================
+    // MÉTODOS DE CREACIÓN
+    // ==============================================================
     crearPersonajes(mapWidth, mapHeight) {
-        this.personaje = this.physics.add.sprite(mapWidth * 0.1, mapHeight * 0.7, 'niñoCaminando').setDepth(5);
-        this.animal = this.physics.add.sprite(mapWidth * 0.1, mapHeight * 0.7, 'gatoCaminando').setDepth(5).setVisible(false);
+        this.personaje = this.physics.add.sprite(mapWidth * 0.1, mapHeight * 0.7, 'niñoCaminando').setDepth(5).setScale(1.5);
+        this.animal = this.physics.add.sprite(mapWidth * 0.1, mapHeight * 0.7, 'gatoCaminando').setDepth(5).setVisible(false).setScale(1.2);
         
         this.personaje.setCollideWorldBounds(true);
         this.animal.setCollideWorldBounds(true);
@@ -114,8 +121,9 @@ export class EscenaCombateBase extends Phaser.Scene {
     }
 
     crearInterfazUsuario() {
-        this.barra = this.add.image(0, 0, 'barraobjetos').setDepth(15).setScrollFactor(0);
-        this.botonI = this.add.image(0, 0, 'botonInventario').setDepth(15).setInteractive({ useHandCursor: true }).setScrollFactor(0);
+        // Coordenadas fijas absolutas calculadas desde porcentajes previos
+        this.barra = this.add.image(742.5, 837, 'barraobjetos').setDepth(15).setScrollFactor(0).setScale(1);
+        this.botonI = this.add.image(462, 837, 'botonInventario').setDepth(15).setInteractive({ useHandCursor: true }).setScrollFactor(0).setScale(1);
         
         agregarEfectoHover(this.botonI);
 
@@ -134,11 +142,15 @@ export class EscenaCombateBase extends Phaser.Scene {
         this.objetosImgs = {};
         const activos = getState().objetosActivos || [];
         
-        activos.forEach(id => {
+        activos.forEach((id, index) => {
             const dataObj = getState().objetosGlobales?.find(o => o.id == id);
             const spriteKey = dataObj?.sprite || id;
             
-            const sprite = this.add.sprite(0, 0, spriteKey).setDepth(16).setInteractive({ useHandCursor: true }).setScrollFactor(0);
+            // Renderizado en posición absoluta calculada según su índice en el inventario activo
+            const posXItem = 500 * (0.35 + (index * 0.04)); // 577.5, 643.5, 709.5...
+            const posYItem = 500;
+
+            const sprite = this.add.sprite(posXItem, posYItem, spriteKey).setDepth(101).setInteractive({ useHandCursor: true }).setScrollFactor(0).setScale(0.5);
             this.objetosImgs[id] = sprite;
 
             if (this.anims.exists(spriteKey + '-movimiento')) sprite.play(spriteKey + '-movimiento');
@@ -146,6 +158,8 @@ export class EscenaCombateBase extends Phaser.Scene {
             sprite.on('pointerdown', () => {
                 this.objetoSeleccionado = id;
                 if (this.marcadorSeleccion) this.marcadorSeleccion.destroy();
+                
+                // El recuadro verde de selección se adapta de forma nativa a las dimensiones directas del sprite
                 this.marcadorSeleccion = this.add.rectangle(sprite.x, sprite.y, sprite.displayWidth + 5, sprite.displayHeight + 5, 0x00ff00, 0.3)
                     .setDepth(15).setScrollFactor(0);
 
@@ -155,13 +169,14 @@ export class EscenaCombateBase extends Phaser.Scene {
     }
 
     crearMenuPausaYVictoria() {
-        this.regreso = this.add.image(0, 0, 'regreso').setDepth(20).setInteractive({ useHandCursor: true }).setScrollFactor(0);
-        this.RegresarMenu = this.add.image(0, 0, 'RegresarMenu').setDepth(20).setVisible(false).setScrollFactor(0);
-        this.siBoton = this.add.image(0, 0, 'siBoton').setDepth(21).setVisible(false).setInteractive({ useHandCursor: true }).setScrollFactor(0);     
-        this.noBoton = this.add.image(0, 0, 'noBoton').setDepth(21).setVisible(false).setInteractive({ useHandCursor: true }).setScrollFactor(0);
+        // Coordenadas fijas absolutas
+        this.regreso = this.add.image(1567.5, 100, 'regreso').setDepth(100).setInteractive({ useHandCursor: true }).setScrollFactor(0).setScale(1);
+        this.RegresarMenu = this.add.image(825, 450, 'RegresarMenu').setDepth(20).setVisible(false).setScrollFactor(0).setScale(1);
+        this.siBoton = this.add.image(660, 540, 'siBoton').setDepth(21).setVisible(false).setInteractive({ useHandCursor: true }).setScrollFactor(0).setScale(0.7);     
+        this.noBoton = this.add.image(990, 540, 'noBoton').setDepth(21).setVisible(false).setInteractive({ useHandCursor: true }).setScrollFactor(0).setScale(0.7);
         
-        this.FinalCompletado = this.add.image(0, 0, 'FinalCompletado').setDepth(20).setVisible(false).setScrollFactor(0);
-        this.botonSiguiente = this.add.image(0, 0, 'botonSiguiente').setDepth(21).setInteractive({ useHandCursor: true }).setVisible(false).setScrollFactor(0);
+        this.FinalCompletado = this.add.image(825, 450, 'FinalCompletado').setDepth(20).setVisible(false).setScrollFactor(0).setScale(1.5);
+        this.botonSiguiente = this.add.image(825, 585, 'botonSiguiente').setDepth(21).setInteractive({ useHandCursor: true }).setVisible(false).setScrollFactor(0).setScale(0.5);
 
         this.regreso.on('pointerdown', () => {
             this.juegoPausado = true;
@@ -193,13 +208,15 @@ export class EscenaCombateBase extends Phaser.Scene {
         agregarEfectoHover(this.botonSiguiente);
     }
 
-    // ==========================================
+    // ==============================================================
     // LÓGICA DE COMBATE
-    // ==========================================
+    // ==============================================================
     actualizarBarraVida() {
         this.barraVidaGrafico.clear();
         const ancho = 350, alto = 40;
-        const x = this.scale.width * 0.05, y = this.scale.height * 0.05;
+        
+        // Posición estática en base a la esquina superior izquierda del lienzo (1650 * 0.05 = 82.5, 900 * 0.05 = 45)
+        const x = 82.5, y = 45;
 
         this.barraVidaGrafico.fillStyle(0x000000, 0.7).fillRect(x, y, ancho, alto);
         this.barraVidaGrafico.fillStyle(0xff0000, 1).fillRect(x + 6, y + 6, (ancho - 12) * (Math.max(0, this.vidaPersonaje) / 100), alto - 12);
@@ -221,7 +238,6 @@ export class EscenaCombateBase extends Phaser.Scene {
         if (this.juegoPausado || enemigo.vida <= 0) return;
 
         if (this.time.now - this.tiempoUltimoDaño > 1000) {
-            // Usamos el daño configurado en la clase hija, si no, por defecto 5
             const dañoRecibido = this.configNivel.dañoEnemigo || 5;
             this.vidaPersonaje -= dañoRecibido;
             this.tiempoUltimoDaño = this.time.now;
@@ -294,30 +310,6 @@ export class EscenaCombateBase extends Phaser.Scene {
             this.jugadorActivo = this.personaje;
         }
         this.cameras.main.startFollow(this.jugadorActivo);
-    }
-
-    aplicarReescaladoUI() {
-        const elementosUI = [
-            { obj: this.barra, posX: 0.45, posY: 0.93, escalaRelativa: 0.5 },
-            { obj: this.botonI, posX: 0.28, posY: 0.93, escalaRelativa: 0.1 },
-            { obj: this.regreso, posX: 0.95, posY: 0.08, escalaRelativa: 0.15 },
-            { obj: this.RegresarMenu, posX: 0.5, posY: 0.5, escalaRelativa: 1.5 },
-            { obj: this.siBoton, posX: 0.4, posY: 0.6, escalaRelativa: 0.3 },
-            { obj: this.noBoton, posX: 0.6, posY: 0.6, escalaRelativa: 0.3 },
-            { obj: this.FinalCompletado, posX: 0.5, posY: 0.5, escalaRelativa: 1.5 },
-            { obj: this.botonSiguiente, posX: 0.5, posY: 0.65, escalaRelativa: 0.5 }
-        ];
-
-        Object.keys(this.objetosImgs).forEach((id, index) => {
-            elementosUI.push({ obj: this.objetosImgs[id], posX: 0.35 + (index * 0.04), posY: 0.93, escalaRelativa: 0.06 });
-        });
-
-        reescalarGlobalFlexible(this, elementosUI);
-
-        if (this.marcadorSeleccion && this.objetoSeleccionado) {
-            const spriteActivo = this.objetosImgs[this.objetoSeleccionado];
-            if (spriteActivo) this.marcadorSeleccion.setPosition(spriteActivo.x, spriteActivo.y);
-        }
     }
 
     update() {

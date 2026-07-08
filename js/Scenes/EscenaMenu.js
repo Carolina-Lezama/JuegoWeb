@@ -28,7 +28,7 @@ export class EscenaMenu extends Phaser.Scene {
         this.si = this.add.image(775, 300, 'si').setDepth(4).setScale(1.3); // <-- Modifica la escala aquí
         this.no = this.add.image(990, 300, 'no').setDepth(4).setScale(1.3); // <-- Modifica la escala aquí
 
-        // Checkpoints (Botones para hacer clic, debajo de "Sí" y "No")
+        // Checkpoints (Botones  para hacer clic, debajo de "Sí" y "No")
         this.checkpoint1 = this.add.image(775, 380, 'checkpoint').setDepth(2).setInteractive({ useHandCursor: true }).setScale(1); // <-- Modifica la escala aquí
         this.checkpoint2 = this.add.image(990, 380, 'checkpoint').setDepth(2).setInteractive({ useHandCursor: true }).setScale(1); // <-- Modifica la escala aquí
         

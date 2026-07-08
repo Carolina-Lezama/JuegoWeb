@@ -1,5 +1,4 @@
-import { getState, agregarObjetoInventario } from '../globals.js';
-import { reescalarGlobalFlexible, createAndAdaptTextFlexible, agregarEfectoHover } from '../uiHelpers.js';
+import { getState, agregarObjetoInventario, getGatoActivo } from '../globals.js';
 
 export class EscenaCabanaAdentro extends Phaser.Scene {
     constructor() {
@@ -7,42 +6,55 @@ export class EscenaCabanaAdentro extends Phaser.Scene {
     }
 
     create() {
-        // 1. ELEMENTOS VISUALES Y FONDOS
-        this.fondo = this.add.image(0, 0, 'FondoCabanaAdentro').setDepth(1);
-        this.fondoObjeto = this.add.image(0, 0, 'FondoObjeto').setDepth(4).setVisible(false);
+        // ==============================================================
+        // 1. DETERMINAR QUÉ GATO USAR (Fuente Única de Verdad)
+        // ==============================================================
+        const claveGato = getGatoActivo();
+
+        // ==============================================================
+        // 2. ELEMENTOS VISUALES Y FONDOS
+        // ==============================================================
+        this.fondo = this.add.image(825, 450, 'FondoCabanaAdentro').setDepth(1).setScale(1); // <-- Modifica la escala aquí
+        this.fondoObjeto = this.add.image(825, 450, 'FondoObjeto').setDepth(4).setVisible(false).setScale(1); // <-- Modifica la escala aquí
         
         // Recuadros de diálogo
-        this.recuadro = this.add.image(0, 0, 'recuadro').setDepth(2).setVisible(false);
-        this.recuadroMa = this.add.image(0, 0, 'recuadroM').setDepth(2).setVisible(true);
-        this.recuadroPe = this.add.image(0, 0, 'recuadroP').setDepth(2).setVisible(false);
+        this.recuadro = this.add.image(500, 170, 'recuadro').setDepth(2).setVisible(false).setScale(1.85, 1.35); // <-- Modifica la escala aquí
+        this.recuadroMa = this.add.image(500, 170, 'recuadroM').setDepth(2).setVisible(true).setScale(1.85, 1.35); // <-- Modifica la escala aquí
+        this.recuadroPe = this.add.image(500, 170, 'recuadroP').setDepth(2).setVisible(false).setScale(1.85, 1.35); // <-- Modifica la escala aquí
         
         // Botones e Interfaz
-        this.botonD = this.add.image(0, 0, 'botonDescripcion').setDepth(4).setVisible(false);
-        this.botonI = this.add.image(0, 0, 'botonInventario').setDepth(10).setInteractive({ useHandCursor: true }).setVisible(false);
-        this.botonSa = this.add.image(0, 0, 'botonSalir').setDepth(4).setInteractive({ useHandCursor: true }).setVisible(false);
-        this.boton = this.add.image(0, 0, 'botonSiguiente').setDepth(4).setInteractive({ useHandCursor: true });
-        this.botonS = this.add.image(0, 0, 'botonSaltar').setDepth(4).setInteractive({ useHandCursor: true });
+        // Coordenadas calculadas desde tus porcentajes relativos
+        this.botonD = this.add.image(500, 180, 'botonDescripcion').setDepth(4).setVisible(false).setScale(0.55); // <-- Modifica la escala aquí
+        this.botonI = this.add.image(85, 90, 'botonInventario').setDepth(10).setInteractive({ useHandCursor: true }).setVisible(false).setScale(0.85); // <-- Modifica la escala aquí
+        this.botonSa = this.add.image(500, 720, 'botonSalir').setDepth(4).setInteractive({ useHandCursor: true }).setVisible(false).setScale(0.7); // <-- Modifica la escala aquí
+        this.boton = this.add.image(545, 396, 'botonSiguiente').setDepth(4).setInteractive({ useHandCursor: true }).setScale(0.8); // <-- Modifica la escala aquí
+        this.botonS = this.add.image(185, 396, 'botonSaltar').setDepth(4).setInteractive({ useHandCursor: true }).setScale(0.8); // <-- Modifica la escala aquí
 
-        // 2. PERSONAJES Y OBJETOS ANIMADOS
-        this.gato = this.add.sprite(0, 0, 'gato').setDepth(3).setFlipX(true);
-        this.mago = this.add.sprite(0, 0, 'mago').setDepth(3).setFlipX(true);
-        this.objetoEspejo = this.add.sprite(0, 0, 'objetoEspejo').setDepth(10).setVisible(false);
+        // ==============================================================
+        // 3. PERSONAJES Y OBJETOS ANIMADOS
+        // ==============================================================
+        this.gato = this.add.sprite(1300, 730, claveGato).setDepth(3).setFlipX(true).setScale(1); // <-- Modifica la escala aquí
+        this.mago = this.add.sprite(1000, 620, 'mago').setDepth(3).setFlipX(true).setScale(1.2); // <-- Modifica la escala aquí
+        this.objetoEspejo = this.add.sprite(1200, 450, 'objetoEspejo').setDepth(10).setVisible(false).setScale(1); // <-- Modifica la escala aquí
 
-        // Protección de animaciones
-        if (!this.anims.exists('gato-movimiento')) {
-            this.anims.create({ key: 'gato-movimiento', frames: this.anims.generateFrameNumbers('gato', { start: 0, end: 7 }), frameRate: 3, repeat: -1 });
+        // Protección de animaciones dinámicas según el gato elegido
+        const animGato = `caminata-${claveGato}`;
+        if (!this.anims.exists(animGato)) {
+            this.anims.create({ key: animGato, frames: this.anims.generateFrameNumbers(claveGato, { start: 0, end: 7 }), frameRate: 4, repeat: -1 });
         }
         if (!this.anims.exists('mago-movimiento')) {
-            this.anims.create({ key: 'mago-movimiento', frames: this.anims.generateFrameNumbers('mago', { start: 0, end: 4 }), frameRate: 5, repeat: -1 });
+            this.anims.create({ key: 'mago-movimiento', frames: this.anims.generateFrameNumbers('mago', { start: 0, end: 4 }), frameRate: 4, repeat: -1 });
         }
         if (!this.anims.exists('objetoEspejo-movimiento')) {
             this.anims.create({ key: 'objetoEspejo-movimiento', frames: this.anims.generateFrameNumbers('objetoEspejo', { start: 0, end: 6 }), frameRate: 3, repeat: -1 });
         }
 
-        this.gato.play('gato-movimiento');
+        this.gato.play(animGato);
         this.mago.play('mago-movimiento');
 
-        // 3. LÓGICA DE INVENTARIO (Delegada al Store)
+        // ==============================================================
+        // 4. LÓGICA DE INVENTARIO (Delegada al Store)
+        // ==============================================================
         const ITEM_ID = 1;
         // La lógica interna de globals.js decidirá si guardarlo en BD o en LocalStorage
         agregarObjetoInventario(ITEM_ID); 
@@ -56,7 +68,9 @@ export class EscenaCabanaAdentro extends Phaser.Scene {
             rareza: 'Único'
         };
 
-        // 4. SISTEMA DE DIÁLOGOS Y TEXTOS
+        // ==============================================================
+        // 5. SISTEMA DE DIÁLOGOS Y TEXTOS
+        // ==============================================================
         this.dialogos = [
             'Thalor: Primero te daré un objeto que te ayudará a volver a ser humano. Déjame buscarlo.',
             'Thalor: Aquí tienes.',
@@ -68,22 +82,28 @@ export class EscenaCabanaAdentro extends Phaser.Scene {
         this.dialogoActual = 0;
 
         // Texto principal de diálogo
-        this.texto = createAndAdaptTextFlexible(this, {
-            text: this.dialogos[this.dialogoActual],
-            posX: 0.74, posY: 0.19, maxWidth: 850, fontSizeInicial: 36,
-            originX: 0.5, originY: 0.5, color: '#000000'
-        }).setDepth(5);
+        this.texto = this.add.text(511, 171, this.dialogos[this.dialogoActual], {
+            fontSize: '38px',
+            color: '#000000',
+            fontFamily: 'Arial',
+            align: 'center',
+            wordWrap: { width: 700 }
+        }).setOrigin(0.5).setDepth(5).setScale(1); // <-- Modifica la escala aquí
 
         // Texto de descripción del objeto (UI emergente)
         const textoDescripcionObjeto = `${itemData.nombre}\n\n${itemData.descripcion}\n\nCantidad de usos máximo: ${itemData.cantidad}\n\nRareza: ${itemData.rareza}`;
         
-        this.texto2 = createAndAdaptTextFlexible(this, {
-            text: textoDescripcionObjeto,
-            posX: 0.3, posY: 0.49, maxWidth: 850, fontSizeInicial: 38,
-            originX: 0.5, originY: 0.5, color: '#ffffff'
-        }).setDepth(20).setVisible(false);
+        this.texto2 = this.add.text(500, 440, textoDescripcionObjeto, {
+            fontSize: '38px',
+            color: '#ffffff',
+            fontFamily: 'Arial',
+            align: 'center',
+            wordWrap: { width: 700 }
+        }).setOrigin(0.5).setDepth(20).setVisible(false).setScale(1); // <-- Modifica la escala aquí
 
-        // 5. EVENTOS E INTERACCIÓN
+        // ==============================================================
+        // 6. EVENTOS E INTERACCIÓN
+        // ==============================================================
         const abrirInventario = () => {
             this.dialogoActual++;
             window.ultimaEscenaActiva = this.scene.key;
@@ -116,14 +136,13 @@ export class EscenaCabanaAdentro extends Phaser.Scene {
             }
         });
 
-        // 6. RESPONSIVIDAD Y EFECTOS
-        this.aplicarReescalado();
-        this.scale.on('resize', () => this.aplicarReescalado());
-
-        agregarEfectoHover(this.boton);
-        agregarEfectoHover(this.botonS);
-        agregarEfectoHover(this.botonI, 1.15); // El icono de inventario puede crecer un poco más
-        agregarEfectoHover(this.botonSa);
+        // ==============================================================
+        // 7. EVENTOS HOVER (Feedback Visual)
+        // ==============================================================
+        this.agregarEfectoHover(this.boton, 1.1);
+        this.agregarEfectoHover(this.botonS, 1.1);
+        this.agregarEfectoHover(this.botonI, 1.15); // El icono de inventario crece un poco más
+        this.agregarEfectoHover(this.botonSa, 1.1);
     }
 
     actualizarEscenaPorDialogo(dialogoIndex) {
@@ -182,37 +201,9 @@ export class EscenaCabanaAdentro extends Phaser.Scene {
         }   
     }
 
-    aplicarReescalado() {
-        reescalarGlobalFlexible(this, [
-            { obj: this.fondo, posX: 0.5, posY: 1, originX: 0.5, originY: 1, escalaRelativa: 1, autoFill: true },
-            
-            // Layout de diálogo
-            { obj: this.recuadro, posX: 0.85, posY: 0.22, escalaRelativa: 1.5 },
-            { obj: this.recuadroPe, posX: 0.73, posY: 0.19, escalaRelativa: 1.03 },
-            { obj: this.recuadroMa, posX: 0.73, posY: 0.19, escalaRelativa: 1.04 },
-            
-            // Botones de diálogo
-            { obj: this.boton, posX: 0.73, posY: 0.42, escalaRelativa: 0.32 },
-            { obj: this.botonS, posX: 0.9, posY: 0.41, escalaRelativa: 0.32 },
-            
-            // Actores
-            { obj: this.gato, posX: 0.44, posY: 0.81, escalaRelativa: 0.24 },
-            { obj: this.mago, posX: 0.24, posY: 0.67, escalaRelativa: 0.3 },
-            
-            // Pop-Up Objeto
-            { obj: this.objetoEspejo, posX: 0.73, posY: 0.5, escalaRelativa: 0.7 },
-            { obj: this.fondoObjeto, posX: 0.5, posY: 0.5, escalaRelativa: 2 },
-            { obj: this.botonD, posX: 0.3, posY: 0.2, escalaRelativa: 0.55 },
-            { obj: this.botonSa, posX: 0.3, posY: 0.8, escalaRelativa: 0.3 },
-            
-            // UI Global
-            { obj: this.botonI, posX: 0.05, posY: 0.1, escalaRelativa: 0.15 }
-        ]);
-
-// Guardamos las escalas para el efecto hover
-        this.boton.escalaBase = this.boton.scale;
-        this.botonS.escalaBase = this.botonS.scale;
-        this.botonI.escalaBase = this.botonI.scale;
-        this.botonSa.escalaBase = this.botonSa.scale;
+    agregarEfectoHover(boton, multiplicador) {
+        boton.escalaBase = boton.scaleX;
+        boton.on('pointerover', () => boton.setScale(boton.escalaBase * multiplicador));
+        boton.on('pointerout', () => boton.setScale(boton.escalaBase));
     }
 }

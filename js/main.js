@@ -57,6 +57,17 @@ class PreloadScene extends Phaser.Scene {
     }
 
     create() {
+        this.textoMotivacional = this.add.text(800, 650, 'Buscando inspiración en el cosmos...', {
+            fontSize: '30px',
+            color: '#ffffff',
+            fontFamily: 'Arial',
+            fontStyle: 'italic',
+            align: 'center',
+            wordWrap: { width: 700 }
+        }).setOrigin(0.5).setDepth(5);
+
+        this.consumirApiMotivacional();
+        
         // 1. Centramos el fondo en las coordenadas (825, 450)
         this.fondo = this.add.image(825, 450, 'fondoCarga');
         
@@ -78,7 +89,7 @@ class PreloadScene extends Phaser.Scene {
         });
 
         this.load.on('complete', () => {
-            this.scene.start('EscenaIntroduccionUno'); //aqui EscenaInicio
+            this.scene.start('EscenaCementerio'); //aqui EscenaInicio
         });
 
         // --- CARGA MASIVA DE ASSETS ESTATICOS ---
@@ -129,8 +140,11 @@ class PreloadScene extends Phaser.Scene {
         ['gato1', 'gato2', 'gato3', 'gato4'].forEach(g => {
             this.load.image(g, `/Juego/assets/static/Personajes/${g}.png`);
         });
-    ['SpritePersonaje1', 'SpritePersonaje2', 'SpritePersonaje3', 'SpritePersonaje4'].forEach(g => {
+        ['SpritePersonaje1', 'SpritePersonaje2', 'SpritePersonaje3', 'SpritePersonaje4'].forEach(g => {
             this.load.spritesheet(g, `/Juego/assets/static/Personajes/sprites/${g}.png`, { frameWidth: 185, frameHeight: 350});
+        });
+        ['SpriteGato1', 'SpriteGato2', 'SpriteGato3', 'SpriteGato4'].forEach(g => {
+            this.load.spritesheet(g, `/Juego/assets/static/Personajes/sprites/${g}.png`, { frameWidth: 200, frameHeight: 230});
         });
 
         this.load.spritesheet('fondoAnimado', '/Juego/assets/static/Animaciones/FondoAnimado.png', { frameWidth: 1536, frameHeight: 960 });
@@ -181,60 +195,55 @@ class PreloadScene extends Phaser.Scene {
             { key: 'si', path: 'Textos/si.png' },
             { key: 'no', path: 'Textos/no.png' },
             { key: 'tituloLogros', path: 'Textos/tituloLogros.png' },
+            { key: 'botonDescripcion', path: 'Textos/botonDescripcion.png' },
 
             // Recuadros
             { key: 'recuadroLogroMaestro', path: 'Recuadros/recuadroLogroMaestro.png' },
             { key: 'recuadroLogroNovato', path: 'Recuadros/recuadroLogroNovato.png' },
             { key: 'recuadroLogroMitico', path: 'Recuadros/recuadroLogroMitico.png' },
             { key: 'fondoPersonajes', path: 'Recuadros/fondoPersonajes2.png' },
+            { key: 'recuadroM', path: 'Recuadros/recuadroMago.png' },
+            { key: 'recuadroP', path: 'Recuadros/recuadroPersona.png' },
+            { key: 'recuadro', path: 'Recuadros/recuadro2.png' },
+            { key: 'barraobjetos', path: 'Recuadros/barraobjetos.png' },
+            { key: 'inventariopanel', path: 'Recuadros/inventariopanel.png' },
 
 
 
 
 
 
-
-            { key: 'botonDescripcion', path: 'botonDescripcion.png' },
             
-            { key: 'recuadroM', path: 'recuadroMago.png' },
-            { key: 'recuadroP', path: 'recuadroPersona.png' },
-            { key: 'recuadro', path: 'recuadro2.png' },
-            { key: 'baraobjetos', path: 'barraobjetos.png' },
-            { key: 'inventariopanel', path: 'inventariopanel.png' },
 
 
-        ];
+];
+        this.load.spritesheet('niñoCaminando', '/Juego/assets/static/Personajes/sprites/caminataFinal.png', {frameWidth: 92,frameHeight: 155});
+        this.load.spritesheet('gatoCaminando', '/Juego/assets/static/Personajes/sprites/caminataFinalGato.png', {frameWidth: 194,frameHeight: 143});
+        
+
+// quiero que quites variables de rescalado, usar las globales de personajes y gato, dejar los comentarios para el reescalado de recursos, agregar el .setscale()
+
+
+
+
+
+
+
+        this.load.spritesheet('mago', '/Juego/assets/static/Personajes/sprites/mago.png', { frameWidth: 207, frameHeight: 400 });
+
         uiAssets.forEach(ui => this.load.image(ui.key, `/Juego/assets/static/${ui.path}`));
+
         if (Array.isArray(getState().objetosGlobales)) {
             getState().objetosGlobales.forEach(obj => {
                 if (obj.id) {
-                    this.load.spritesheet(String(obj.id), `/Juego/assets/static/${obj.id}.png`, {frameWidth: 134, frameHeight: 184});
+                    this.load.spritesheet(String(obj.id), `/Juego/assets/static/Animaciones/${obj.id}.png`, {frameWidth: 134, frameHeight: 184});
                 }
             });
         }
 
-        this.load.spritesheet('mago', '/Juego/assets/static/Personajes/sprites/mago.png', { frameWidth: 207, frameHeight: 400 });
-        this.load.spritesheet('niñoCaminando', '/Juego/assets/static/Personajes/sprites/caminataFinal.png', {frameWidth: 92,frameHeight: 155});
-        this.load.spritesheet('gatoCaminando', '/Juego/assets/static/Personajes/sprites/caminataFinalGato.png', {frameWidth: 194,frameHeight: 143});
-        
-        // CARGAR LOS GATOS TAMBIRN, ASI COMO HACER LA FUNCION GLOBAL PARA NO REPETIR QUE PERSONAJE ES
-        // MOMENTO DE ARREGLAR LOS TAMAÑOS Y LOS GATOS
-
-
-         ['SpriteGato1', 'SpriteGato2', 'SpriteGato3', 'SpriteGato4'].forEach(g => {
-            this.load.spritesheet(g, `/Juego/assets/static/Personajes/sprites/${g}.png`, { frameWidth: 262, frameHeight: 282});
-        });
-
-        this.load.spritesheet('objetoEspejo', '/Juego/assets/static/Sprites/animacionEspejo.png', { frameWidth: 447, frameHeight: 447});
-        this.load.spritesheet('objetoEspada', '/Juego/assets/static/Sprites/animacionEspada.png', { frameWidth: 447, frameHeight: 447});
-        this.load.spritesheet('objetoMapa', '/Juego/assets/static/Sprites/animacionMapa.png', { frameWidth: 447, frameHeight: 447});
-
-
-// quitar variables de rescalado, usar las globales de personajes y gato, dejar los comentarios para el reescalado de recursos, agregar el .setscale()
-
-
-
-
+        this.load.spritesheet('objetoEspejo', '/Juego/assets/static/Animaciones/animacionEspejo.png', { frameWidth: 447, frameHeight: 447});
+        this.load.spritesheet('objetoEspada', '/Juego/assets/static/Animaciones/animacionEspada.png', { frameWidth: 447, frameHeight: 447});
+        this.load.spritesheet('objetoMapa', '/Juego/assets/static/Animaciones/animacionMapa.png', { frameWidth: 447, frameHeight: 447});
 
         const logrosData = getState().logrosGlobales;
         if (logrosData && Array.isArray(logrosData)) {
@@ -251,6 +260,30 @@ class PreloadScene extends Phaser.Scene {
 
         this.load.start();
     }
+
+    async consumirApiMotivacional() {
+        try {
+            // Hacemos la petición a la API
+            const respuesta = await fetch('https://api.adviceslip.com/advice');
+            
+            // Verificamos que la respuesta sea correcta
+            if (!respuesta.ok) throw new Error('Error en la red');
+            
+            // Convertimos la respuesta a JSON
+            const datos = await respuesta.json();
+            
+            // Extraemos el consejo del JSON y actualizamos el texto en Phaser
+            const consejo = datos.slip.advice;
+            this.textoMotivacional.setText(`" ${consejo} "`);
+
+        } catch (error) {
+            // Plan B: Si no hay internet o la API falla, mostramos un mensaje por defecto
+            console.warn("No se pudo cargar la API:", error);
+            this.textoMotivacional.setText('" El verdadero tesoro es el código que depuramos en el camino. "');
+        }
+    }
+
+
 
 }
 
@@ -282,8 +315,6 @@ const config = {
         EscenaElegir,
         EscenaEleccion,
         EscenaIntroduccionUno,
-        
-         
         EscenaBosque,
         EscenaBosque2, 
         EscenaCabanaAfuera, 
@@ -293,10 +324,10 @@ const config = {
         EscenaSalida,
         EscenaParteUno,
         EscenaMapa,
+        EscenaCasaAbandonada,
         EscenaPeleaSlime, 
         EscenaCastilloIfernal, 
         EscenaCementerio, 
-        EscenaCasaAbandonada,
         EscenaMuerte,
         EscenaFinal
     ]

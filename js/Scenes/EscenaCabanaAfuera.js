@@ -1,4 +1,4 @@
-import { reescalarGlobalFlexible, createAndAdaptTextFlexible, agregarEfectoHover } from '../uiHelpers.js';
+import { getState, getGatoActivo } from '../globals.js';
 
 export class EscenaCabanaAfuera extends Phaser.Scene {
     constructor() {
@@ -6,45 +6,60 @@ export class EscenaCabanaAfuera extends Phaser.Scene {
     }
 
     create() {
-        // 1. ELEMENTOS VISUALES ESTÁTICOS
-        this.fondo = this.add.image(0, 0, 'FondoCabana').setDepth(1);
+        // ==============================================================
+        // 1. DETERMINAR QUÉ GATO USAR (Fuente Única de Verdad)
+        // ==============================================================
+        const claveGato = getGatoActivo();
+
+        // ==============================================================
+        // 2. ELEMENTOS VISUALES ESTÁTICOS
+        // ==============================================================
+        this.fondo = this.add.image(825, 450, 'FondoCabana').setDepth(1).setScale(1); // <-- Modifica la escala aquí
         
-        // Recuadros de diálogo
-        this.recuadro = this.add.image(0, 0, 'recuadro').setDepth(2);
-        this.recuadroMa = this.add.image(0, 0, 'recuadroM').setDepth(2).setVisible(false);
-        this.recuadroPe = this.add.image(0, 0, 'recuadroP').setDepth(2).setVisible(false);
+        // Recuadros de diálogo (Usando las coordenadas base de tu UI)
+        this.recuadro = this.add.image(500, 170, 'recuadro').setDepth(2).setScale(1.85, 1.35); // <-- Modifica la escala aquí
+        this.recuadroMa = this.add.image(500, 170, 'recuadroM').setDepth(2).setVisible(false).setScale(1.85, 1.35); // <-- Modifica la escala aquí
+        this.recuadroPe = this.add.image(500, 170, 'recuadroP').setDepth(2).setVisible(false).setScale(1.85, 1.35); // <-- Modifica la escala aquí
         
         // Botones interactivos
-        this.boton = this.add.image(0, 0, 'botonSiguiente').setDepth(4).setInteractive({ useHandCursor: true });
-        this.botonS = this.add.image(0, 0, 'botonSaltar').setDepth(4).setInteractive({ useHandCursor: true });
+        this.boton = this.add.image(545, 396, 'botonSiguiente').setDepth(4).setInteractive({ useHandCursor: true }).setScale(0.8); // <-- Modifica la escala aquí
+        this.botonS = this.add.image(185, 396, 'botonSaltar').setDepth(4).setInteractive({ useHandCursor: true }).setScale(0.8); // <-- Modifica la escala aquí
 
-        // 2. PERSONAJES Y ANIMACIONES
-        this.gato = this.add.sprite(0, 0, 'gato').setDepth(3);
-        this.mago = this.add.sprite(0, 0, 'mago').setDepth(3);
-
+        // ==============================================================
+        // 3. PERSONAJES Y ANIMACIONES
+        // ==============================================================
+        
+        // 3.1 Renderizamos al Gato (Posiciones aproximadas basadas en tu esquema anterior)
+        this.gato = this.add.sprite(930, 720, claveGato).setDepth(3).setScale(1); // <-- Modifica la escala aquí
+        const animGato = `caminata-${claveGato}`;
+        
         // Protección de creación de animaciones
-        if (!this.anims.exists('gato-movimiento')) {
+        if (!this.anims.exists(animGato)) {
             this.anims.create({
-                key: 'gato-movimiento',
-                frames: this.anims.generateFrameNumbers('gato', { start: 0, end: 7 }),
-                frameRate: 3,
+                key: animGato,
+                frames: this.anims.generateFrameNumbers(claveGato, { start: 0, end: 7 }),
+                frameRate: 4,
                 repeat: -1
             });
         }
         
+        // 3.2 Mago 
+        this.mago = this.add.sprite(1250, 590, 'mago').setDepth(3).setScale(1.2); // <-- Modifica la escala aquí
         if (!this.anims.exists('mago-movimiento')) {
             this.anims.create({
                 key: 'mago-movimiento',
                 frames: this.anims.generateFrameNumbers('mago', { start: 0, end: 4 }),
-                frameRate: 5,
+                frameRate: 4,
                 repeat: -1
             });
         }
 
-        this.gato.play('gato-movimiento');
+        this.gato.play(animGato);
         this.mago.play('mago-movimiento');
 
-        // 3. SISTEMA DE DIÁLOGOS
+        // ==============================================================
+        // 4. SISTEMA DE DIÁLOGOS
+        // ==============================================================
         this.dialogos = [
             '(Llegan a la casa del mago, que es una cabaña acogedora en medio del bosque)',
             'Thalor: Esta es mi casa. ¿Qué te parece? Es linda, ¿no?',
@@ -55,21 +70,20 @@ export class EscenaCabanaAfuera extends Phaser.Scene {
         
         this.dialogoActual = 0;
 
-        // Texto adaptativo
-        this.texto = createAndAdaptTextFlexible(this, {
-            text: this.dialogos[this.dialogoActual],
-            posX: 0.74,
-            posY: 0.19,
-            maxWidth: 850,
-            fontSizeInicial: 36,
-            originX: 0.5,
-            originY: 0.5,
-            color: '#000000'
-        }).setDepth(5);
+        // Texto nativo centrado
+        this.texto = this.add.text(511, 171, this.dialogos[this.dialogoActual], {
+            fontSize: '38px',
+            color: '#000000',
+            fontFamily: 'Arial',
+            align: 'center',
+            wordWrap: { width: 700 }
+        }).setOrigin(0.5).setDepth(5).setScale(1); // <-- Modifica la escala aquí
 
-        // 4. LÓGICA DE EVENTOS Y TRANSICIÓN
+        // ==============================================================
+        // 5. LÓGICA DE EVENTOS Y TRANSICIÓN
+        // ==============================================================
         const avanzarEscena = () => {
-            // Limpiamos el DOM por seguridad como en la escena anterior
+            // Limpiamos el DOM por seguridad
             document.getElementById('nombreInput')?.remove();
             this.scene.start('EscenaCabanaAdentro');
         };
@@ -86,12 +100,11 @@ export class EscenaCabanaAfuera extends Phaser.Scene {
             }
         });
 
-        // 5. RESPONSIVIDAD Y EFECTOS
-        this.aplicarReescalado();
-        this.scale.on('resize', () => this.aplicarReescalado());
-
-        agregarEfectoHover(this.boton);
-        agregarEfectoHover(this.botonS);
+        // ==============================================================
+        // 6. EVENTOS HOVER (Feedback Visual)
+        // ==============================================================
+        this.agregarEfectoHover(this.boton, 1.1);
+        this.agregarEfectoHover(this.botonS, 1.1);
     }
 
     actualizarEscenaPorDialogo(dialogoIndex) {
@@ -114,27 +127,9 @@ export class EscenaCabanaAfuera extends Phaser.Scene {
         }   
     }
 
-    aplicarReescalado() {
-        reescalarGlobalFlexible(this, [
-            // Fondo anclado a la base inferior
-            { obj: this.fondo, posX: 0.5, posY: 1, originX: 0.5, originY: 1, escalaRelativa: 1, autoFill: true },
-            
-            // Recuadros
-            { obj: this.recuadro, posX: 0.85, posY: 0.22, escalaRelativa: 1.5 },
-            { obj: this.recuadroPe, posX: 0.73, posY: 0.19, escalaRelativa: 1.03 },
-            { obj: this.recuadroMa, posX: 0.73, posY: 0.19, escalaRelativa: 1.04 },
-            
-            // Botones
-            { obj: this.boton, posX: 0.73, posY: 0.42, escalaRelativa: 0.32 },
-            { obj: this.botonS, posX: 0.9, posY: 0.41, escalaRelativa: 0.32 },
-            
-            // Actores
-            { obj: this.gato, posX: 0.24, posY: 0.81, escalaRelativa: 0.24 },
-            { obj: this.mago, posX: 0.44, posY: 0.67, escalaRelativa: 0.3 }
-        ]);
-
-        // Guardar escalas base para el Hover
-        this.boton.escalaBase = this.boton.scale;
-        this.botonS.escalaBase = this.botonS.scale;
+    agregarEfectoHover(boton, multiplicador) {
+        boton.escalaBase = boton.scaleX;
+        boton.on('pointerover', () => boton.setScale(boton.escalaBase * multiplicador));
+        boton.on('pointerout', () => boton.setScale(boton.escalaBase));
     }
 }

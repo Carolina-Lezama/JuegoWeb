@@ -17,7 +17,7 @@ class RegisterController {
         if (!$name || !$email || !$password || !$confirmPw) {
             $this->alertaInformativa('Todos los campos son obligatorios.');
             return;
-        }
+        }   
 
         // Verificamos coincidencia de credenciales
         if ($password !== $confirmPw) {
@@ -27,7 +27,6 @@ class RegisterController {
 
         $player = new Jugador();
         
-        // 🔥 ALINEACIÓN CON EL NUEVO MODELO: Recibe el estado real del registro
         $resultadoRegistro = $player->register($name, $email, $password);
 
         if ($resultadoRegistro === true) {
@@ -55,7 +54,6 @@ class RegisterController {
         $result = $player->comprobarUsuario($email, $password);
 
         if ($result) {
-            // 🔥 Aseguramos la sesión mediante el motor de configuración unificado
             if (session_status() === PHP_SESSION_NONE) {
                 session_start();
             }

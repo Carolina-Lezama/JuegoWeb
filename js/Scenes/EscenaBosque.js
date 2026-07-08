@@ -1,4 +1,4 @@
-import { reescalarGlobalFlexible, createAndAdaptTextFlexible, agregarEfectoHover } from '../uiHelpers.js';
+import { getPersonajeActivo } from '../globals.js';
 
 export class EscenaBosque extends Phaser.Scene {
     constructor() {
@@ -6,40 +6,57 @@ export class EscenaBosque extends Phaser.Scene {
     }
 
     create() {
-        // 1. ELEMENTOS VISUALES ESTÁTICOS Y DE INTERFAZ
-        this.fondo = this.add.image(0, 0, 'fondoBosque').setDepth(1);
-        
-        // Recuadros de diálogo
-        this.recuadro = this.add.image(0, 0, 'recuadro').setDepth(2);
-        this.recuadroMa = this.add.image(0, 0, 'recuadroM').setDepth(2).setVisible(false);
-        this.recuadroPe = this.add.image(0, 0, 'recuadroP').setDepth(2).setVisible(false);
-        
-        // Botones interactivos
-        this.boton = this.add.image(0, 0, 'botonSiguiente').setDepth(4).setInteractive({ useHandCursor: true });
-        this.botonS = this.add.image(0, 0, 'botonSaltar').setDepth(4).setInteractive({ useHandCursor: true });
+        // ==============================================================
+        // 1. DETERMINAR QUÉ PERSONAJES USAR (Fuente Única de Verdad)
+        // ==============================================================
+        const claveHumano = getPersonajeActivo();
 
-        // 2. PERSONAJES Y ANIMACIONES
-        this.personaje = this.add.sprite(0, 0, 'personajeUsar').setDepth(3);
-        this.mago = this.add.sprite(0, 0, 'mago').setDepth(3).setVisible(false);
-        this.animacionFondoBosque = this.add.sprite(0, 0, 'fondoAnimadoBosque').setDepth(10).setVisible(false);
+        // ==============================================================
+        // 2. ELEMENTOS VISUALES ESTÁTICOS Y DE INTERFAZ
+        // ==============================================================
+        // Fondo centrado
+        this.fondo = this.add.image(825, 450, 'fondoBosque').setDepth(1).setScale(1); // <-- Modifica la escala aquí
+        
+        // Recuadros de diálogo (Posiciones adaptadas de los porcentajes X: 0.43/0.3, Y: 0.22/0.2)
+        this.recuadro = this.add.image(500, 170, 'recuadro').setDepth(2).setScale(1.85, 1.35); // <-- Modifica la escala aquí
+        this.recuadroMa = this.add.image(500, 170, 'recuadroM').setDepth(2).setVisible(false).setScale(1.85, 1.35); // <-- Modifica la escala aquí
+        this.recuadroPe = this.add.image(500, 170, 'recuadroP').setDepth(2).setVisible(false).setScale(1.85, 1.35); // <-- Modifica la escala aquí
+        
+        // Botones interactivos (X: 0.3/0.1, Y: 0.44/0.43)
+        this.boton = this.add.image(545, 396, 'botonSiguiente').setDepth(4).setInteractive({ useHandCursor: true }).setScale(0.8); // <-- Modifica la escala aquí
+        this.botonS = this.add.image(185, 396, 'botonSaltar').setDepth(4).setInteractive({ useHandCursor: true }).setScale(0.8); // <-- Modifica la escala aquí
 
-        // Protección de animaciones (vital si la escena se reinicia)
-        if (!this.anims.exists('personaje-movimiento')) {
+        // ==============================================================
+        // 3. PERSONAJES Y ANIMACIONES
+        // ==============================================================
+        // Animación de fondo
+        this.animacionFondoBosque = this.add.sprite(825 , 450, 'fondoAnimadoBosque').setDepth(10).setVisible(false).setScale(1.05, 1.01); // <-- Modifica la escala aquí
+
+
+        this.personaje = this.add.sprite(720, 645, claveHumano).setDepth(3).setScale(1); // <-- Modifica la escala aquí
+        const animHumano = `caminata-${claveHumano}`;
+        if (!this.anims.exists(animHumano)) {
             this.anims.create({
-                key: 'personaje-movimiento',
-                frames: this.anims.generateFrameNumbers('personajeUsar', { start: 0, end: 4 }),
-                frameRate: 5,
+                key: animHumano,
+                frames: this.anims.generateFrameNumbers(claveHumano, { start: 0, end: 4 }),
+                frameRate: 4,
                 repeat: -1
             });
         }
+        this.personaje.play(animHumano);
+
+
+        // 3.3 Mago (X: 0.72, Y: 0.62 -> X: 1188, Y: 558)
+        this.mago = this.add.sprite(1008, 575, 'mago').setDepth(3).setVisible(false).setScale(1.2); // <-- Modifica la escala aquí
         if (!this.anims.exists('mago-movimiento')) {
             this.anims.create({
                 key: 'mago-movimiento',
                 frames: this.anims.generateFrameNumbers('mago', { start: 0, end: 4 }),
-                frameRate: 5,
+                frameRate: 4,
                 repeat: -1
             });
         }
+
         if (!this.anims.exists('fondoAnimadoBosqueFinal')) {
             this.anims.create({
                 key: 'fondoAnimadoBosqueFinal',
@@ -49,9 +66,9 @@ export class EscenaBosque extends Phaser.Scene {
             });
         }
 
-        this.personaje.play('personaje-movimiento');
-
-        // 3. SISTEMA DE DIÁLOGOS
+        // ==============================================================
+        // 4. SISTEMA DE DIÁLOGOS
+        // ==============================================================
         this.dialogos = [
             'El niño fue llevado a un mundo desconocido que él no podía reconocer: ¿dónde estaba y qué hacía él allí?',
             'A lo lejos, escuchó que alguien se acercaba; parecía ser un hombre alto, con ropas extrañas.',
@@ -65,18 +82,18 @@ export class EscenaBosque extends Phaser.Scene {
         
         this.dialogoActual = 0;
         
-        this.texto = createAndAdaptTextFlexible(this, {
-            text: this.dialogos[this.dialogoActual],
-            posX: 0.31,
-            posY: 0.19,
-            maxWidth: 970,
-            fontSizeInicial: 38,
-            originX: 0.5,
-            originY: 0.5,
-            color: '#000000'
-        }).setDepth(5);
+        // Texto nativo centrado en el recuadro principal
+        this.texto = this.add.text(511, 171, this.dialogos[this.dialogoActual], {
+            fontSize: '38px',
+            color: '#000000',
+            fontFamily: 'Arial',
+            align: 'center',
+            wordWrap: { width: 870 }
+        }).setOrigin(0.5).setDepth(5).setScale(1); // <-- Modifica la escala aquí
 
-        // 4. LÓGICA DE EVENTOS Y TRANSICIÓN
+        // ==============================================================
+        // 5. LÓGICA DE EVENTOS Y TRANSICIÓN
+        // ==============================================================
         const animarFondo = () => {
             this.texto.setVisible(false);
             this.boton.setVisible(false);
@@ -84,6 +101,8 @@ export class EscenaBosque extends Phaser.Scene {
             this.recuadro.setVisible(false);
             this.recuadroMa.setVisible(false);
             this.recuadroPe.setVisible(false);
+            
+            // Ocultamos a todos los actores
             this.personaje.setVisible(false);
             this.mago.setVisible(false);
             
@@ -107,18 +126,16 @@ export class EscenaBosque extends Phaser.Scene {
             }
         });
 
-        // 5. RESPONSIVIDAD Y EFECTOS
-        this.aplicarReescalado();
-        this.scale.on('resize', () => this.aplicarReescalado());
-
-        agregarEfectoHover(this.boton);
-        agregarEfectoHover(this.botonS);
+        // ==============================================================
+        // 6. EVENTOS HOVER (Feedback Visual)
+        // ==============================================================
+        this.agregarEfectoHover(this.boton, 1.1);
+        this.agregarEfectoHover(this.botonS, 1.1);
     }
 
     actualizarEscenaPorDialogo(dialogoIndex) {
         // NOTA DE ARQUITECTURA: Esto está "hardcodeado". En el futuro, si los diálogos
-        // vienen de la base de datos, cada diálogo debería incluir un campo 'actor' 
-        // (ej: { texto: "...", actor: "mago" }) para evitar usar estos arreglos fijos.
+        // vienen de la base de datos, cada diálogo debería incluir un campo 'actor'.
         const mostrarMago = [2, 5, 7];
         const mostrarPe = [3];
         const mostrarNormal = [4, 6];
@@ -146,27 +163,9 @@ export class EscenaBosque extends Phaser.Scene {
         }
     }
 
-    aplicarReescalado() {
-        reescalarGlobalFlexible(this, [
-            { obj: this.fondo, posX: 0.5, posY: 0.5, escalaRelativa: 1, autoFill: true },
-            { obj: this.animacionFondoBosque, posX: 0.5, posY: 0.5, escalaRelativa: 1, autoFill: true },
-            
-            // Recuadros de texto (Se enciman en la misma posición)
-            { obj: this.recuadro, posX: 0.43, posY: 0.22, escalaRelativa: 1.7 },
-            { obj: this.recuadroPe, posX: 0.3, posY: 0.2, escalaRelativa: 1.18 },
-            { obj: this.recuadroMa, posX: 0.3, posY: 0.2, escalaRelativa: 1.18 },
-            
-            // Interfaz
-            { obj: this.boton, posX: 0.3, posY: 0.44, escalaRelativa: 0.34 },
-            { obj: this.botonS, posX: 0.1, posY: 0.43, escalaRelativa: 0.34 },
-            
-            // Actores
-            { obj: this.personaje, posX: 0.51, posY: 0.69, escalaRelativa: 0.32 },
-            { obj: this.mago, posX: 0.72, posY: 0.62, escalaRelativa: 0.38 }
-        ]);
-
-        // Guardamos escalas para el Hover
-        this.boton.escalaBase = this.boton.scale;
-        this.botonS.escalaBase = this.botonS.scale;
+    agregarEfectoHover(boton, multiplicador) {
+        boton.escalaBase = boton.scaleX;
+        boton.on('pointerover', () => boton.setScale(boton.escalaBase * multiplicador));
+        boton.on('pointerout', () => boton.setScale(boton.escalaBase));
     }
 }

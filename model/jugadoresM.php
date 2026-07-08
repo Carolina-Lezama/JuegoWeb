@@ -73,7 +73,7 @@ class Jugador {
         $usuarioData = $stmt->fetch();
 
         if ($usuarioData && password_verify($contrasena, $usuarioData['contrasena'])) {
-            // 🔥 SEGURIDAD: Eliminamos el hash de la contraseña antes de retornar el usuario
+            //  SEGURIDAD: Eliminamos el hash de la contraseña antes de retornar el usuario
             unset($usuarioData['contrasena']);
             return $usuarioData;
         }

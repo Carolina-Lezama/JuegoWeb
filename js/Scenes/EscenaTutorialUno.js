@@ -1,5 +1,4 @@
 import { getState } from '../globals.js';
-import { reescalarGlobalFlexible, agregarEfectoHover } from '../uiHelpers.js';
 
 export class EscenaTutorialUno extends Phaser.Scene {
     constructor() {
@@ -10,53 +9,54 @@ export class EscenaTutorialUno extends Phaser.Scene {
     }
 
     preload() {
-        // Asegúrate de que las rutas coincidan con tu proyecto
         this.load.image('FondoCasaU', 'assets/static/Lugares/FondoCasaU.png');
         this.load.tilemapTiledJSON('mapaTutorial', 'assets/static/Lugares/Nosale.json'); 
     }
 
     create() {
-        // 1. CARGA DEL MAPA TILED
+        // ==============================================================
+        // 1. CARGA DEL MAPA TILED Y ESCALADO UNIFORME
+        // ==============================================================
         const mapa = this.make.tilemap({ key: 'mapaTutorial' });
         const tileset = mapa.addTilesetImage('Fondo', 'FondoCasaU');
 
-        // Cálculo de escala para que el mapa ocupe la pantalla (si es lo deseado)
-        const escalaX = this.scale.width / (mapa.width * mapa.tileWidth);
-        const escalaY = this.scale.height / (mapa.height * mapa.tileHeight);
+        // Escala uniforme para no deformar el mapa. 
+        // Si quieres que sea más grande o más chico, cambia este número (ej. 1.2, 0.8)
+        const escalaMapa = 1; 
 
         const capaFondo = mapa.createLayer('fondo', tileset, 0, 0);
-        capaFondo.setScale(escalaX, escalaY);
+        capaFondo.setScale(escalaMapa);
 
+        // ==============================================================
         // 2. LÍMITES DEL MUNDO Y CÁMARA
-        // Los límites deben ser el tamaño DEL MAPA ESCALADO, no de la pantalla
-        const mapWidth = mapa.width * mapa.tileWidth * escalaX;
-        const mapHeight = mapa.height * mapa.tileHeight * escalaY;
+        // ==============================================================
+        const mapWidth = mapa.width * mapa.tileWidth * escalaMapa;
+        const mapHeight = mapa.height * mapa.tileHeight * escalaMapa;
         
         this.physics.world.setBounds(0, 0, mapWidth, mapHeight);
         this.cameras.main.setBounds(0, 0, mapWidth, mapHeight);
 
+        // ==============================================================
         // 3. JUGADORES Y FÍSICAS
-        this.personaje = this.physics.add.sprite(mapWidth / 2, mapHeight / 2, 'niñoCaminando');
-        this.animal = this.physics.add.sprite(mapWidth / 2, mapHeight / 2, 'gatoCaminando').setVisible(false);
+        // ==============================================================
+        this.personaje = this.physics.add.sprite(mapWidth / 2, mapHeight / 2, 'niñoCaminando').setScale(0.7); // <-- Modifica escala del jugador aquí
+        this.animal = this.physics.add.sprite(mapWidth / 2, mapHeight / 2, 'gatoCaminando').setVisible(false).setScale(0.7); // <-- Modifica escala del animal aquí
         this.animal.body.enable = false;
         
         this.personaje.setCollideWorldBounds(true);
         this.animal.setCollideWorldBounds(true);
         
-        // Puntero dinámico al jugador que estamos controlando
         this.jugadorActivo = this.personaje;
         this.cameras.main.startFollow(this.jugadorActivo);
 
-        // 4. ANIMACIONES DEL JUGADOR
+        // ==============================================================
+        // 4. INICIALIZACIÓN
+        // ==============================================================
         this.crearAnimacionesMovimiento();
-
-        // 5. INTERFAZ DE USUARIO (UI)
         this.crearInterfazUsuario();
+        this.crearZonasDeInteraccion(mapa, escalaMapa); // Pasamos la escala única
 
-        // 6. MAPEO DE COLISIONES Y ZONAS
-        this.crearZonasDeInteraccion(mapa, escalaX, escalaY);
-
-        // 7. CONTROLES Y EVENTOS
+        // Controles
         this.teclasMovimiento = this.input.keyboard.addKeys({
             arriba: Phaser.Input.Keyboard.KeyCodes.W,
             abajo: Phaser.Input.Keyboard.KeyCodes.S,
@@ -64,51 +64,59 @@ export class EscenaTutorialUno extends Phaser.Scene {
             derecha: Phaser.Input.Keyboard.KeyCodes.D
         });
         this.teclasExtras = this.input.keyboard.addKeys('E,G');
-
-        // 8. RESPONSIVIDAD
-        this.aplicarReescaladoUI();
-        this.scale.on('resize', () => this.aplicarReescaladoUI());
     }
 
     crearInterfazUsuario() {
-        // 🔥 CRÍTICO: setScrollFactor(0) asegura que la UI no se mueva con la cámara
-        this.barra = this.add.image(0, 0, 'barraobjetos').setDepth(5).setScrollFactor(0);
+        // ==============================================================
+        // INTERFAZ FIJA A LA CÁMARA (1650x900)
+        // ==============================================================
+        this.barra = this.add.image(742, 837, 'barraobjetos')
+            .setDepth(5)
+            .setScrollFactor(0)
+            .setScale(1.1); // <-- Escala de la barra
         
-        this.botonI = this.add.image(0, 0, 'botonInventario')
+        this.botonI = this.add.image(462, 837, 'botonInventario')
             .setDepth(5)
             .setInteractive({ useHandCursor: true })
-            .setScrollFactor(0);
+            .setScrollFactor(0)
+            .setScale(1); // <-- Escala del botón de inventario
             
-        agregarEfectoHover(this.botonI);
+        this.agregarEfectoHover(this.botonI, 1.15);
 
         const abrirInventario = () => {
-            window.ultimaEscenaActiva = this.scene.key;
-            this.scene.switch('EscenaInventario'); // Usamos switch para pausar y ocultar
+            // Guardamos qué escena llamó al inventario
+            window.ultimaEscenaActiva = this.scene.key; 
+            
+            // Switch pone esta escena a dormir y despierta (o inicia) el inventario
+            this.scene.switch('EscenaInventario');
         };
 
         this.botonI.on('pointerdown', abrirInventario);
         this.input.keyboard.on('keydown-R', abrirInventario);
 
-        // Renderizar Barra de Herramientas (Hotbar)
+        // ==============================================================
+        // BARRA DE HERRAMIENTAS (HOTBAR)
+        // ==============================================================
         this.objetosImgs = {};
-        const activos = getState().objetosActivos || []; // Leemos del Store
+        const activos = getState().objetosActivos || []; 
         
-        activos.forEach(id => {
-            // Buscamos el sprite correcto
+        activos.forEach((id, index) => {
             const dataObj = getState().objetosGlobales?.find(o => o.id == id);
             const spriteKey = dataObj?.sprite || id;
 
-            const sprite = this.add.sprite(0, 0, spriteKey)
+            // Separación dinámica de 80 píxeles por cada objeto en la barra
+            const posX = 577 + (index * 80);
+            
+            const sprite = this.add.sprite(posX, 837, spriteKey)
                 .setDepth(8)
                 .setInteractive({ useHandCursor: true })
-                .setScrollFactor(0); // Fijar a la pantalla
+                .setScrollFactor(0)
+                .setScale(0.5); // <-- Escala de los objetos en la barra
 
             this.objetosImgs[id] = sprite;
 
-            // Animación segura del objeto
-            const animKey = spriteKey + '-movimiento';
-            if (this.anims.exists(animKey)) {
-                sprite.play(animKey);
+            if (this.anims.exists(spriteKey + '-movimiento')) {
+                sprite.play(spriteKey + '-movimiento');
             }
 
             sprite.on('pointerdown', () => {
@@ -117,10 +125,12 @@ export class EscenaTutorialUno extends Phaser.Scene {
             });
         });
 
-        // Textos flotantes
+        // ==============================================================
+        // TEXTOS FLOTANTES Y DE MENSAJES
+        // ==============================================================
         this.textoAccion = this.add.text(0, 0, '', {
             fontSize: '16px', fill: '#ffffff', backgroundColor: '#000000', padding: { x: 8, y: 4 }
-        }).setVisible(false).setDepth(20);
+        }).setVisible(false).setDepth(20); // Sin ScrollFactor, flota en el mundo
 
         this.mensajeTexto = this.add.text(20, 20, '', {
             fontSize: '18px', fill: '#fff', backgroundColor: '#000'
@@ -128,15 +138,13 @@ export class EscenaTutorialUno extends Phaser.Scene {
     }
 
     gestionarUsoDeObjeto(id, sprite) {
-        // UI: Dibujar marcador
         if (this.marcadorSeleccion) this.marcadorSeleccion.destroy();
         
         this.marcadorSeleccion = this.add.rectangle(
             sprite.x, sprite.y, sprite.displayWidth + 5, sprite.displayHeight + 5, 0x00ff00, 0.3
         ).setDepth(sprite.depth - 1).setScrollFactor(0);
 
-        // Lógica: Si es el espejo (ID 1), cambia el personaje
-        if (id == 1) {
+        if (id == 1) { // ID 1 = Espejo
             this.cambiarPersonaje();
         }
     }
@@ -146,7 +154,7 @@ export class EscenaTutorialUno extends Phaser.Scene {
             this.personaje.setVisible(false);
             this.personaje.body.enable = false;
             
-            this.animal.setPosition(this.personaje.x, this.personaje.y); // Sincroniza pos
+            this.animal.setPosition(this.personaje.x, this.personaje.y); 
             this.animal.setVisible(true);
             this.animal.body.enable = true;
             
@@ -166,30 +174,28 @@ export class EscenaTutorialUno extends Phaser.Scene {
         this.cameras.main.startFollow(this.jugadorActivo);
     }
 
-    crearZonasDeInteraccion(mapa, escalaX, escalaY) {
+    crearZonasDeInteraccion(mapa, escalaMapa) {
         this.paredes = this.physics.add.staticGroup();
-        this.zonaInteractivaActual = null; // Guardará en qué zona está pisando el jugador
+        this.zonaInteractivaActual = null; 
 
         const capaObjetos = mapa.getObjectLayer('Objetos');
         if (!capaObjetos) return;
 
         capaObjetos.objects.forEach(obj => {
-            const x = (obj.x + (obj.width || 0) / 2) * escalaX;
-            const y = (obj.y + (obj.height || 0) / 2) * escalaY;
-            const w = (obj.width || 0) * escalaX;
-            const h = (obj.height || 0) * escalaY;
+            // Se usa la misma escala para X e Y para evitar distorsiones en las cajas de colisión
+            const x = (obj.x + (obj.width || 0) / 2) * escalaMapa;
+            const y = (obj.y + (obj.height || 0) / 2) * escalaMapa;
+            const w = (obj.width || 0) * escalaMapa;
+            const h = (obj.height || 0) * escalaMapa;
 
             const zona = this.add.zone(x, y, w, h);
-            this.physics.add.existing(zona, true);
+            this.physics.add.existing(zona, true); // true = Static body
 
             if (!obj.ellipse) {
-                // Pared sólida
                 this.paredes.add(zona);
             } else {
-                // Zona de interacción (Gatillo/Trigger)
                 zona.propiedades = obj.properties?.reduce((acc, p) => ({ ...acc, [p.name]: p.value }), {}) || {};
                 
-                // Usamos Overlap nativo en lugar de calcular intersecciones en el update
                 this.physics.add.overlap(this.personaje, zona, () => this.zonaInteractivaActual = zona);
                 this.physics.add.overlap(this.animal, zona, () => this.zonaInteractivaActual = zona);
             }
@@ -211,45 +217,22 @@ export class EscenaTutorialUno extends Phaser.Scene {
         }
     }
 
-    aplicarReescaladoUI() {
-        // Solo reescalamos la interfaz. Los personajes y el mapa ya viven en el mundo físico.
-        const elementosUI = [
-            { obj: this.barra, posX: 0.45, posY: 0.93, escalaRelativa: 0.5 },
-            { obj: this.botonI, posX: 0.28, posY: 0.93, escalaRelativa: 0.1 }
-        ];
-
-        // Reescalamos los objetos de la barra
-        Object.keys(this.objetosImgs).forEach((id) => {
-            // Ajustamos la posición horizontal según cuántos objetos haya
-            elementosUI.push({
-                obj: this.objetosImgs[id],
-                posX: 0.35, // Aquí deberías sumar un offset por índice si permites más de 1 objeto en la barra
-                posY: 0.93,
-                escalaRelativa: 0.06
-            });
-        });
-
-        reescalarGlobalFlexible(this, elementosUI);
-
-        if (this.marcadorSeleccion && this.objetoSeleccionado) {
-            const spriteActivo = this.objetosImgs[this.objetoSeleccionado];
-            if (spriteActivo) this.marcadorSeleccion.setPosition(spriteActivo.x, spriteActivo.y);
-        }
-
-        // Escalar actores del mundo físico
-        const escalaPersonaje = (900 * 0.07) / this.personaje.width; // 900 es el height base del FIT
-        const escalaAnimal = (900 * 0.1) / this.animal.width;
-        this.personaje.setScale(escalaPersonaje);
-        this.animal.setScale(escalaAnimal);
-    }
-
     mostrarMensaje(texto) {
         this.mensajeTexto.setText(texto).setVisible(true);
         this.time.delayedCall(3000, () => this.mensajeTexto.setVisible(false));
     }
 
+    // Función interna nativa para reemplazar la de uiHelpers.js
+    agregarEfectoHover(boton, multiplicador = 1.1) {
+        boton.escalaBase = boton.scaleX;
+        boton.on('pointerover', () => boton.setScale(boton.escalaBase * multiplicador));
+        boton.on('pointerout', () => boton.setScale(boton.escalaBase));
+    }
+
     update() {
+        // ==============================================================
         // 1. MOVIMIENTO
+        // ==============================================================
         const teclas = this.teclasMovimiento;
         const velocidad = 150;
         let vx = 0, vy = 0;
@@ -270,7 +253,9 @@ export class EscenaTutorialUno extends Phaser.Scene {
 
         this.jugadorActivo.setVelocity(vx, vy);
 
+        // ==============================================================
         // 2. GESTIÓN DE ANIMACIONES
+        // ==============================================================
         const esGato = this.personajeActivoStr === 'gato';
         
         if (vx !== 0 || vy !== 0) {
@@ -279,10 +264,12 @@ export class EscenaTutorialUno extends Phaser.Scene {
             else this.jugadorActivo.play(esGato ? 'caminar_derecha_animal' : 'caminar_derecha', true);
         } else {
             this.jugadorActivo.anims.stop();
-            this.jugadorActivo.setFrame(0);
+            this.jugadorActivo.setFrame(0); // Vuelve a la pose estática
         }
 
-        // 3. INTERACCIÓN CON ZONAS
+        // ==============================================================
+        // 3. INTERACCIÓN CON ZONAS DE TILED
+        // ==============================================================
         if (this.zonaInteractivaActual) {
             const props = this.zonaInteractivaActual.propiedades;
             const tecla = props.tecla || 'E';
@@ -290,7 +277,7 @@ export class EscenaTutorialUno extends Phaser.Scene {
             
             this.textoAccion.setText(tipo === 'salida' ? 'Presiona G para salir' : 'Presiona E para inspeccionar').setVisible(true);
             
-            // Posicionar texto sobre la cabeza del jugador (en coordenadas de mundo)
+            // Posicionar texto sobre la cabeza del jugador (en coordenadas de mundo físico)
             this.textoAccion.setPosition(this.jugadorActivo.x - 40, this.jugadorActivo.y - 60);
 
             if ((tecla === 'E' && Phaser.Input.Keyboard.JustDown(this.teclasExtras.E)) || 
@@ -303,7 +290,7 @@ export class EscenaTutorialUno extends Phaser.Scene {
                 }
             }
 
-            // Limpiamos la zona en cada frame. Si el jugador sigue ahí, el evento 'overlap' la volverá a llenar.
+            // Limpiamos la zona en cada frame. Si el jugador sigue ahí, el evento 'overlap' la volverá a asignar.
             this.zonaInteractivaActual = null; 
         } else {
             this.textoAccion.setVisible(false);
