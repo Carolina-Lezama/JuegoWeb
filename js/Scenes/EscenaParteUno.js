@@ -41,12 +41,12 @@ export class EscenaParteUno extends Phaser.Scene {
         // ==============================================================
         // 3. INTERFAZ DE USUARIO (Coordenadas Fijas Base 1650x900)
         // ==============================================================
-        this.fondoObjeto = this.add.image(825, 450, 'FondoObjeto').setVisible(false).setDepth(20).setScrollFactor(0).setScale(2); // <-- Modifica la escala aquí
+        this.fondoObjeto = this.add.image(825, 450, 'FondoObjeto').setVisible(false).setDepth(20).setScrollFactor(0).setScale(1); // <-- Modifica la escala aquí
         this.Logro1 = this.add.image(1320, 720, 'Logro1').setVisible(false).setDepth(25).setScrollFactor(0).setScale(0.5); // <-- Modifica la escala aquí
         
-        this.botonD = this.add.image(495, 180, 'botonDescripcion').setDepth(21).setVisible(false).setScrollFactor(0).setScale(0.55); // <-- Modifica la escala aquí
-        this.botonSa = this.add.image(495, 720, 'botonSalir').setDepth(21).setInteractive({ useHandCursor: true }).setVisible(false).setScrollFactor(0).setScale(0.3); // <-- Modifica la escala aquí
-        this.objetoMapa = this.add.sprite(1204, 450, 'objetoMapa').setDepth(22).setVisible(false).setScrollFactor(0).setScale(0.7); // <-- Modifica la escala aquí
+        this.botonD = this.add.image(495, 180, 'botonDescripcion').setDepth(21).setVisible(false).setScrollFactor(0).setScale(1,0.5); // <-- Modifica la escala aquí
+        this.botonSa = this.add.image(495, 720, 'botonSalir').setDepth(21).setInteractive({ useHandCursor: true }).setVisible(false).setScrollFactor(0).setScale(1); // <-- Modifica la escala aquí
+        this.objetoMapa = this.add.sprite(1204, 450, 'objetoMapa').setDepth(22).setVisible(false).setScrollFactor(0).setScale(1); // <-- Modifica la escala aquí
         
         // Texto del Pop-Up de descripción del Mapa
         this.texto2 = this.add.text(495, 441, '', {

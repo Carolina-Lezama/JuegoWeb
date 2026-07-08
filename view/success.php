@@ -17,7 +17,7 @@
         <p>Redirigiendo a la página de inicio de sesión...</p>
         
         <p style="font-size: 0.9em; margin-top: 20px;">
-            ¿No te redirige automáticamente? <a href="inicio.php" style="color: inherit; text-decoration: underline;">Haz clic aquí</a>.
+            ¿No te redirige automáticamente? <a href="view/catalogo.php" style="color: inherit; text-decoration: underline;">Haz clic aquí</a>.
         </p>
     </main>
 

@@ -1,5 +1,4 @@
-import { getState } from '../globals.js';
-import { reescalarGlobalFlexible, createAndAdaptTextFlexible, agregarEfectoHover } from '../uiHelpers.js';
+import { getState, getGatoActivo } from '../globals.js'; // <-- Agregado getGatoActivo
 
 export class EscenaMapa extends Phaser.Scene {
     constructor() {
@@ -7,51 +6,77 @@ export class EscenaMapa extends Phaser.Scene {
     }
 
     create() {
-        // 1. FONDOS Y ELEMENTOS ESTÁTICOS
-        this.EscenaMapa = this.add.image(0, 0, 'EscenaMapa').setDepth(0);
+        // ==============================================================
+        // 1. FONDOS Y ELEMENTOS ESTÁTICOS (Base 1650 x 900)
+        // ==============================================================
+        this.EscenaMapa = this.add.image(825, 450, 'EscenaMapa').setDepth(0).setScale(1); 
         
+        // ==============================================================
         // 2. BOTONES E INTERFAZ
-        this.regreso = this.add.image(0, 0, 'regreso').setDepth(10).setInteractive({ useHandCursor: true });
-        this.botonFinalizar = this.add.image(0, 0, 'botonFinalizar').setDepth(10).setInteractive({ useHandCursor: true });
+        // ==============================================================
+        this.regreso = this.add.image(82, 90, 'regreso').setDepth(10).setInteractive({ useHandCursor: true }).setScale(1.2);
+        this.botonFinalizar = this.add.image(825, 450, 'botonFinalizar').setDepth(10).setInteractive({ useHandCursor: true }).setScale(1.5);
         
         // Íconos de Niveles / Enemigos
-        this.IconoCaballero = this.add.image(0, 0, 'IconoCaballero').setDepth(10).setInteractive({ useHandCursor: true });
-        this.IconoCalaca = this.add.image(0, 0, 'IconoCalaca').setDepth(10).setInteractive({ useHandCursor: true });
-        this.IconoDuende = this.add.image(0, 0, 'IconoDuende').setDepth(10).setInteractive({ useHandCursor: true });
-        this.IconoSlime = this.add.image(0, 0, 'IconoSlime').setDepth(10).setInteractive({ useHandCursor: true });
+        this.IconoSlime = this.add.image(330, 270, 'IconoSlime').setDepth(10).setInteractive({ useHandCursor: true }).setScale(1.7);
+        this.IconoDuende = this.add.image(1320, 270, 'IconoDuende').setDepth(10).setInteractive({ useHandCursor: true }).setScale(1.7);
+        this.IconoCalaca = this.add.image(330, 630, 'IconoCalaca').setDepth(10).setInteractive({ useHandCursor: true }).setScale(1.7);
+        this.IconoCaballero = this.add.image(1320, 630, 'IconoCaballero').setDepth(10).setInteractive({ useHandCursor: true }).setScale(1.7);
 
-        // 3. PERSONAJES Y ANIMACIONES
-        this.gato = this.add.sprite(0, 0, 'gato').setDepth(5).setFlipX(true);
-        this.mago = this.add.sprite(0, 0, 'mago').setDepth(5).setFlipX(true);
+        // ==============================================================
+        // 3. PERSONAJES Y ANIMACIONES (Gato Dinámico)
+        // ==============================================================
+        const claveGato = getGatoActivo(); // <-- Determinamos el gato activo
 
-        // Protección de animaciones
-        if (!this.anims.exists('gato-movimiento')) {
-            this.anims.create({ key: 'gato-movimiento', frames: this.anims.generateFrameNumbers('gato', { start: 0, end: 7 }), frameRate: 3, repeat: -1 });
+        this.gato = this.add.sprite(957, 810, claveGato).setDepth(5).setFlipX(true).setScale(1);
+        this.mago = this.add.sprite(726, 720, 'mago').setDepth(5).setFlipX(true).setScale(1.2);
+
+        // Animación dinámica para el gato
+        const animGato = `movimiento-${claveGato}`;
+        if (!this.anims.exists(animGato)) {
+            this.anims.create({ 
+                key: animGato, 
+                frames: this.anims.generateFrameNumbers(claveGato, { start: 0, end: 7 }), // Ajusta el 'end' si tu sprite tiene menos frames
+                frameRate: 3, 
+                repeat: -1 
+            });
         }
+
+        // Animación estática del mago
         if (!this.anims.exists('mago-movimiento')) {
-            this.anims.create({ key: 'mago-movimiento', frames: this.anims.generateFrameNumbers('mago', { start: 0, end: 4 }), frameRate: 5, repeat: -1 });
+            this.anims.create({ 
+                key: 'mago-movimiento', 
+                frames: this.anims.generateFrameNumbers('mago', { start: 0, end: 4 }), 
+                frameRate: 5, 
+                repeat: -1 
+            });
         }
 
-        this.gato.play('gato-movimiento');
+        this.gato.play(animGato);
         this.mago.play('mago-movimiento');
 
+        // ==============================================================
         // 4. TEXTOS (Puntuación)
-        // Extraemos los puntos actualizados desde el Gestor de Estado
+        // ==============================================================
         const puntosActuales = getState().puntosTotales || 0;
 
-        this.texto1 = createAndAdaptTextFlexible(this, {
-            text: 'Puntos',
-            posX: 0.5, posY: 0.1, maxWidth: 950, fontSizeInicial: 110,
-            originX: 0.5, originY: 0.5, color: '#000000'
-        }).setDepth(5);
+        this.texto1 = this.add.text(825, 90, 'Puntos', {
+            fontFamily: 'Arial', 
+            fontSize: '110px',
+            fill: '#000000',
+            align: 'center'
+        }).setOrigin(0.5).setDepth(5).setScale(1);
 
-        this.texto2 = createAndAdaptTextFlexible(this, {
-            text: String(puntosActuales), // Convertimos a string por seguridad
-            posX: 0.5, posY: 0.25, maxWidth: 950, fontSizeInicial: 85,
-            originX: 0.5, originY: 0.5, color: '#000000'
-        }).setDepth(5);
+        this.texto2 = this.add.text(825, 225, String(puntosActuales), {
+            fontFamily: 'Arial', 
+            fontSize: '85px',
+            fill: '#000000',
+            align: 'center'
+        }).setOrigin(0.5).setDepth(5).setScale(1);
 
+        // ==============================================================
         // 5. EVENTOS DE NAVEGACIÓN
+        // ==============================================================
         this.regreso.on('pointerdown', () => this.scene.start('EscenaInicio'));
         this.botonFinalizar.on('pointerdown', () => this.scene.start('EscenaFinal'));
         
@@ -61,44 +86,20 @@ export class EscenaMapa extends Phaser.Scene {
         this.IconoCalaca.on('pointerdown', () => this.scene.start('EscenaCementerio'));
         this.IconoDuende.on('pointerdown', () => this.scene.start('EscenaCasaAbandonada'));
 
+        // ==============================================================
         // 6. EFECTOS VISUALES (Hover)
-        agregarEfectoHover(this.regreso);
-        agregarEfectoHover(this.botonFinalizar, 1.05); // Crece un poco menos por ser un botón grande
-        agregarEfectoHover(this.IconoSlime, 1.1);
-        agregarEfectoHover(this.IconoCaballero, 1.1);
-        agregarEfectoHover(this.IconoCalaca, 1.1);
-        agregarEfectoHover(this.IconoDuende, 1.1);
-
-        // 7. RESPONSIVIDAD
-        this.aplicarReescalado();
-        this.scale.on('resize', () => this.aplicarReescalado());
+        // ==============================================================
+        this.agregarEfectoHover(this.regreso, 1.1);
+        this.agregarEfectoHover(this.botonFinalizar, 1.05); 
+        this.agregarEfectoHover(this.IconoSlime, 1.1);
+        this.agregarEfectoHover(this.IconoCaballero, 1.1);
+        this.agregarEfectoHover(this.IconoCalaca, 1.1);
+        this.agregarEfectoHover(this.IconoDuende, 1.1);
     }
 
-    aplicarReescalado() {
-        reescalarGlobalFlexible(this, [
-            { obj: this.EscenaMapa, posX: 0.5, posY: 0.5, originX: 0.5, originY: 0.5, escalaRelativa: 1, autoFill: true },
-            
-            // Botones de sistema
-            { obj: this.regreso, posX: 0.05, posY: 0.1, escalaRelativa: 0.16 },
-            { obj: this.botonFinalizar, posX: 0.5, posY: 0.5, escalaRelativa: 0.5 },
-            
-            // Íconos de nivel (Distribución en cuadrícula)
-            { obj: this.IconoSlime, posX: 0.2, posY: 0.3, escalaRelativa: 0.32 },
-            { obj: this.IconoDuende, posX: 0.8, posY: 0.3, escalaRelativa: 0.32 },
-            { obj: this.IconoCalaca, posX: 0.2, posY: 0.7, escalaRelativa: 0.32 },
-            { obj: this.IconoCaballero, posX: 0.8, posY: 0.7, escalaRelativa: 0.32 },
-            
-            // Personajes decorativos
-            { obj: this.gato, posX: 0.58, posY: 0.9, escalaRelativa: 0.19 },
-            { obj: this.mago, posX: 0.44, posY: 0.8, escalaRelativa: 0.22 }
-        ]);
-
-        // Guardar escalas base para el efecto Hover
-        this.regreso.escalaBase = this.regreso.scale;
-        this.botonFinalizar.escalaBase = this.botonFinalizar.scale;
-        this.IconoSlime.escalaBase = this.IconoSlime.scale;
-        this.IconoCaballero.escalaBase = this.IconoCaballero.scale;
-        this.IconoCalaca.escalaBase = this.IconoCalaca.scale;
-        this.IconoDuende.escalaBase = this.IconoDuende.scale;
+    agregarEfectoHover(boton, multiplicador) {
+        boton.escalaBase = boton.scaleX;
+        boton.on('pointerover', () => boton.setScale(boton.escalaBase * multiplicador));
+        boton.on('pointerout', () => boton.setScale(boton.escalaBase));
     }
 }

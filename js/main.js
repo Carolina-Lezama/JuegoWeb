@@ -89,7 +89,7 @@ class PreloadScene extends Phaser.Scene {
         });
 
         this.load.on('complete', () => {
-            this.scene.start('EscenaSalida'); //aqui EscenaInicio
+            this.scene.start('EscenaCementerio'); //aqui EscenaInicio
         });
 
         // --- CARGA MASIVA DE ASSETS ESTATICOS ---
@@ -323,13 +323,11 @@ const config = {
         EscenaTutorialUno, 
         EscenaSalida,
         EscenaParteUno,
-        
-        
         EscenaMapa,
+        EscenaCasaAbandonada,
         EscenaPeleaSlime, 
         EscenaCastilloIfernal, 
         EscenaCementerio, 
-        EscenaCasaAbandonada,
         EscenaMuerte,
         EscenaFinal
     ]
